@@ -117,7 +117,20 @@
                 timeZone: 'local',
                 displayEventTime: true,
                 eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-                headerToolbar: { left: 'prev,next', center: 'title', right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' },
+                
+                // 🛠️ 核心汉化：把自带的英文按钮和文本全部翻译成中文
+                buttonText: {
+                    today: '今天',
+                    month: '月历',
+                    week: '周历',
+                    day: '日历',
+                    list: '订单列表'
+                },
+                headerToolbar: { 
+                    left: 'prev,next today', // 加上今天按钮
+                    center: 'title', 
+                    right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' 
+                },
                 eventClick: function(info) { openModal(info.event.extendedProps); }
             });
             calendar.render();
@@ -258,14 +271,11 @@
             const datetime = `${oDate}T${oTime}`;
 
             document.getElementById('submitBtn').innerText = "正在核对云端...";
-            await fetchOrders(); // 强行拉最新云端数据
+            await fetchOrders(); 
 
-            // ⚠️ 彻底修复：精准撞时间拦截！
-            // 只要云端有任何订单的 datetime 跟你现在输入的一模一样（且不是当前正在修改的这笔单子本身），就直接拦截！
             const isTimeOccupied = localOrders.some(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
             
             if (isTimeOccupied) {
-                // 找出那个撞单的订单名字，给用户看，体验更好
                 const existingOrder = localOrders.find(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
                 alert(`🚨 撞单拦截！\n\n【${oDate} ${oTime}】这个时间已经被订单【${existingOrder.name}】占用了！\n请更换其他时间。`);
                 document.getElementById('submitBtn').innerText = "保存";

@@ -7,8 +7,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
-        .fc { max-height: 75vh; font-size: 0.85rem; }
-        .fc-event { cursor: pointer; padding: 2px 4px; margin: 1px 0; border-radius: 4px; border: none !important; }
+        .fc { max-height: 78vh; font-size: 0.85rem; }
+        /* 🚨 核心美化：重塑订单在日历格子里的长相 */
+        .fc-event { 
+            cursor: pointer; 
+            padding: 4px 6px !important; 
+            margin: 2px 0 !important; 
+            border-radius: 6px !important; 
+            border: none !important;
+            background-color: #ecfdf5 !important; /* 极浅绿背景 */
+            color: #065f46 !important; /* 深绿文字 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        /* 确保自定义的内容横向撑开 */
+        .fc-event-main { width: 100%; }
         .fc-toolbar { flex-wrap: wrap; gap: 6px; }
         @media (max-width: 640px) {
             .fc-toolbar-title { font-size: 1.1rem !important; }
@@ -75,9 +87,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. 固定配置
-        // ==========================================
         const GH_USER = "althellobye"; 
         const GH_REPO = "my-order-data"; 
         const GH_BRANCH = "main"; 
@@ -104,9 +113,6 @@
             location.reload();
         }
 
-        // ==========================================
-        // 2. 初始化日历
-        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
             const isMobile = window.innerWidth < 640;
@@ -115,21 +121,26 @@
                 initialView: isMobile ? 'listMonth' : 'dayGridMonth',
                 locale: 'zh-cn',
                 timeZone: 'local',
-                displayEventTime: true,
-                eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+                displayEventTime: false, // 关闭自带的丑陋时间前缀，我们用下面的自定义排版
+                buttonText: { today: '今天', month: '月历', week: '周历', day: '日历', list: '订单列表' },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' },
                 
-                // 🛠️ 核心汉化：把自带的英文按钮和文本全部翻译成中文
-                buttonText: {
-                    today: '今天',
-                    month: '月历',
-                    week: '周历',
-                    day: '日历',
-                    list: '订单列表'
-                },
-                headerToolbar: { 
-                    left: 'prev,next today', // 加上今天按钮
-                    center: 'title', 
-                    right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' 
+                // 🛠️ 视觉一目了然：自定义订单方块的内部 HTML 排版
+                eventContent: function(arg) {
+                    const props = arg.event.extendedProps;
+                    const timeStr = props.datetime ? props.datetime.split('T')[1] : '';
+                    
+                    // 创建一个优雅的 Flex 布局：左边时间，中间名字，右边数量小气泡
+                    let customHtml = `
+                        <div class="flex items-center justify-between w-full overflow-hidden text-xs gap-1">
+                            <div class="flex items-center overflow-hidden min-w-0 gap-1.5">
+                                <span class="bg-emerald-800 text-emerald-100 px-1 py-0.5 rounded text-[10px] font-bold font-mono tracking-tight shrink-0">${timeStr}</span>
+                                <span class="truncate font-medium text-emerald-950">${props.name}</span>
+                            </div>
+                            <span class="bg-emerald-200/60 text-emerald-900 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0">${props.count}部</span>
+                        </div>
+                    `;
+                    return { html: customHtml };
                 },
                 eventClick: function(info) { openModal(info.event.extendedProps); }
             });
@@ -138,9 +149,6 @@
             setInterval(fetchOrders, 20000); 
         });
 
-        // ==========================================
-        // 3. 数据请求
-        // ==========================================
         async function fetchOrders() {
             const token = getAuthToken();
             if (!token) return;
@@ -170,9 +178,8 @@
         function renderCalendar() {
             const events = localOrders.map(item => ({
                 id: item.id,
-                title: `[${item.datetime.split('T')[1]}] ${item.name} (${item.count}部)`,
+                title: item.name, // 备用
                 start: item.datetime,
-                backgroundColor: '#10b981',
                 extendedProps: item
             }));
             calendar.removeAllEvents();
@@ -217,9 +224,6 @@
             }
         }
 
-        // ==========================================
-        // 4. 弹窗与防重业务逻辑
-        // ==========================================
         const modal = document.getElementById('orderModal');
         const deleteBtn = document.getElementById('deleteBtn');
 

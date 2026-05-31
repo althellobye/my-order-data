@@ -43,10 +43,18 @@
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">订单名称</label>
                     <input type="text" id="orderName" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
                 </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-slate-600">日期与时间</label>
-                    <input type="datetime-local" id="orderDateTime" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-slate-600">选择日期</label>
+                        <input type="date" id="orderOnlyDate" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-slate-600">具体时间</label>
+                        <input type="time" id="orderOnlyTime" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                    </div>
                 </div>
+
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">多少部</label>
                     <input type="number" id="orderCount" required min="1" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
@@ -68,7 +76,7 @@
 
     <script>
         // ==========================================
-        // 1. 固定配置（只需填你的用户名和仓库名，不用填 Token 密码！）
+        // 1. 固定配置（只需填你的用户名和仓库名）
         // ==========================================
         const GH_USER = "althellobye"; 
         const GH_REPO = "my-order-data"; 
@@ -81,14 +89,11 @@
         let calendar;
         let fileSha = ""; 
 
-        // 获取或向用户索要 Token 密匙
         function getAuthToken() {
             let token = localStorage.getItem('gh_order_token');
             if (!token || token.trim() === "") {
                 token = prompt("🔑 首次使用验证：\n请输入你新生成的 GitHub Token (ghp_开头的口令):");
-                if (token) {
-                    localStorage.setItem('gh_order_token', token.trim());
-                }
+                if (token) { localStorage.setItem('gh_order_token', token.trim()); }
             }
             return token;
         }
@@ -117,7 +122,7 @@
             });
             calendar.render();
             fetchOrders(); 
-            setInterval(fetchOrders, 20000); // 20秒自动刷新
+            setInterval(fetchOrders, 20000); 
         });
 
         // ==========================================
@@ -132,7 +137,7 @@
                     headers: { "Authorization": `token ${token}` }
                 });
                 if (response.status === 401 || response.status === 403) {
-                    alert("❌ 口令无效或已被注销，请点击‘重置口令’重新输入正确的新Token！");
+                    alert("❌ 口令无效或已被注销，请点击‘重置口令’重新输入！");
                     clearToken();
                     return;
                 }
@@ -212,7 +217,12 @@
                 document.getElementById('modalTitle').innerText = "查看/修改订单";
                 document.getElementById('orderId').value = orderData.id;
                 document.getElementById('orderName').value = orderData.name;
-                document.getElementById('orderDateTime').value = orderData.datetime;
+                
+                // 拆分时间回填到两个输入框
+                const parts = orderData.datetime.split('T');
+                document.getElementById('orderOnlyDate').value = parts[0];
+                document.getElementById('orderOnlyTime').value = parts[1];
+                
                 document.getElementById('orderCount').value = orderData.count;
                 document.getElementById('orderNote').value = orderData.note || '';
                 deleteBtn.classList.remove('hidden');
@@ -220,7 +230,8 @@
                 document.getElementById('modalTitle').innerText = "添加新订单";
                 document.getElementById('orderId').value = '';
                 document.getElementById('orderName').value = '';
-                document.getElementById('orderDateTime').value = '';
+                document.getElementById('orderOnlyDate').value = '';
+                document.getElementById('orderOnlyTime').value = '';
                 document.getElementById('orderCount').value = '';
                 document.getElementById('orderNote').value = '';
                 deleteBtn.classList.add('hidden');
@@ -234,19 +245,28 @@
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const id = document.getElementById('orderId').value || '_' + Math.random().toString(36).substr(2, 9);
             const name = document.getElementById('orderName').value.trim();
-            const datetime = document.getElementById('orderDateTime').value; 
+            const oDate = document.getElementById('orderOnlyDate').value;
+            const oTime = document.getElementById('orderOnlyTime').value;
             const count = parseInt(document.getElementById('orderCount').value);
             const note = document.getElementById('orderNote').value.trim();
             const isEdit = document.getElementById('orderId').value !== '';
 
-            if (!name || !datetime || !count) {
-                alert("请完整填写 名称、时间 和 部数！");
+            if (!name || !oDate || !oTime || !count) {
+                alert("请完整填写 名称、日期、时间 和 部数！");
                 return;
             }
 
+            // 把日期和时间重新合并为标准的存储格式
+            const datetime = `${oDate}T${oTime}`;
+
+            document.getElementById('submitBtn').innerText = "正在核对云端...";
+            await fetchOrders(); // 强行拉最新云端数据
+
+            // 精准撞单防重
             const isDuplicate = localOrders.some(item => item.name === name && item.datetime === datetime && item.id !== document.getElementById('orderId').value);
             if (isDuplicate) {
-                alert(`⚠️ 撞单提示：\n\n该时间【${datetime.replace('T', ' ')}】已存在相同的订单【${name}】！`);
+                alert(`⚠️ 撞单拦截提示：\n\n该时间【${oDate} ${oTime}】已存在相同的订单【${name}】！\n请修改时间或名称后再试。`);
+                document.getElementById('submitBtn').innerText = "保存";
                 return;
             }
 
@@ -256,7 +276,6 @@
             if (isEdit) { updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item); } 
             else { updatedOrders.push(orderPayload); }
 
-            await fetchOrders(); 
             uploadToGitHub(updatedOrders, `${isEdit ? '修改' : '新增'}订单: ${name}`);
         });
 

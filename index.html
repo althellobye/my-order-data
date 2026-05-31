@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
-        /* 手机端日历格子高度和字体优化 */
         .fc { max-height: 75vh; font-size: 0.85rem; }
         .fc-event { cursor: pointer; padding: 2px 4px; margin: 1px 0; border-radius: 4px; border: none !important; }
         .fc-toolbar { flex-wrap: wrap; gap: 6px; }
@@ -23,52 +22,44 @@
         <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
             <div class="flex flex-row justify-between items-center mb-4 gap-2">
                 <h1 class="text-xl sm:text-2xl font-bold text-emerald-600 flex items-center gap-1">📅 订单系统</h1>
-                <button onclick="fetchOrders()" class="bg-slate-100 active:bg-slate-200 sm:hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-1">
-                    🔄 刷新
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="clearToken()" class="bg-red-50 text-red-600 px-2 py-1.5 rounded-xl text-xs font-medium">重置口令</button>
+                    <button onclick="fetchOrders()" class="bg-slate-100 active:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition">🔄 刷新</button>
+                </div>
             </div>
-            
             <div id="calendar"></div>
         </div>
     </div>
 
-    <button id="addBtn" class="fixed bottom-6 right-6 bg-emerald-600 active:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl flex items-center justify-center transition-all transform active:scale-95 z-40">
-        +
-    </button>
+    <button id="addBtn" class="fixed bottom-6 right-6 bg-emerald-600 active:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl flex items-center justify-center z-40">+</button>
 
-    <div id="orderModal" class="fixed inset-0 bg-slate-900/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-all">
+    <div id="orderModal" class="fixed inset-0 bg-slate-900/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50">
         <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            
             <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
-
             <h3 id="modalTitle" class="text-lg sm:text-xl font-bold mb-4 text-slate-900">添加新订单</h3>
-            
             <form id="orderForm" class="space-y-4" onsubmit="return false;">
                 <input type="hidden" id="orderId">
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">订单名称</label>
-                    <input type="text" id="orderName" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-base">
+                    <input type="text" id="orderName" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">日期与时间</label>
-                    <input type="datetime-local" id="orderDateTime" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-base">
+                    <input type="datetime-local" id="orderDateTime" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">多少部</label>
-                    <input type="number" id="orderCount" required min="1" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-base">
+                    <input type="number" id="orderCount" required min="1" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-slate-600">补充或其他</label>
-                    <textarea id="orderNote" rows="2" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-base"></textarea>
+                    <textarea id="orderNote" rows="2" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none"></textarea>
                 </div>
-
                 <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 pt-2">
-                    <button type="button" id="deleteBtn" class="hidden bg-rose-50 active:bg-rose-100 text-rose-600 py-3 sm:py-2 px-4 rounded-xl font-medium text-sm transition text-center">
-                        🗑️ 删除订单
-                    </button>
+                    <button type="button" id="deleteBtn" class="hidden bg-rose-50 text-rose-600 py-3 sm:py-2 px-4 rounded-xl font-medium text-sm text-center">🗑️ 删除订单</button>
                     <div class="flex flex-row gap-2 sm:ml-auto">
-                        <button type="button" id="closeBtn" class="flex-1 sm:flex-none bg-slate-100 active:bg-slate-200 text-slate-600 py-3 sm:py-2 px-5 rounded-xl font-medium text-sm">取消</button>
-                        <button type="button" id="submitBtn" class="flex-1 sm:flex-none bg-emerald-600 active:bg-emerald-700 text-white py-3 sm:py-2 px-5 rounded-xl font-medium text-sm shadow-sm shadow-emerald-200">保存</button>
+                        <button type="button" id="closeBtn" class="flex-1 sm:flex-none bg-slate-100 text-slate-600 py-3 sm:py-2 px-5 rounded-xl font-medium text-sm">取消</button>
+                        <button type="button" id="submitBtn" class="flex-1 sm:flex-none bg-emerald-600 text-white py-3 sm:py-2 px-5 rounded-xl font-medium text-sm shadow-sm">保存</button>
                     </div>
                 </div>
             </form>
@@ -77,11 +68,10 @@
 
     <script>
         // ==========================================
-        // 1. 配置你的 GitHub 信息 (这里一定要保持你之前改过的内容)
+        // 1. 固定配置（只需填你的用户名和仓库名，不用填 Token 密码！）
         // ==========================================
         const GH_USER = "althellobye"; 
         const GH_REPO = "my-order-data"; 
-        const GH_TOKEN = "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"; // 🚨 记得把这一行换成你刚才生成的那个真实Token
         const GH_BRANCH = "main"; 
         const FILE_PATH = "data.json";
 
@@ -91,46 +81,61 @@
         let calendar;
         let fileSha = ""; 
 
+        // 获取或向用户索要 Token 密匙
+        function getAuthToken() {
+            let token = localStorage.getItem('gh_order_token');
+            if (!token || token.trim() === "") {
+                token = prompt("🔑 首次使用验证：\n请输入你新生成的 GitHub Token (ghp_开头的口令):");
+                if (token) {
+                    localStorage.setItem('gh_order_token', token.trim());
+                }
+            }
+            return token;
+        }
+
+        function clearToken() {
+            localStorage.removeItem('gh_order_token');
+            alert("同步口令已清除，刷新网页将重新要求输入。");
+            location.reload();
+        }
+
         // ==========================================
-        // 2. 初始化日历（带手机端响应式优化）
+        // 2. 初始化日历
         // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
-            
-            // 判断是不是手机屏幕
             const isMobile = window.innerWidth < 640;
 
             calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: isMobile ? 'listMonth' : 'dayGridMonth', // 手机端默认用列表视图看订单，更清晰
+                initialView: isMobile ? 'listMonth' : 'dayGridMonth',
                 locale: 'zh-cn',
                 timeZone: 'local',
-                displayEventTime: true, // 在日历上显示时间
-                eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false }, // 24小时制显示
-                headerToolbar: {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek'
-                },
-                eventClick: function(info) {
-                    openModal(info.event.extendedProps);
-                }
+                displayEventTime: true,
+                eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+                headerToolbar: { left: 'prev,next', center: 'title', right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' },
+                eventClick: function(info) { openModal(info.event.extendedProps); }
             });
             calendar.render();
             fetchOrders(); 
-
-            // 每 20 秒自动刷新一次
-            setInterval(fetchOrders, 20000);
+            setInterval(fetchOrders, 20000); // 20秒自动刷新
         });
 
         // ==========================================
-        // 3. 接口数据读写
+        // 3. 数据请求
         // ==========================================
         async function fetchOrders() {
+            const token = getAuthToken();
+            if (!token) return;
+
             try {
                 const response = await fetch(`${API_URL}?ts=${new Date().getTime()}`, {
-                    headers: { "Authorization": `token ${GH_TOKEN}` }
+                    headers: { "Authorization": `token ${token}` }
                 });
-                if (!response.ok) throw new Error();
+                if (response.status === 401 || response.status === 403) {
+                    alert("❌ 口令无效或已被注销，请点击‘重置口令’重新输入正确的新Token！");
+                    clearToken();
+                    return;
+                }
                 const data = await response.json();
                 fileSha = data.sha; 
                 const content = decodeURIComponent(atob(data.content).split('').map(function(c) {
@@ -140,16 +145,15 @@
                 localOrders = JSON.parse(content || "[]");
                 renderCalendar();
             } catch (err) {
-                console.error("读取失败");
+                console.error("加载数据失败");
             }
         }
 
         function renderCalendar() {
             const events = localOrders.map(item => ({
                 id: item.id,
-                // 把具体时间拼接到标题里，方便在月视图一眼看到
                 title: `[${item.datetime.split('T')[1]}] ${item.name} (${item.count}部)`,
-                start: item.datetime, // FullCalendar 支持 ISO 格式的精确时间
+                start: item.datetime,
                 backgroundColor: '#10b981',
                 extendedProps: item
             }));
@@ -158,6 +162,7 @@
         }
 
         async function uploadToGitHub(newData, commitMessage) {
+            const token = getAuthToken();
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.innerText = "同步中...";
             submitBtn.disabled = true;
@@ -167,7 +172,7 @@
             try {
                 const response = await fetch(API_URL, {
                     method: "PUT",
-                    headers: { "Authorization": `token ${GH_TOKEN}`, "Content-Type": "application/json" },
+                    headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         message: commitMessage,
                         content: base64Content,
@@ -183,7 +188,7 @@
                     renderCalendar();
                     closeModal();
                 } else {
-                    alert("⚠️ 提示：云端冲突，系统已自动同步最新状态，请重新点击保存！");
+                    alert("⚠️ 提示：检测到多人在同时修改。系统已自动合并最新状态，请再次点击保存！");
                     fetchOrders();
                 }
             } catch (err) {
@@ -203,7 +208,6 @@
         function openModal(orderData = null) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
             if (orderData && orderData.id) {
                 document.getElementById('modalTitle').innerText = "查看/修改订单";
                 document.getElementById('orderId').value = orderData.id;
@@ -223,61 +227,43 @@
             }
         }
 
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         document.getElementById('addBtn').addEventListener('click', () => openModal());
         document.getElementById('closeBtn').addEventListener('click', closeModal);
 
-        // 点击保存按钮
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const id = document.getElementById('orderId').value || '_' + Math.random().toString(36).substr(2, 9);
             const name = document.getElementById('orderName').value.trim();
-            const datetime = document.getElementById('orderDateTime').value; // 格式: 2026-05-31T15:30
+            const datetime = document.getElementById('orderDateTime').value; 
             const count = parseInt(document.getElementById('orderCount').value);
             const note = document.getElementById('orderNote').value.trim();
             const isEdit = document.getElementById('orderId').value !== '';
 
-            // 表单基础验证
             if (!name || !datetime || !count) {
                 alert("请完整填写 名称、时间 和 部数！");
                 return;
             }
 
-            // ⚠️ 撞时间深度防重逻辑：
-            // 只有当“名字一样”且“具体的年-月-日 小时:分钟”也完全一模一样，且不是当前正在修改的订单时，才算撞。
-            const isDuplicate = localOrders.some(item => {
-                return item.name === name && item.datetime === datetime && item.id !== document.getElementById('orderId').value;
-            });
-
+            const isDuplicate = localOrders.some(item => item.name === name && item.datetime === datetime && item.id !== document.getElementById('orderId').value);
             if (isDuplicate) {
-                const showTime = datetime.replace('T', ' ');
-                alert(`⚠️ 撞单提示：\n\n在【${showTime}】已经存在一笔名为【${name}】的订单。\n请修改时间或名称后再保存！`);
+                alert(`⚠️ 撞单提示：\n\n该时间【${datetime.replace('T', ' ')}】已存在相同的订单【${name}】！`);
                 return;
             }
 
             let updatedOrders = [...localOrders];
             const orderPayload = { id, name, datetime, count, note };
 
-            if (isEdit) {
-                updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item);
-            } else {
-                updatedOrders.push(orderPayload);
-            }
+            if (isEdit) { updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item); } 
+            else { updatedOrders.push(orderPayload); }
 
-            await fetchOrders(); // 锁定最新SHA
+            await fetchOrders(); 
             uploadToGitHub(updatedOrders, `${isEdit ? '修改' : '新增'}订单: ${name}`);
         });
 
-        // 删除订单（带二次确认）
         deleteBtn.addEventListener('click', async () => {
             const id = document.getElementById('orderId').value;
             const name = document.getElementById('orderName').value;
-
-            const confirmDelete = confirm(`🚨 再次确认：\n\n你确定要永久删除订单【${name}】吗？此操作不可撤销。`);
-            if (confirmDelete) {
+            if (confirm(`🚨 再次确认：\n\n你确定要永久删除订单【${name}】吗？`)) {
                 const updatedOrders = localOrders.filter(item => item.id !== id);
                 await fetchOrders(); 
                 uploadToGitHub(updatedOrders, `删除订单: ${name}`);

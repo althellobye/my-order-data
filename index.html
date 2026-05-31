@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>订单管理 · 日历视图</title>
+    <title>订单日历 · 清晰手机版</title>
     <style>
         * {
             margin: 0;
@@ -13,221 +13,252 @@
         }
 
         body {
-            background: #f1f5f9;
+            background: #e8ecf2;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 16px 12px 100px 12px;
+            padding: 12px 10px 90px 10px;
         }
 
         /* 头部 */
-        .header {
+        .top-bar {
+            background: white;
+            border-radius: 28px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            background: white;
-            padding: 12px 16px;
-            border-radius: 28px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
-        .header h1 {
+        .top-bar h1 {
             font-size: 20px;
             font-weight: 700;
-            color: #0f172a;
+            color: #1e293b;
         }
-        .header-actions {
+        .top-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
-        .btn-icon {
+        .top-btn {
             background: #f1f5f9;
             border: none;
-            padding: 8px 14px;
-            border-radius: 40px;
+            padding: 6px 14px;
+            border-radius: 30px;
             font-size: 13px;
             font-weight: 500;
             color: #475569;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: 0.15s;
         }
-        .btn-icon:active {
+        .top-btn:active {
             background: #e2e8f0;
             transform: scale(0.96);
         }
-        .btn-icon.danger {
-            background: #fef2f2;
+        .top-btn.danger {
+            background: #fff1f0;
             color: #e11d48;
         }
 
-        /* 日历容器 */
-        .calendar-container {
+        /* 日历卡片 */
+        .calendar-card {
             background: white;
             border-radius: 32px;
-            padding: 16px 12px;
+            padding: 16px 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
         }
 
         /* 月份导航 */
-        .month-nav {
+        .month-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 8px;
             margin-bottom: 20px;
-            padding: 0 4px;
         }
-        .month-nav button {
+        .month-bar button {
             background: #f1f5f9;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 30px;
             font-size: 20px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: 0.15s;
         }
-        .month-nav button:active {
+        .month-bar button:active {
             background: #e2e8f0;
             transform: scale(0.94);
         }
         .month-title {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 700;
             color: #0f172a;
         }
 
         /* 星期行 */
-        .weekdays {
+        .week-row {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 12px;
+            padding: 0 4px;
         }
-        .weekday {
-            font-size: 13px;
+        .week-day {
+            font-size: 14px;
             font-weight: 600;
             color: #64748b;
             padding: 6px 0;
         }
 
-        /* 日历格子 - 手机大尺寸 */
+        /* 日历网格 - 大格子 */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 6px;
         }
-        .day-cell {
-            aspect-ratio: 1 / 1;
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 8px 4px;
+
+        /* 每个格子 */
+        .date-cell {
+            background: #fafcff;
+            border-radius: 18px;
+            padding: 8px 5px;
+            min-height: 110px;
             display: flex;
             flex-direction: column;
-            cursor: pointer;
-            transition: all 0.15s;
             border: 1px solid #eef2ff;
+            transition: all 0.1s;
+            cursor: pointer;
         }
-        .day-cell:active {
-            transform: scale(0.97);
-            background: #f1f5f9;
+        .date-cell:active {
+            transform: scale(0.98);
+            background: #f3f4f6;
         }
-        .day-cell.empty {
+        .date-cell.empty {
             background: #fefce8;
             border: 1px dashed #fde047;
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: default;
         }
-        .day-cell.empty:active {
+        .date-cell.empty:active {
             transform: none;
         }
-        .day-number {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 6px;
-        }
-        /* 今日高亮 */
-        .day-cell.today {
+        .date-cell.today {
             background: #ecfdf5;
             border: 2px solid #10b981;
         }
-        .day-cell.today .day-number {
+
+        /* 日期数字 */
+        .day-num {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            padding-left: 2px;
+        }
+        .date-cell.today .day-num {
             color: #059669;
         }
 
-        /* 订单预览区域 - 一目了然 */
-        .order-preview {
+        /* 订单列表 - 直接显示在格子内 */
+        .cell-orders {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            margin-top: 2px;
+            gap: 6px;
+            flex: 1;
         }
-        .order-badge {
-            background: #10b981;
-            color: white;
+        .mini-order {
+            background: #eef2ff;
+            border-radius: 12px;
+            padding: 6px 6px;
+            font-size: 11px;
+            font-weight: 500;
+            line-height: 1.3;
+            border-left: 3px solid #059669;
+        }
+        .mini-order.vip-order {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+        .mini-time {
             font-size: 10px;
             font-weight: 700;
-            padding: 3px 6px;
-            border-radius: 20px;
-            text-align: center;
+            color: #059669;
+            margin-bottom: 2px;
+        }
+        .vip-order .mini-time {
+            color: #d97706;
+        }
+        .mini-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 12px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .order-badge.vip {
-            background: linear-gradient(135deg, #f59e0b, #ea580c);
-        }
-        .order-badge.multiple {
-            background: #3b82f6;
-        }
-        .more-indicator {
-            font-size: 10px;
-            color: #94a3b8;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        /* 今日订单浮层 */
-        .detail-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: flex-end;
-            z-index: 100;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.25s;
-        }
-        .detail-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .detail-panel {
-            background: white;
-            width: 100%;
-            max-height: 70vh;
-            border-radius: 28px 28px 0 0;
-            overflow-y: auto;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-        .detail-overlay.active .detail-panel {
-            transform: translateY(0);
-        }
-        .detail-header {
+        .mini-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            margin-top: 3px;
+        }
+        .mini-count {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #059669;
+        }
+        .vip-order .mini-count {
+            color: #d97706;
+        }
+        .vip-icon {
+            font-size: 10px;
+            color: #f59e0b;
+        }
+        .more-badge {
+            background: #cbd5e1;
+            color: #334155;
+            font-size: 10px;
+            padding: 4px 6px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* 底部弹出详情 */
+        .detail-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 32px 32px 0 0;
+            max-height: 65vh;
+            overflow-y: auto;
+            z-index: 200;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        }
+        .detail-panel.open {
+            transform: translateY(0);
+        }
+        .detail-header {
+            padding: 20px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid #eef2ff;
+            position: sticky;
+            top: 0;
+            background: white;
         }
         .detail-date {
             font-size: 18px;
             font-weight: 700;
-            color: #0f172a;
         }
         .close-detail {
             background: #f1f5f9;
@@ -235,131 +266,113 @@
             width: 36px;
             height: 36px;
             border-radius: 30px;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
         }
         .order-list {
+            padding: 12px 16px 30px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        .order-card {
+        .full-order-card {
             background: #f8fafc;
             border-radius: 20px;
             padding: 14px;
             border-left: 5px solid #10b981;
         }
-        .order-card.vip-card {
+        .full-order-card.vip {
             border-left-color: #f59e0b;
+            background: #fffbeb;
         }
-        .order-time {
-            font-size: 12px;
-            font-weight: 600;
-            color: #10b981;
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 6px;
         }
-        .order-name {
+        .order-time-big {
+            font-size: 14px;
+            font-weight: 700;
+            color: #10b981;
+        }
+        .order-count-big {
+            background: #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .order-name-big {
             font-size: 16px;
             font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 4px;
+            margin: 8px 0 4px;
         }
-        .order-detail {
+        .order-phone {
             font-size: 13px;
             color: #475569;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 6px;
+            margin: 4px 0;
         }
-        .delete-order {
+        .delete-order-btn {
             background: #fee2e2;
             border: none;
-            padding: 6px 12px;
-            border-radius: 30px;
+            padding: 8px 16px;
+            border-radius: 40px;
             color: #e11d48;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 10px;
             cursor: pointer;
         }
 
-        /* 悬浮加号 */
-        .float-add {
-            position: fixed;
-            bottom: 24px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: #059669;
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 28px;
-            font-weight: 300;
-            box-shadow: 0 6px 16px rgba(5,150,105,0.4);
-            cursor: pointer;
-            z-index: 50;
-            transition: all 0.2s;
-        }
-        .float-add:active {
-            transform: scale(0.92);
-            background: #047857;
-        }
-
-        /* 表单弹窗 */
-        .form-overlay {
+        /* 表单浮层 */
+        .form-mask {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.6);
+            z-index: 300;
             display: flex;
             align-items: flex-end;
-            z-index: 200;
             visibility: hidden;
             opacity: 0;
-            transition: all 0.25s;
+            transition: 0.2s;
         }
-        .form-overlay.active {
+        .form-mask.show {
             visibility: visible;
             opacity: 1;
         }
-        .form-panel {
+        .form-container {
             background: white;
             width: 100%;
-            max-height: 85vh;
             border-radius: 32px 32px 0 0;
+            padding: 24px 20px;
+            max-height: 85vh;
             overflow-y: auto;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-        .form-overlay.active .form-panel {
-            transform: translateY(0);
         }
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
         .form-group label {
-            display: block;
             font-size: 13px;
             font-weight: 600;
             color: #475569;
+            display: block;
             margin-bottom: 6px;
         }
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 14px;
             border: 1px solid #e2e8f0;
-            border-radius: 20px;
+            border-radius: 24px;
             font-size: 15px;
             background: #f8fafc;
         }
-        .form-actions {
+        .form-buttons {
             display: flex;
             gap: 12px;
             margin-top: 24px;
         }
-        .form-actions button {
+        .form-buttons button {
             flex: 1;
             padding: 14px;
             border-radius: 40px;
@@ -367,64 +380,82 @@
             border: none;
             cursor: pointer;
         }
-        .vip-tip {
+        .vip-hint {
             font-size: 12px;
-            margin-top: 6px;
-            padding: 8px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+        .float-add {
+            position: fixed;
+            bottom: 24px;
+            right: 20px;
+            width: 58px;
+            height: 58px;
+            background: #059669;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 30px;
+            font-weight: 300;
+            box-shadow: 0 6px 16px rgba(5,150,105,0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: 0.15s;
+        }
+        .float-add:active {
+            transform: scale(0.92);
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>📋 订单日历</h1>
-    <div class="header-actions">
-        <button class="btn-icon" onclick="clearTokenAndReload()">重置</button>
-        <button class="btn-icon" onclick="loadAllOrders()">刷新</button>
+<div class="top-bar">
+    <h1>📅 订单日历</h1>
+    <div class="top-actions">
+        <button class="top-btn" onclick="resetToken()">重置</button>
+        <button class="top-btn" onclick="fetchAllOrders()">刷新</button>
     </div>
 </div>
 
-<div class="calendar-container">
-    <div class="month-nav">
-        <button id="prevMonth">←</button>
+<div class="calendar-card">
+    <div class="month-bar">
+        <button id="prevMonthBtn">←</button>
         <span class="month-title" id="monthTitle">2025年1月</span>
-        <button id="nextMonth">→</button>
+        <button id="nextMonthBtn">→</button>
     </div>
-    <div class="weekdays">
-        <div class="weekday">一</div><div class="weekday">二</div><div class="weekday">三</div>
-        <div class="weekday">四</div><div class="weekday">五</div><div class="weekday">六</div>
-        <div class="weekday">日</div>
+    <div class="week-row">
+        <div class="week-day">一</div><div class="week-day">二</div><div class="week-day">三</div>
+        <div class="week-day">四</div><div class="week-day">五</div><div class="week-day">六</div>
+        <div class="week-day">日</div>
     </div>
     <div id="calendarGrid" class="calendar-grid"></div>
 </div>
 
-<button class="float-add" id="showAddForm">+</button>
+<button class="float-add" id="openFormBtn">+</button>
 
-<!-- 订单详情浮层 -->
-<div id="detailOverlay" class="detail-overlay">
-    <div class="detail-panel">
-        <div class="detail-header">
-            <span class="detail-date" id="detailDate"></span>
-            <button class="close-detail" onclick="closeDetail()">✕</button>
-        </div>
-        <div id="orderListContainer" class="order-list"></div>
+<!-- 底部详情面板 -->
+<div id="detailPanel" class="detail-panel">
+    <div class="detail-header">
+        <span class="detail-date" id="detailDateTitle"></span>
+        <button class="close-detail" onclick="closeDetailPanel()">✕</button>
     </div>
+    <div id="detailOrderList" class="order-list"></div>
 </div>
 
-<!-- 添加/编辑表单 -->
-<div id="formOverlay" class="form-overlay">
-    <div class="form-panel">
-        <h3 id="formTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">➕ 新增订单</h3>
+<!-- 表单弹窗 -->
+<div id="formModal" class="form-mask">
+    <div class="form-container">
+        <h3 id="formModalTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">➕ 新增订单</h3>
         <input type="hidden" id="editOrderId">
         <div class="form-group">
             <label>📛 订单名称</label>
             <input type="text" id="orderName" placeholder="例: 奶茶团购">
         </div>
         <div class="form-group">
-            <label>📞 电话 (自动识别老客)</label>
+            <label>📞 联系电话</label>
             <input type="tel" id="orderPhone" placeholder="13800000000">
-            <div id="vipTip" class="vip-tip" style="display: none;"></div>
+            <div id="vipHint" class="vip-hint" style="display: none;"></div>
         </div>
         <div class="form-group">
             <label>📅 日期</label>
@@ -440,48 +471,46 @@
         </div>
         <div class="form-group">
             <label>📝 备注</label>
-            <textarea id="orderNote" rows="2" placeholder="补充说明"></textarea>
+            <textarea id="orderNote" rows="2"></textarea>
         </div>
-        <div class="form-actions">
+        <div class="form-buttons">
             <button id="cancelFormBtn" style="background:#f1f5f9;">取消</button>
-            <button id="deleteFormBtn" style="background:#fef2f2; color:#e11d48; display: none;">删除</button>
+            <button id="deleteFormBtn" style="background:#fef2f2; color:#e11d48; display:none;">删除</button>
             <button id="saveFormBtn" style="background:#059669; color:white;">保存</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== GitHub 配置 ==========
+    // ===== GitHub 配置 =====
     const GH_USER = "althellobye";
     const GH_REPO = "my-order-data";
     const GH_BRANCH = "main";
     const FILE_PATH = "data.json";
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
 
-    let allOrders = [];      // 原始订单数组
+    let allOrders = [];
     let fileSha = "";
     let currentYear = new Date().getFullYear();
-    let currentMonth = new Date().getMonth(); // 0-11
-    let currentDetailDate = "";
+    let currentMonth = new Date().getMonth();
+    let currentOpenDate = "";
 
-    // 获取 Token
     function getToken() {
         let t = localStorage.getItem('gh_order_token');
-        if (!t || t.trim() === "") {
+        if (!t || t === "") {
             t = prompt("🔑 请输入 GitHub Token (ghp_开头):");
             if (t) localStorage.setItem('gh_order_token', t.trim());
         }
         return t;
     }
 
-    function clearTokenAndReload() {
+    function resetToken() {
         localStorage.removeItem('gh_order_token');
-        alert("已清除，刷新重新输入");
+        alert("已清除，刷新页面重新输入");
         location.reload();
     }
 
-    // 加载所有订单
-    async function loadAllOrders() {
+    async function fetchAllOrders() {
         const token = getToken();
         if (!token) return;
         try {
@@ -489,8 +518,8 @@
                 headers: { "Authorization": `token ${token}` }
             });
             if (res.status === 401 || res.status === 403) {
-                alert("Token 无效，请重置");
-                clearTokenAndReload();
+                alert("Token无效，请重置");
+                resetToken();
                 return;
             }
             const data = await res.json();
@@ -499,15 +528,13 @@
             allOrders = JSON.parse(content || "[]");
             renderCalendar();
         } catch(e) {
-            console.error(e);
             alert("加载失败");
         }
     }
 
-    // 保存到 GitHub
-    async function saveOrders(updatedOrders, msg) {
+    async function saveOrdersToGit(newOrders, msg) {
         const token = getToken();
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(updatedOrders, null, 2))));
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(newOrders, null, 2))));
         try {
             const res = await fetch(API_URL, {
                 method: "PUT",
@@ -517,12 +544,12 @@
             if (res.ok) {
                 const d = await res.json();
                 fileSha = d.content.sha;
-                allOrders = updatedOrders;
+                allOrders = newOrders;
                 renderCalendar();
                 return true;
             } else {
-                alert("保存冲突，请重新刷新后再试");
-                await loadAllOrders();
+                alert("保存冲突，请刷新后重试");
+                await fetchAllOrders();
                 return false;
             }
         } catch(e) {
@@ -531,141 +558,133 @@
         }
     }
 
-    // 检查老客
-    function isVip(phone, excludeId = null) {
+    function isVipCustomer(phone, excludeId = null) {
         if (!phone) return false;
         return allOrders.some(o => o.phone === phone && o.id !== excludeId);
     }
-    
-    function getVipCount(phone, excludeId = null) {
+    function getVipOrderCount(phone, excludeId = null) {
         return allOrders.filter(o => o.phone === phone && o.id !== excludeId).length;
     }
 
-    // 渲染日历 (一目了然：格子大，订单简洁)
+    // 渲染日历（格子内直接显示订单：时间+名称+数量+老客标记）
     function renderCalendar() {
         const firstDay = new Date(currentYear, currentMonth, 1);
-        const startWeekday = firstDay.getDay(); // 0周日
+        let startWeekday = firstDay.getDay(); // 0周日
         let startOffset = startWeekday === 0 ? 6 : startWeekday - 1;
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = "";
         document.getElementById('monthTitle').innerHTML = `${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;
+        const todayStr = new Date().toISOString().slice(0,10);
         
-        // 空白填充
+        // 空白
         for (let i = 0; i < startOffset; i++) {
             const empty = document.createElement('div');
-            empty.className = 'day-cell empty';
+            empty.className = 'date-cell empty';
             grid.appendChild(empty);
         }
-        
-        const today = new Date().toISOString().slice(0,10);
         
         for (let d = 1; d <= daysInMonth; d++) {
             const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const dayOrders = allOrders.filter(o => o.datetime.startsWith(dateStr));
+            dayOrders.sort((a,b) => a.datetime.localeCompare(b.datetime));
             
             const cell = document.createElement('div');
-            cell.className = 'day-cell';
-            if (dateStr === today) cell.classList.add('today');
+            cell.className = 'date-cell';
+            if (dateStr === todayStr) cell.classList.add('today');
             
-            // 日期数字
-            const numSpan = document.createElement('div');
-            numSpan.className = 'day-number';
-            numSpan.innerText = d;
-            cell.appendChild(numSpan);
+            const numDiv = document.createElement('div');
+            numDiv.className = 'day-num';
+            numDiv.innerText = d;
+            cell.appendChild(numDiv);
             
-            // 订单预览 - 一目了然
             if (dayOrders.length > 0) {
-                const preview = document.createElement('div');
-                preview.className = 'order-preview';
-                
-                // 按订单数量显示不同样式
-                if (dayOrders.length === 1) {
-                    const o = dayOrders[0];
-                    const isVipOrder = isVip(o.phone, o.id);
-                    const badge = document.createElement('div');
-                    badge.className = `order-badge ${isVipOrder ? 'vip' : ''}`;
-                    badge.innerText = `${o.count}部${isVipOrder ? ' 🌟' : ''}`;
-                    preview.appendChild(badge);
-                } else {
-                    const totalCount = dayOrders.reduce((sum, o) => sum + o.count, 0);
-                    const hasVip = dayOrders.some(o => isVip(o.phone, o.id));
-                    const badge = document.createElement('div');
-                    badge.className = `order-badge multiple`;
-                    badge.innerText = `${dayOrders.length}单 / ${totalCount}部${hasVip ? ' 🌟' : ''}`;
-                    preview.appendChild(badge);
+                const ordersDiv = document.createElement('div');
+                ordersDiv.className = 'cell-orders';
+                // 最多显示前2个订单，多余的用...表示
+                const showOrders = dayOrders.slice(0, 2);
+                showOrders.forEach(order => {
+                    const vip = isVipCustomer(order.phone, order.id);
+                    const orderDiv = document.createElement('div');
+                    orderDiv.className = `mini-order ${vip ? 'vip-order' : ''}`;
+                    const timeShort = order.datetime.split('T')[1];
+                    orderDiv.innerHTML = `
+                        <div class="mini-time">${timeShort}</div>
+                        <div class="mini-name">${escapeHtml(order.name)} ${vip ? '<span class="vip-icon">🌟</span>' : ''}</div>
+                        <div class="mini-footer">
+                            <span class="mini-count">${order.count}部</span>
+                        </div>
+                    `;
+                    ordersDiv.appendChild(orderDiv);
+                });
+                if (dayOrders.length > 2) {
+                    const more = document.createElement('div');
+                    more.className = 'more-badge';
+                    more.innerText = `+${dayOrders.length - 2} 个订单`;
+                    ordersDiv.appendChild(more);
                 }
-                cell.appendChild(preview);
+                cell.appendChild(ordersDiv);
             }
             
             cell.addEventListener('click', (e) => {
                 e.stopPropagation();
-                showDetail(dateStr, dayOrders);
+                openDetailPanel(dateStr, dayOrders);
             });
             grid.appendChild(cell);
         }
     }
     
-    // 显示某天详情
-    function showDetail(dateStr, orders) {
-        currentDetailDate = dateStr;
-        document.getElementById('detailDate').innerText = dateStr;
-        const container = document.getElementById('orderListContainer');
-        
+    function openDetailPanel(dateStr, orders) {
+        currentOpenDate = dateStr;
+        document.getElementById('detailDateTitle').innerText = dateStr;
+        const container = document.getElementById('detailOrderList');
         if (orders.length === 0) {
-            container.innerHTML = '<div style="padding: 30px; text-align:center; color:#94a3b8;">暂无订单<br><button onclick="openAddWithDate()" style="margin-top:12px; background:#10b981; border:none; padding:8px 20px; border-radius:40px; color:white;">+ 添加订单</button></div>';
+            container.innerHTML = `<div style="text-align:center; padding:40px;">暂无订单<br><button onclick="openFormWithDate('${dateStr}')" style="margin-top:12px; background:#10b981; border:none; padding:10px 24px; border-radius:40px; color:white;">+ 添加订单</button></div>`;
         } else {
             container.innerHTML = orders.map(o => {
-                const vipFlag = isVip(o.phone, o.id);
+                const vip = isVipCustomer(o.phone, o.id);
                 return `
-                    <div class="order-card ${vipFlag ? 'vip-card' : ''}" data-id="${o.id}">
-                        <div class="order-time">${o.datetime.split('T')[1]}</div>
-                        <div class="order-name">${escapeHtml(o.name)} ${vipFlag ? '🌟老客' : ''}</div>
-                        <div class="order-detail">
-                            <span>📞 ${maskPhone(o.phone)}</span>
-                            <span>🔢 ${o.count}部</span>
-                            ${o.note ? `<span>📝 ${escapeHtml(o.note)}</span>` : ''}
+                    <div class="full-order-card ${vip ? 'vip' : ''}" data-id="${o.id}">
+                        <div class="order-row">
+                            <span class="order-time-big">${o.datetime.split('T')[1]}</span>
+                            <span class="order-count-big">${o.count}部</span>
                         </div>
-                        <button class="delete-order" data-id="${o.id}">🗑️ 删除</button>
+                        <div class="order-name-big">${escapeHtml(o.name)} ${vip ? '🌟老客' : ''}</div>
+                        <div class="order-phone">📞 ${maskPhone(o.phone)}</div>
+                        ${o.note ? `<div class="order-phone">📝 ${escapeHtml(o.note)}</div>` : ''}
+                        <button class="delete-order-btn" data-id="${o.id}">删除订单</button>
                     </div>
                 `;
             }).join('');
-            
-            // 绑定删除事件
-            document.querySelectorAll('.delete-order').forEach(btn => {
+            document.querySelectorAll('.delete-order-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const id = btn.getAttribute('data-id');
-                    if (confirm('确认删除此订单？')) {
-                        const newOrders = allOrders.filter(o => o.id !== id);
-                        await saveOrders(newOrders, `删除订单`);
-                        closeDetail();
+                    if (confirm('确认删除？')) {
+                        const newList = allOrders.filter(o => o.id !== id);
+                        await saveOrdersToGit(newList, `删除订单`);
+                        closeDetailPanel();
                         renderCalendar();
                     }
                 });
             });
         }
-        
-        document.getElementById('detailOverlay').classList.add('active');
+        document.getElementById('detailPanel').classList.add('open');
     }
     
-    function closeDetail() {
-        document.getElementById('detailOverlay').classList.remove('active');
+    function closeDetailPanel() {
+        document.getElementById('detailPanel').classList.remove('open');
     }
     
-    // 弹窗打开新增 (自动填入当前查看的日期)
-    function openAddWithDate() {
-        closeDetail();
-        openForm(null, currentDetailDate);
+    function openFormWithDate(date) {
+        closeDetailPanel();
+        openForm(null, date);
     }
     
-    // 打开表单 (编辑/新增)
     function openForm(order = null, presetDate = null) {
-        const overlay = document.getElementById('formOverlay');
-        const title = document.getElementById('formTitle');
+        const modal = document.getElementById('formModal');
+        const title = document.getElementById('formModalTitle');
         const deleteBtn = document.getElementById('deleteFormBtn');
-        
         if (order) {
             title.innerText = "✏️ 编辑订单";
             document.getElementById('editOrderId').value = order.id;
@@ -676,7 +695,7 @@
             document.getElementById('orderCount').value = order.count;
             document.getElementById('orderNote').value = order.note || '';
             deleteBtn.style.display = "block";
-            checkVipTip(order.phone, order.id);
+            checkVipDisplay(order.phone, order.id);
         } else {
             title.innerText = "➕ 新增订单";
             document.getElementById('editOrderId').value = '';
@@ -687,47 +706,34 @@
             document.getElementById('orderCount').value = '1';
             document.getElementById('orderNote').value = '';
             deleteBtn.style.display = "none";
-            document.getElementById('vipTip').style.display = "none";
+            document.getElementById('vipHint').style.display = "none";
         }
-        overlay.classList.add('active');
+        modal.classList.add('show');
     }
     
     function closeForm() {
-        document.getElementById('formOverlay').classList.remove('active');
+        document.getElementById('formModal').classList.remove('show');
     }
     
-    function maskPhone(phone) {
-        if (!phone) return '';
-        if (phone.length === 11) return phone.slice(0,3)+'****'+phone.slice(-4);
-        return phone.slice(-4);
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-    }
-    
-    // 实时老客提示
-    function checkVipTip(phone, orderId) {
-        const tipDiv = document.getElementById('vipTip');
-        if (phone && isVip(phone, orderId)) {
-            const count = getVipCount(phone, orderId);
-            tipDiv.innerHTML = `🏆 老客！第 ${count+1} 次下单 (历史${count}单)`;
-            tipDiv.style.display = "block";
-            tipDiv.style.background = "#fef3c7";
-            tipDiv.style.color = "#b45309";
-        } else if (phone && !isVip(phone, orderId)) {
-            tipDiv.innerHTML = `✨ 新客户，首次下单 ✨`;
-            tipDiv.style.display = "block";
-            tipDiv.style.background = "#d1fae5";
-            tipDiv.style.color = "#065f46";
+    function checkVipDisplay(phone, orderId) {
+        const hintDiv = document.getElementById('vipHint');
+        if (phone && isVipCustomer(phone, orderId)) {
+            const count = getVipOrderCount(phone, orderId);
+            hintDiv.innerHTML = `🏆 老客！第 ${count+1} 次下单 (历史${count}单)`;
+            hintDiv.style.display = "block";
+            hintDiv.style.background = "#fef3c7";
+            hintDiv.style.color = "#b45309";
+        } else if (phone && !isVipCustomer(phone, orderId)) {
+            hintDiv.innerHTML = `✨ 新客户，首次下单 ✨`;
+            hintDiv.style.display = "block";
+            hintDiv.style.background = "#d1fae5";
+            hintDiv.style.color = "#065f46";
         } else {
-            tipDiv.style.display = "none";
+            hintDiv.style.display = "none";
         }
     }
     
-    // 保存订单逻辑
-    async function handleSave() {
+    async function handleSaveOrder() {
         const id = document.getElementById('editOrderId').value || ('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
         const name = document.getElementById('orderName').value.trim();
         const phone = document.getElementById('orderPhone').value.trim();
@@ -736,19 +742,16 @@
         const count = parseInt(document.getElementById('orderCount').value);
         const note = document.getElementById('orderNote').value.trim();
         const isEdit = document.getElementById('editOrderId').value !== '';
-        
         if (!name || !phone || !date || !time || !count) {
             alert("请填写完整");
             return;
         }
         const datetime = `${date}T${time}`;
-        // 时间冲突检测
         const conflict = allOrders.some(o => o.datetime === datetime && o.id !== id);
         if (conflict) {
-            alert(`⚠️ ${date} ${time} 已有订单，请换时间`);
+            alert(`⚠️ ${date} ${time} 已有订单，请更换时间`);
             return;
         }
-        
         let newOrders = [...allOrders];
         const orderData = { id, name, phone, datetime, count, note };
         if (isEdit) {
@@ -756,51 +759,61 @@
         } else {
             newOrders.push(orderData);
         }
-        const success = await saveOrders(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
-        if (success) {
+        const ok = await saveOrdersToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
+        if (ok) {
             closeForm();
             renderCalendar();
         }
     }
     
-    async function handleDeleteOrder() {
+    async function handleDeleteFromForm() {
         const id = document.getElementById('editOrderId').value;
         const name = document.getElementById('orderName').value;
-        if (!confirm(`删除「${name}」？`)) return;
+        if (!confirm(`删除「${name}」吗？`)) return;
         const newOrders = allOrders.filter(o => o.id !== id);
-        await saveOrders(newOrders, `删除:${name}`);
+        await saveOrdersToGit(newOrders, `删除:${name}`);
         closeForm();
         renderCalendar();
     }
     
+    function maskPhone(phone) {
+        if (!phone) return '';
+        if (phone.length === 11) return phone.slice(0,3)+'****'+phone.slice(-4);
+        return phone.slice(-4);
+    }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+    }
+    
     // 事件绑定
-    document.getElementById('prevMonth').addEventListener('click', () => {
+    document.getElementById('prevMonthBtn').addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         renderCalendar();
     });
-    document.getElementById('nextMonth').addEventListener('click', () => {
+    document.getElementById('nextMonthBtn').addEventListener('click', () => {
         currentMonth++;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         renderCalendar();
     });
-    document.getElementById('showAddForm').addEventListener('click', () => openForm(null, new Date().toISOString().slice(0,10)));
-    document.getElementById('saveFormBtn').addEventListener('click', handleSave);
-    document.getElementById('deleteFormBtn').addEventListener('click', handleDeleteOrder);
+    document.getElementById('openFormBtn').addEventListener('click', () => openForm(null, new Date().toISOString().slice(0,10)));
+    document.getElementById('saveFormBtn').addEventListener('click', handleSaveOrder);
+    document.getElementById('deleteFormBtn').addEventListener('click', handleDeleteFromForm);
     document.getElementById('cancelFormBtn').addEventListener('click', closeForm);
     document.getElementById('orderPhone').addEventListener('input', (e) => {
         const oid = document.getElementById('editOrderId').value;
-        checkVipTip(e.target.value, oid);
+        checkVipDisplay(e.target.value, oid);
     });
-    // 点遮罩关闭
-    document.getElementById('formOverlay').addEventListener('click', (e) => { if(e.target === document.getElementById('formOverlay')) closeForm(); });
-    document.getElementById('detailOverlay').addEventListener('click', (e) => { if(e.target === document.getElementById('detailOverlay')) closeDetail(); });
+    document.getElementById('formModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('formModal')) closeForm();
+    });
+    window.openFormWithDate = openFormWithDate;
+    window.closeDetailPanel = closeDetailPanel;
+    window.resetToken = resetToken;
+    window.fetchAllOrders = fetchAllOrders;
     
-    loadAllOrders();
-    window.loadAllOrders = loadAllOrders;
-    window.clearTokenAndReload = clearTokenAndReload;
-    window.openAddWithDate = openAddWithDate;
-    window.closeDetail = closeDetail;
+    fetchAllOrders();
 </script>
 </body>
 </html>

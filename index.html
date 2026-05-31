@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>多人订单管理系统</title>
+    <title>多人订单管理系统 - 老客识别</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
-        /* 🎨 全新优雅排版样式 */
         .fc { max-height: 72vh; font-size: 0.85rem; }
         
-        /* 订单方块精细化排版 */
         .fc-event { 
             cursor: pointer; 
             padding: 5px 6px !important; 
             margin: 3px 0 !important; 
             border-radius: 8px !important; 
             border: none !important;
-            background-color: #f0fdf4 !important; /* 护眼淡绿背景 */
+            background-color: #f0fdf4 !important;
             box-shadow: 0 1px 3px rgba(16, 185, 129, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
             transition: all 0.2s ease;
         }
@@ -27,13 +25,34 @@
         }
         .fc-event-main { width: 100%; }
         
-        /* 日历控制栏移动端适配排版 */
         .fc-toolbar { flex-wrap: wrap; gap: 8px; justify-content: space-between !important; }
         .fc-toolbar-chunk { display: flex; align-items: center; gap: 4px; }
+        
+        /* 老客标签样式 */
+        .vip-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 20px;
+            margin-left: 6px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+        
+        .customer-phone {
+            font-size: 9px;
+            color: #64748b;
+            margin-left: 6px;
+            font-family: monospace;
+        }
         
         @media (max-width: 640px) {
             .fc-toolbar-title { font-size: 1.05rem !important; font-weight: 700; color: #1e293b; }
             .fc-button { padding: 0.4em 0.6em !important; font-size: 0.75rem !important; border-radius: 8px !important; }
+            .vip-badge { font-size: 8px; padding: 1px 5px; }
         }
     </style>
 </head>
@@ -72,9 +91,18 @@
             
             <form id="orderForm" class="space-y-4" onsubmit="return false;">
                 <input type="hidden" id="orderId">
+                
                 <div>
                     <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">订单名称</label>
                     <input type="text" id="orderName" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
+                </div>
+                
+                <div>
+                    <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">
+                        📞 联系电话 <span class="text-emerald-600 text-[10px]">(自动识别老客)</span>
+                    </label>
+                    <input type="tel" id="orderPhone" required placeholder="13800000000" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
+                    <p id="vipHint" class="text-xs mt-1 hidden"></p>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3">
@@ -92,6 +120,7 @@
                     <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">多少部</label>
                     <input type="number" id="orderCount" required min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                 </div>
+                
                 <div>
                     <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">补充或其他说明</label>
                     <textarea id="orderNote" rows="2" placeholder="没有可不填..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all resize-none"></textarea>
@@ -135,6 +164,39 @@
             location.reload();
         }
 
+        // 检查电话号码是否老客（历史订单中有相同号码）
+        function isReturningCustomer(phone, currentOrderId = null) {
+            if (!phone) return false;
+            return localOrders.some(order => 
+                order.phone === phone && order.id !== currentOrderId
+            );
+        }
+        
+        // 获取客户历史订单次数
+        function getCustomerOrderCount(phone, currentOrderId = null) {
+            if (!phone) return 0;
+            return localOrders.filter(order => 
+                order.phone === phone && order.id !== currentOrderId
+            ).length;
+        }
+
+        // 显示老客提示
+        function checkAndShowVipHint(phone, orderId = null) {
+            const vipHint = document.getElementById('vipHint');
+            if (phone && isReturningCustomer(phone, orderId)) {
+                const orderCount = getCustomerOrderCount(phone, orderId);
+                vipHint.innerHTML = `🏆 老客识别成功！这是这位客户的第 ${orderCount + 1} 次下单 (历史 ${orderCount} 单)`;
+                vipHint.className = "text-xs mt-1 text-amber-600 font-semibold bg-amber-50 p-1.5 rounded-lg";
+                vipHint.classList.remove('hidden');
+            } else if (phone && !isReturningCustomer(phone, orderId)) {
+                vipHint.innerHTML = `✨ 新客户，首次下单 ✨`;
+                vipHint.className = "text-xs mt-1 text-emerald-600 font-semibold bg-emerald-50 p-1.5 rounded-lg";
+                vipHint.classList.remove('hidden');
+            } else {
+                vipHint.classList.add('hidden');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
             const isMobile = window.innerWidth < 640;
@@ -147,16 +209,22 @@
                 buttonText: { today: '今天', month: '月历', week: '周历', day: '日历', list: '列表' },
                 headerToolbar: { left: 'prev,next today', center: 'title', right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' },
                 
-                // 🛠️ 极致一目了然排版：分离时间、名称和数量标签
                 eventContent: function(arg) {
                     const props = arg.event.extendedProps;
                     const timeStr = props.datetime ? props.datetime.split('T')[1] : '';
                     
+                    // 老客标签显示
+                    const isVip = props.isReturning === true;
+                    const vipBadge = isVip ? '<span class="vip-badge">🌟 老客</span>' : '';
+                    const phoneDisplay = props.phone ? `<span class="customer-phone">📞 ${props.phone.slice(-4)}</span>` : '';
+                    
                     let customHtml = `
                         <div class="flex items-center justify-between w-full overflow-hidden gap-1.5 py-0.5">
-                            <div class="flex items-center overflow-hidden min-w-0 gap-2">
+                            <div class="flex items-center overflow-hidden min-w-0 gap-2 flex-wrap">
                                 <span class="bg-emerald-700 text-white px-1.5 py-0.5 rounded text-[10px] font-black font-mono tracking-tight shrink-0 shadow-sm">${timeStr}</span>
                                 <span class="truncate font-bold text-slate-800 text-xs sm:text-sm">${props.name}</span>
+                                ${vipBadge}
+                                ${phoneDisplay}
                             </div>
                             <span class="bg-slate-200/80 text-slate-700 px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 tracking-wide">${props.count}部</span>
                         </div>
@@ -197,12 +265,19 @@
         }
 
         function renderCalendar() {
-            const events = localOrders.map(item => ({
-                id: item.id,
-                title: item.name, 
-                start: item.datetime,
-                extendedProps: item
-            }));
+            const events = localOrders.map(item => {
+                // 计算是否为老客（排除当前订单自己，这里用于历史标记）
+                const isReturning = isReturningCustomer(item.phone, item.id);
+                return {
+                    id: item.id,
+                    title: item.name, 
+                    start: item.datetime,
+                    extendedProps: {
+                        ...item,
+                        isReturning: isReturning
+                    }
+                };
+            });
             calendar.removeAllEvents();
             calendar.addEventSource(events);
         }
@@ -247,14 +322,26 @@
 
         const modal = document.getElementById('orderModal');
         const deleteBtn = document.getElementById('deleteBtn');
+        const phoneInput = document.getElementById('orderPhone');
+
+        // 监听电话输入，实时显示老客提示
+        phoneInput.addEventListener('input', function(e) {
+            const orderId = document.getElementById('orderId').value;
+            checkAndShowVipHint(e.target.value, orderId);
+        });
 
         function openModal(orderData = null) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            
+            // 重置老客提示
+            document.getElementById('vipHint').classList.add('hidden');
+            
             if (orderData && orderData.id) {
                 document.getElementById('modalTitle').innerText = "查看/修改订单";
                 document.getElementById('orderId').value = orderData.id;
                 document.getElementById('orderName').value = orderData.name;
+                document.getElementById('orderPhone').value = orderData.phone || '';
                 
                 const parts = orderData.datetime.split('T');
                 document.getElementById('orderOnlyDate').value = parts[0];
@@ -263,15 +350,22 @@
                 document.getElementById('orderCount').value = orderData.count;
                 document.getElementById('orderNote').value = orderData.note || '';
                 deleteBtn.classList.remove('hidden');
+                
+                // 检查老客状态
+                if (orderData.phone) {
+                    checkAndShowVipHint(orderData.phone, orderData.id);
+                }
             } else {
                 document.getElementById('modalTitle').innerText = "添加新订单";
                 document.getElementById('orderId').value = '';
                 document.getElementById('orderName').value = '';
+                document.getElementById('orderPhone').value = '';
                 document.getElementById('orderOnlyDate').value = '';
                 document.getElementById('orderOnlyTime').value = '';
                 document.getElementById('orderCount').value = '';
                 document.getElementById('orderNote').value = '';
                 deleteBtn.classList.add('hidden');
+                document.getElementById('vipHint').classList.add('hidden');
             }
         }
 
@@ -282,15 +376,21 @@
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const id = document.getElementById('orderId').value || '_' + Math.random().toString(36).substr(2, 9);
             const name = document.getElementById('orderName').value.trim();
+            const phone = document.getElementById('orderPhone').value.trim();
             const oDate = document.getElementById('orderOnlyDate').value;
             const oTime = document.getElementById('orderOnlyTime').value;
             const count = parseInt(document.getElementById('orderCount').value);
             const note = document.getElementById('orderNote').value.trim();
             const isEdit = document.getElementById('orderId').value !== '';
 
-            if (!name || !oDate || !oTime || !count) {
-                alert("请完整填写 名称、日期、时间 和 部数！");
+            if (!name || !phone || !oDate || !oTime || !count) {
+                alert("请完整填写 名称、电话、日期、时间和部数！");
                 return;
+            }
+            
+            // 简单手机号验证
+            if (!/^1[3-9]\d{9}$/.test(phone) && !/^\d{7,15}$/.test(phone)) {
+                if (!confirm("电话号码格式不太常见，确定要继续吗？")) return;
             }
 
             const datetime = `${oDate}T${oTime}`;
@@ -308,12 +408,31 @@
             }
 
             let updatedOrders = [...localOrders];
-            const orderPayload = { id, name, datetime, count, note };
+            const orderPayload = { 
+                id, 
+                name, 
+                phone,      // 新增电话字段
+                datetime, 
+                count, 
+                note,
+                createdAt: new Date().toISOString()
+            };
 
-            if (isEdit) { updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item); } 
-            else { updatedOrders.push(orderPayload); }
+            if (isEdit) { 
+                updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item); 
+            } else { 
+                updatedOrders.push(orderPayload);
+            }
 
-            uploadToGitHub(updatedOrders, `${isEdit ? '修改' : '新增'}订单: ${name}`);
+            // 检查是否是老客用于提示
+            const isReturning = isReturningCustomer(phone, id);
+            const confirmMsg = isReturning 
+                ? `🔄 检测到老客（电话 ${phone.slice(-4)}）再次下单！\n\n订单名称：${name}\n时间：${oDate} ${oTime}\n数量：${count}部\n\n确认保存吗？`
+                : `确认添加新订单？\n\n订单名称：${name}\n客户电话：${phone}\n时间：${oDate} ${oTime}\n数量：${count}部`;
+            
+            if (confirm(confirmMsg)) {
+                await uploadToGitHub(updatedOrders, isEdit ? `更新订单: ${name}` : `新订单: ${name}`);
+            }
         });
 
         deleteBtn.addEventListener('click', async () => {

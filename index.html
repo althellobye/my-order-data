@@ -3,43 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>洗冷氣訂單系統 · 可調價格</title>
+    <title>洗冷氣訂單系統</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; padding: 16px 12px 100px 12px; }
         
         .header { background: white; border-radius: 24px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header h1 { font-size: 20px; font-weight: 700; color: #0f172a; }
-        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
         .btn-sm { background: #f1f5f9; border: none; padding: 6px 14px; border-radius: 30px; font-size: 13px; cursor: pointer; }
-        .btn-price { background: #dbeafe; color: #1d4ed8; }
         
-        /* 統計卡片 */
         .stats-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 28px; padding: 16px 20px; margin-bottom: 16px; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .stats-item { text-align: center; flex: 1; min-width: 80px; }
         .stats-title { font-size: 12px; opacity: 0.8; }
         .stats-number { font-size: 22px; font-weight: 800; }
         
-        /* 價格設置卡片 */
-        .price-card { background: white; border-radius: 24px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .price-label { font-size: 13px; font-weight: 600; color: #475569; }
-        .price-input-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .price-input { width: 90px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 14px; font-weight: 600; text-align: center; }
-        .price-hint { font-size: 11px; color: #94a3b8; }
+        .price-card { background: white; border-radius: 24px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .price-input { width: 90px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 20px; text-align: center; }
         
-        .calendar-card { background: white; border-radius: 28px; padding: 16px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .month-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 4px; }
+        .calendar-card { background: white; border-radius: 28px; padding: 16px 12px; }
+        .month-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .month-bar button { background: #f1f5f9; border: none; width: 42px; height: 42px; border-radius: 30px; font-size: 20px; cursor: pointer; }
         .month-title { font-size: 18px; font-weight: 700; }
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 12px; }
-        .weekday { font-size: 14px; font-weight: 600; color: #64748b; padding: 6px 0; }
+        .weekday { font-size: 14px; font-weight: 600; color: #64748b; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .date-cell { background: #fafcff; border-radius: 16px; padding: 6px 4px; min-height: 100px; border: 1px solid #eef2ff; cursor: pointer; position: relative; }
+        .date-cell { background: #fafcff; border-radius: 16px; padding: 6px 4px; min-height: 100px; border: 1px solid #eef2ff; cursor: pointer; }
         .date-cell.today { background: #ecfdf5; border: 2px solid #10b981; }
         .day-number { font-size: 16px; font-weight: 700; margin-bottom: 6px; padding-left: 4px; }
         .order-badge { background: #eef2ff; border-radius: 10px; padding: 4px 6px; margin-bottom: 4px; font-size: 10px; border-left: 3px solid #059669; }
         .order-badge.vip { background: #fef3c7; border-left-color: #f59e0b; }
-        .daily-income { font-size: 9px; color: #059669; margin-top: 4px; text-align: right; padding-right: 4px; font-weight: 600; }
+        .daily-income { font-size: 9px; color: #059669; text-align: right; margin-top: 4px; font-weight: 600; }
         
         .fab { position: fixed; bottom: 24px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
         .fab-btn { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; }
@@ -48,70 +41,43 @@
         
         .modal { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 28px 28px 0 0; max-height: 80vh; overflow-y: auto; z-index: 200; transform: translateY(100%); transition: transform 0.3s; }
         .modal.open { transform: translateY(0); }
-        .modal-header { padding: 20px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2ff; position: sticky; top: 0; background: white; }
+        .modal-header { padding: 20px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2ff; }
         .modal-header h3 { font-size: 18px; font-weight: 700; }
         .close { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 30px; font-size: 22px; cursor: pointer; }
         .modal-body { padding: 20px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 15px; background: #f8fafc; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 15px; }
         .form-buttons { display: flex; gap: 12px; margin-top: 20px; }
         .form-buttons button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; }
         .vip-tip { font-size: 12px; padding: 8px; border-radius: 16px; margin-top: 8px; }
         .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #10b981; }
-        .order-time { font-weight: 700; font-size: 13px; color: #059669; }
-        .order-name { font-weight: 700; margin: 6px 0 4px; }
-        .delete-btn { background: #fee2e2; border: none; padding: 6px 12px; border-radius: 30px; color: #e11d48; font-size: 12px; margin-top: 8px; cursor: pointer; }
+        .delete-btn { background: #fee2e2; border: none; padding: 6px 12px; border-radius: 30px; color: #e11d48; margin-top: 8px; cursor: pointer; }
         .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
-        .paste-textarea { width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 20px; font-size: 14px; min-height: 150px; margin-bottom: 16px; }
-        .price-badge { background: #dbeafe; color: #1d4ed8; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; margin-left: 8px; }
-        .old-price-tag { background: #fef3c7; color: #b45309; font-size: 10px; padding: 2px 6px; border-radius: 20px; margin-left: 6px; }
+        .paste-textarea { width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 20px; min-height: 150px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>❄️ 洗冷氣訂單</h1>
-    <div class="header-actions">
-        <button class="btn-sm btn-price" id="priceSettingsBtn">💰 設定價格</button>
+    <div>
+        <button class="btn-sm" id="priceBtn">💰 價格</button>
         <button class="btn-sm" onclick="resetToken()">重置</button>
         <button class="btn-sm" onclick="loadOrders()">刷新</button>
     </div>
 </div>
 
-<!-- 收入統計卡片 -->
 <div class="stats-card">
-    <div class="stats-item">
-        <div class="stats-title">💰 累計收入</div>
-        <div class="stats-number" id="totalIncome">$0</div>
-    </div>
-    <div class="stats-item">
-        <div class="stats-title">📋 總訂單數</div>
-        <div class="stats-number" id="totalOrders">0</div>
-    </div>
-    <div class="stats-item">
-        <div class="stats-title">❄️ 總洗機數</div>
-        <div class="stats-number" id="totalUnits">0</div>
-    </div>
+    <div class="stats-item"><div class="stats-title">累計收入</div><div class="stats-number" id="totalIncome">$0</div></div>
+    <div class="stats-item"><div class="stats-title">總訂單</div><div class="stats-number" id="totalOrders">0</div></div>
+    <div class="stats-item"><div class="stats-title">總洗機數</div><div class="stats-number" id="totalUnits">0</div></div>
 </div>
 
-<!-- 價格設置卡片 -->
-<div id="priceCard" class="price-card" style="display: none;">
-    <div>
-        <div class="price-label">🔧 單價設置</div>
-        <div class="price-hint">每部冷氣清洗價格</div>
-    </div>
-    <div class="price-input-group">
-        <div>
-            <div class="price-label" style="font-size:11px;">✨ 新客</div>
-            <input type="number" id="newPrice" class="price-input" value="500" step="10">
-        </div>
-        <div>
-            <div class="price-label" style="font-size:11px;">🏆 舊客</div>
-            <input type="number" id="oldPrice" class="price-input" value="450" step="10">
-        </div>
-        <button id="savePriceBtn" class="btn-sm" style="background:#059669; color:white;">保存</button>
-    </div>
+<div id="pricePanel" class="price-card" style="display:none;">
+    <span>💰 新客單價: $<input type="number" id="newPrice" class="price-input" value="500" step="10"></span>
+    <span>🏆 舊客單價: $<input type="number" id="oldPrice" class="price-input" value="450" step="10"></span>
+    <button class="btn-sm" id="savePriceBtn" style="background:#059669; color:white;">保存</button>
 </div>
 
 <div class="calendar-card">
@@ -133,44 +99,18 @@
     <button class="fab-btn fab-add" id="addBtn">+</button>
 </div>
 
-<!-- 訂單表單彈窗 -->
+<!-- 表單彈窗 -->
 <div id="formModal" class="modal">
-    <div class="modal-header">
-        <h3 id="formTitle">➕ 新增訂單</h3>
-        <button class="close" onclick="closeFormModal()">✕</button>
-    </div>
+    <div class="modal-header"><h3 id="formTitle">➕ 新增訂單</h3><button class="close" onclick="closeFormModal()">✕</button></div>
     <div class="modal-body">
         <input type="hidden" id="orderId">
-        <div class="form-group">
-            <label>客戶稱呼</label>
-            <input type="text" id="name" placeholder="例: 陳先生 / 李太">
-        </div>
-        <div class="form-group">
-            <label>聯絡電話</label>
-            <input type="tel" id="phone" placeholder="+853 66668888 或 13812345678">
-            <div id="vipTip" class="vip-tip" style="display:none;"></div>
-        </div>
-        <div class="form-group">
-            <label>預約日期</label>
-            <input type="date" id="date">
-        </div>
-        <div class="form-group">
-            <label>預約時間</label>
-            <input type="time" id="time">
-        </div>
-        <div class="form-group">
-            <label>冷氣機數量</label>
-            <input type="number" id="count" min="1" value="1">
-        </div>
-        <div class="form-group">
-            <label>地址 / 備註</label>
-            <textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B"></textarea>
-        </div>
-        <div class="form-group">
-            <label>💰 單價 (每部)</label>
-            <input type="number" id="unitPrice" step="10">
-            <div class="price-hint" id="priceHint" style="margin-top:4px;"></div>
-        </div>
+        <div class="form-group"><label>客戶稱呼</label><input type="text" id="name" placeholder="例: 陳先生"></div>
+        <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" placeholder="+853 66668888"><div id="vipTip" class="vip-tip" style="display:none;"></div></div>
+        <div class="form-group"><label>預約日期</label><input type="date" id="date"></div>
+        <div class="form-group"><label>預約時間</label><input type="time" id="time"></div>
+        <div class="form-group"><label>冷氣機數量</label><input type="number" id="count" min="1" value="1"></div>
+        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
+        <div class="form-group"><label>💰 單價 (每部)</label><input type="number" id="unitPrice" step="10"></div>
         <div class="form-buttons">
             <button id="deleteOrderBtn" style="display:none; background:#fef2f2; color:#e11d48;">刪除</button>
             <button id="saveOrderBtn" style="background:#059669; color:white;">保存</button>
@@ -180,44 +120,34 @@
 
 <!-- 智能粘貼彈窗 -->
 <div id="pasteModal" class="modal">
-    <div class="modal-header">
-        <h3>🤖 智能粘貼</h3>
-        <button class="close" onclick="closePasteModal()">✕</button>
-    </div>
+    <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close" onclick="closePasteModal()">✕</button></div>
     <div class="modal-body">
         <textarea id="chatText" class="paste-textarea" placeholder="粘貼聊天記錄，例如：
 陳生話：聽日下午3點，洗3部冷氣，地址台山XX大廈，電話+853 66668888"></textarea>
-        <button id="recognizeBtn" style="width:100%; background:#8b5cf6; color:white; border:none; padding:14px; border-radius:40px; font-weight:600; cursor:pointer;">🔍 自動識別並填表</button>
+        <button id="recognizeBtn" style="width:100%; background:#8b5cf6; color:white; border:none; padding:14px; border-radius:40px; cursor:pointer;">🔍 自動識別並填表</button>
         <div id="previewArea" style="margin-top: 16px; display: none;"></div>
     </div>
 </div>
 
 <!-- 詳情彈窗 -->
 <div id="detailModal" class="modal">
-    <div class="modal-header">
-        <h3 id="detailDate"></h3>
-        <button class="close" onclick="closeDetailModal()">✕</button>
-    </div>
+    <div class="modal-header"><h3 id="detailDate"></h3><button class="close" onclick="closeDetailModal()">✕</button></div>
     <div class="modal-body" id="detailList"></div>
 </div>
 
 <script>
-    // ========== 配置 ==========
     const GH_USER = "althellobye";
     const GH_REPO = "my-order-data";
     const FILE_PATH = "data.json";
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
     
-    // 價格設置（從 localStorage 讀取）
     let NEW_PRICE = parseInt(localStorage.getItem('new_price')) || 500;
     let OLD_PRICE = parseInt(localStorage.getItem('old_price')) || 450;
-    
     let allOrders = [];
     let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     
-    // ========== Token 管理 ==========
     function getToken() {
         let t = localStorage.getItem('gh_token');
         if (!t) {
@@ -233,53 +163,33 @@
         location.reload();
     };
     
-    // ========== 價格功能 ==========
+    function normalizePhone(p) { if (!p) return ''; return p.replace(/[\s\+-]/g, ''); }
+    
+    function isVip(phone, excludeId) {
+        if (!phone) return false;
+        const norm = normalizePhone(phone);
+        return allOrders.some(o => normalizePhone(o.phone) === norm && o.id !== excludeId);
+    }
+    
     function getPriceForCustomer(phone, orderId) {
         if (!phone) return NEW_PRICE;
-        const norm = normalizePhone(phone);
-        const isOld = allOrders.some(o => normalizePhone(o.phone) === norm && o.id !== orderId);
-        return isOld ? OLD_PRICE : NEW_PRICE;
+        return isVip(phone, orderId) ? OLD_PRICE : NEW_PRICE;
     }
     
-    function updatePriceDisplay() {
-        document.getElementById('newPrice').value = NEW_PRICE;
-        document.getElementById('oldPrice').value = OLD_PRICE;
-    }
-    
-    function savePriceSettings() {
-        const newP = parseInt(document.getElementById('newPrice').value);
-        const oldP = parseInt(document.getElementById('oldPrice').value);
-        if (isNaN(newP) || isNaN(oldP) || newP <= 0 || oldP <= 0) {
-            alert("請輸入有效價格");
-            return;
-        }
-        NEW_PRICE = newP;
-        OLD_PRICE = oldP;
-        localStorage.setItem('new_price', NEW_PRICE);
-        localStorage.setItem('old_price', OLD_PRICE);
-        document.getElementById('priceCard').style.display = 'none';
-        renderCalendar();
-        updateStats();
-        alert(`✅ 價格已更新\n新客: $${NEW_PRICE}/部\n舊客: $${OLD_PRICE}/部`);
-    }
-    
-    // ========== 統計功能 ==========
     function getOrderIncome(order) {
-        const unitPrice = order.unitPrice || (order.isVip ? OLD_PRICE : NEW_PRICE);
-        return (order.count || 1) * unitPrice;
+        const price = order.unitPrice || getPriceForCustomer(order.phone, order.id);
+        return (order.count || 1) * price;
     }
     
     function updateStats() {
         const totalOrders = allOrders.length;
-        const totalUnits = allOrders.reduce((sum, order) => sum + (order.count || 1), 0);
-        const totalIncome = allOrders.reduce((sum, order) => sum + getOrderIncome(order), 0);
-        
+        const totalUnits = allOrders.reduce((s, o) => s + (o.count || 1), 0);
+        const totalIncome = allOrders.reduce((s, o) => s + getOrderIncome(o), 0);
         document.getElementById('totalIncome').innerHTML = `$${totalIncome.toLocaleString()}`;
         document.getElementById('totalOrders').innerText = totalOrders;
         document.getElementById('totalUnits').innerText = totalUnits;
     }
     
-    // ========== 數據加載 ==========
     window.loadOrders = async function() {
         const token = getToken();
         if (!token) return;
@@ -287,17 +197,16 @@
             const res = await fetch(`${API_URL}?t=${Date.now()}`, {
                 headers: { "Authorization": `token ${token}` }
             });
-            if (res.status === 401) { alert("Token無效，請重置"); return; }
+            if (res.status === 401) { alert("Token無效"); return; }
             const data = await res.json();
             fileSha = data.sha;
             const content = atob(data.content);
             allOrders = JSON.parse(content || "[]");
             renderCalendar();
             updateStats();
-        } catch(e) { alert("加載失敗: " + e.message); }
+        } catch(e) { alert("加載失敗"); }
     };
     
-    // ========== 保存到 GitHub ==========
     async function saveToGit(orders, msg) {
         const token = getToken();
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(orders, null, 2))));
@@ -318,64 +227,29 @@
         } catch(e) { alert("保存失敗"); return false; }
     }
     
-    // ========== 輔助函數 ==========
-    function normalizePhone(p) { if (!p) return ''; return p.replace(/[\s\+-]/g, ''); }
-    
-    function isVipCustomer(phone, excludeId) {
-        if (!phone) return false;
-        const norm = normalizePhone(phone);
-        return allOrders.some(o => normalizePhone(o.phone) === norm && o.id !== excludeId);
-    }
-    
-    function getVipCount(phone, excludeId) {
-        if (!phone) return 0;
-        const norm = normalizePhone(phone);
-        return allOrders.filter(o => normalizePhone(o.phone) === norm && o.id !== excludeId).length;
-    }
-    
-    // ========== 智能識別 ==========
     function recognize(text) {
         let result = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
-        
         let m = text.match(/(?:\+?853\s*)?(\d{8})/);
         if (m) result.phone = '+853 ' + m[1];
         else { m = text.match(/1[3-9]\d{9}/); if (m) result.phone = m[0]; }
-        
         m = text.match(/(\d+)\s*[部台個]/);
         if (m) result.count = parseInt(m[1]);
-        
         const today = new Date();
-        const currentYearNum = today.getFullYear();
-        const currentMonthNum = today.getMonth() + 1;
         const fmt = (y, m, d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        
-        if (text.includes("今日") || text.includes("今天")) {
-            result.date = fmt(today.getFullYear(), today.getMonth()+1, today.getDate());
-        } else if (text.includes("聽日") || text.includes("明天")) {
-            let t = new Date(today); t.setDate(today.getDate()+1);
-            result.date = fmt(t.getFullYear(), t.getMonth()+1, t.getDate());
-        } else if (text.includes("後日") || text.includes("后天")) {
-            let t = new Date(today); t.setDate(today.getDate()+2);
-            result.date = fmt(t.getFullYear(), t.getMonth()+1, t.getDate());
-        } else {
+        if (text.includes("今日") || text.includes("今天")) result.date = fmt(today.getFullYear(), today.getMonth()+1, today.getDate());
+        else if (text.includes("聽日") || text.includes("明天")) { let t = new Date(today); t.setDate(today.getDate()+1); result.date = fmt(t.getFullYear(), t.getMonth()+1, t.getDate()); }
+        else if (text.includes("後日") || text.includes("后天")) { let t = new Date(today); t.setDate(today.getDate()+2); result.date = fmt(t.getFullYear(), t.getMonth()+1, t.getDate()); }
+        else {
             let dm = text.match(/(\d{1,2})月(\d{1,2})[日號]/);
             if (dm) {
-                let month = parseInt(dm[1]), day = parseInt(dm[2]);
-                let year = currentYearNum;
-                if (month < currentMonthNum) year++;
+                let month = parseInt(dm[1]), day = parseInt(dm[2]), year = today.getFullYear();
+                if (month < today.getMonth()+1) year++;
                 result.date = fmt(year, month, day);
             } else {
-                let thisMonthMatch = text.match(/(?:今個月|今月|呢個月)[\s]*(\d{1,2})[日號]/);
-                if (thisMonthMatch) {
-                    let day = parseInt(thisMonthMatch[1]);
-                    result.date = fmt(currentYearNum, currentMonthNum, day);
-                } else {
-                    let ym = text.match(/(\d{4})-(\d{2})-(\d{2})/);
-                    if (ym) result.date = ym[0];
-                }
+                let ym = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (ym) result.date = ym[0];
             }
         }
-        
         let tm = text.match(/(\d{1,2})[:：](\d{2})/);
         if (tm) result.time = `${String(tm[1]).padStart(2,'0')}:${tm[2]}`;
         else {
@@ -386,45 +260,29 @@
                 result.time = `${String(hour).padStart(2,'0')}:00`;
             }
         }
-        
         let nameMatch = text.match(/([陳張李黃何鄭梁謝吳劉林蔡許王周][生太小姐女士先生]?)/);
         if (nameMatch) result.name = nameMatch[0] + " 洗冷氣";
         else result.name = "洗冷氣訂單";
-        
         let addr = text.match(/(?:地址|响|喺|位於)[：:]*\s*([^，,。\n]{5,30})/);
         if (addr) result.note = addr[1];
-        else {
-            let ma = text.match(/(澳門|氹仔|路環|台山|筷子基|黑沙環|祐漢|關閘|新橋|沙梨頭)[^，,。\n]{3,20}/);
-            if (ma) result.note = ma[0];
-        }
-        
+        else { let ma = text.match(/(澳門|氹仔|路環|台山|筷子基|黑沙環|祐漢|關閘)[^，,。\n]{3,20}/); if (ma) result.note = ma[0]; }
         return result;
     }
     
-    // ========== 識別並填表 ==========
     function recognizeAndFill() {
         const raw = document.getElementById('chatText').value;
         if (!raw.trim()) { alert("請粘貼聊天記錄"); return; }
         const rec = recognize(raw);
-        const isVip = rec.phone ? isVipCustomer(rec.phone, '') : false;
-        const suggestedPrice = isVip ? OLD_PRICE : NEW_PRICE;
-        
+        const vip = rec.phone ? isVip(rec.phone, '') : false;
+        const price = vip ? OLD_PRICE : NEW_PRICE;
         const preview = document.getElementById('previewArea');
         preview.style.display = 'block';
-        preview.innerHTML = `
-            <div style="background:#f1f5f9; padding:12px; border-radius:16px;">
-                <div style="font-weight:700; margin-bottom:8px;">✅ 識別結果：</div>
-                <div>❄️ 客戶：${rec.name}</div>
-                <div>📞 電話：${rec.phone || '未識別'}</div>
-                <div>📅 日期：${rec.date || '未識別'}</div>
-                <div>⏰ 時間：${rec.time || '未識別'}</div>
-                <div>🔢 數量：${rec.count}部</div>
-                <div>💰 單價：$${suggestedPrice}/部 ${isVip ? '(舊客價)' : '(新客價)'}</div>
-                <div>💵 小計：$${rec.count * suggestedPrice}</div>
-                <div>📍 地址：${rec.note || '無'}</div>
-                <button id="applyBtn" style="margin-top:12px; background:#059669; color:white; border:none; padding:10px; border-radius:30px; width:100%;">📝 填寫到表單</button>
-            </div>
-        `;
+        preview.innerHTML = `<div style="background:#f1f5f9; padding:12px; border-radius:16px;">
+            <div>❄️ 客戶：${rec.name}</div><div>📞 電話：${rec.phone || '未識別'}</div>
+            <div>📅 日期：${rec.date || '未識別'}</div><div>⏰ 時間：${rec.time || '未識別'}</div>
+            <div>🔢 數量：${rec.count}部</div><div>💰 單價：$${price}/部 ${vip ? '(舊客價)' : '(新客價)'}</div>
+            <div>💵 小計：$${rec.count * price}</div><div>📍 地址：${rec.note || '無'}</div>
+            <button id="applyBtn" style="margin-top:12px; background:#059669; color:white; border:none; padding:10px; border-radius:30px; width:100%;">📝 填寫到表單</button></div>`;
         document.getElementById('applyBtn').onclick = () => {
             document.getElementById('name').value = rec.name;
             document.getElementById('phone').value = rec.phone || '';
@@ -432,38 +290,31 @@
             if (rec.time) document.getElementById('time').value = rec.time;
             document.getElementById('count').value = rec.count;
             document.getElementById('note').value = rec.note || '';
-            document.getElementById('unitPrice').value = suggestedPrice;
+            document.getElementById('unitPrice').value = price;
             document.getElementById('orderId').value = '';
             document.getElementById('deleteOrderBtn').style.display = 'none';
             document.getElementById('formTitle').innerText = "➕ 新增訂單";
-            
             const tip = document.getElementById('vipTip');
-            if (rec.phone && isVipCustomer(rec.phone, '')) {
-                const cnt = getVipCount(rec.phone, '');
-                tip.innerHTML = `🏆 回頭客！第 ${cnt+1} 次幫襯，使用舊客價 $${OLD_PRICE}/部`;
+            if (rec.phone && isVip(rec.phone, '')) {
+                tip.innerHTML = `🏆 回頭客！使用舊客價 $${OLD_PRICE}/部`;
                 tip.style.display = "block";
                 tip.style.background = "#fef3c7";
             } else if (rec.phone) {
-                tip.innerHTML = `✨ 新客戶，首次幫襯，使用新客價 $${NEW_PRICE}/部 ✨`;
+                tip.innerHTML = `✨ 新客戶，使用新客價 $${NEW_PRICE}/部`;
                 tip.style.display = "block";
                 tip.style.background = "#d1fae5";
-            } else {
-                tip.style.display = "none";
-            }
-            
+            } else { tip.style.display = "none"; }
             closePasteModal();
             openFormModal();
         };
     }
     
-    // ========== 彈窗控制 ==========
     function openFormModal() { document.getElementById('formModal').classList.add('open'); }
     function closeFormModal() { document.getElementById('formModal').classList.remove('open'); }
     function openPasteModal() { document.getElementById('pasteModal').classList.add('open'); }
     function closePasteModal() { document.getElementById('pasteModal').classList.remove('open'); }
     function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
     
-    // ========== 保存訂單 ==========
     async function saveOrder() {
         const id = document.getElementById('orderId').value || ('id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6));
         let name = document.getElementById('name').value.trim();
@@ -474,28 +325,15 @@
         const note = document.getElementById('note').value.trim();
         let unitPrice = parseInt(document.getElementById('unitPrice').value);
         const isEdit = document.getElementById('orderId').value !== '';
-        
-        if (!name || !phone || !date || !time || !count) { alert("請填寫完整資料"); return; }
-        
+        if (!name || !phone || !date || !time || !count) { alert("請填寫完整"); return; }
         if (phone.match(/^\d{8}$/)) phone = '+853 ' + phone;
-        else if (phone.match(/^853\d{8}$/)) phone = '+853 ' + phone.slice(3);
-        
-        // 自動計算價格（如果沒填或填錯）
-        if (isNaN(unitPrice) || unitPrice <= 0) {
-            unitPrice = getPriceForCustomer(phone, id);
-        }
-        
+        if (isNaN(unitPrice) || unitPrice <= 0) unitPrice = getPriceForCustomer(phone, id);
         const datetime = `${date}T${time}`;
-        if (allOrders.some(o => o.datetime === datetime && o.id !== id)) {
-            alert(`⚠️ ${date} ${time} 已有訂單`);
-            return;
-        }
-        
+        if (allOrders.some(o => o.datetime === datetime && o.id !== id)) { alert(`⚠️ ${date} ${time} 已有訂單`); return; }
         let newOrders = [...allOrders];
         const orderData = { id, name, phone, datetime, count, note, unitPrice };
         if (isEdit) newOrders = newOrders.map(o => o.id === id ? orderData : o);
         else newOrders.push(orderData);
-        
         await saveToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
         closeFormModal();
     }
@@ -509,9 +347,8 @@
         closeFormModal();
     }
     
-    // ========== 日曆渲染 ==========
     function getDailyIncome(orders) {
-        return orders.reduce((sum, o) => sum + ((o.unitPrice || (isVipCustomer(o.phone, o.id) ? OLD_PRICE : NEW_PRICE)) * (o.count || 1)), 0);
+        return orders.reduce((s, o) => s + ((o.unitPrice || getPriceForCustomer(o.phone, o.id)) * (o.count || 1)), 0);
     }
     
     function renderCalendar() {
@@ -522,7 +359,6 @@
         grid.innerHTML = "";
         document.getElementById('monthTitle').innerHTML = `${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;
         const todayStr = new Date().toISOString().slice(0,10);
-        
         for (let i = 0; i < startOffset; i++) {
             let empty = document.createElement('div');
             empty.className = 'date-cell';
@@ -530,28 +366,24 @@
             empty.style.opacity = '0.5';
             grid.appendChild(empty);
         }
-        
         for (let d = 1; d <= daysInMonth; d++) {
             const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const dayOrders = allOrders.filter(o => o.datetime.startsWith(dateStr));
             const dailyIncome = getDailyIncome(dayOrders);
-            
             const cell = document.createElement('div');
             cell.className = 'date-cell';
             if (dateStr === todayStr) cell.classList.add('today');
-            
             const num = document.createElement('div');
             num.className = 'day-number';
             num.innerText = d;
             cell.appendChild(num);
-            
             dayOrders.slice(0, 2).forEach(order => {
-                const vip = isVipCustomer(order.phone, order.id);
-                const unitP = order.unitPrice || (vip ? OLD_PRICE : NEW_PRICE);
+                const vip = isVip(order.phone, order.id);
+                const price = order.unitPrice || getPriceForCustomer(order.phone, order.id);
                 const badge = document.createElement('div');
                 badge.className = `order-badge ${vip ? 'vip' : ''}`;
                 badge.innerHTML = `<div style="font-size:9px; font-weight:700;">${order.datetime.split('T')[1]}</div>
-                    <div style="font-size:10px;">❄️ ${escapeHtml(order.name)} ${vip ? '🌟' : ''} (${order.count}部 @$${unitP})</div>`;
+                    <div style="font-size:10px;">❄️ ${escapeHtml(order.name)} ${vip ? '🌟' : ''} (${order.count}部 @$${price})</div>`;
                 cell.appendChild(badge);
             });
             if (dayOrders.length > 2) {
@@ -561,29 +393,85 @@
                 more.innerText = `+${dayOrders.length-2}`;
                 cell.appendChild(more);
             }
-            
             if (dailyIncome > 0) {
-                const incomeDiv = document.createElement('div');
-                incomeDiv.className = 'daily-income';
-                incomeDiv.innerText = `💰 $${dailyIncome}`;
-                cell.appendChild(incomeDiv);
+                let inc = document.createElement('div');
+                inc.className = 'daily-income';
+                inc.innerText = `💰 $${dailyIncome}`;
+                cell.appendChild(inc);
             }
-            
             cell.onclick = () => showDetail(dateStr, dayOrders, dailyIncome);
             grid.appendChild(cell);
         }
     }
     
     function showDetail(dateStr, orders, dailyIncome) {
-        document.getElementById('detailDate').innerHTML = `${dateStr} <span class="price-badge">收入 $${dailyIncome}</span>`;
+        document.getElementById('detailDate').innerHTML = `${dateStr} <span style="background:#dbeafe; padding:2px 8px; border-radius:20px; font-size:11px;">收入 $${dailyIncome}</span>`;
         const container = document.getElementById('detailList');
         if (orders.length === 0) {
             container.innerHTML = `<div class="empty-state">暫無訂單</div>`;
         } else {
             container.innerHTML = orders.map(o => {
-                const vip = isVipCustomer(o.phone, o.id);
-                const unitP = o.unitPrice || (vip ? OLD_PRICE : NEW_PRICE);
-                const orderIncome = (o.count || 1) * unitP;
+                const vip = isVip(o.phone, o.id);
+                const price = o.unitPrice || getPriceForCustomer(o.phone, o.id);
+                const income = (o.count || 1) * price;
                 return `<div class="order-card">
-                    <div class="order-time">⏰ ${o.datetime.split('T')[1]}</div>
-                    <div class="order-name">
+                    <div style="font-weight:700; font-size:13px; color:#059669;">⏰ ${o.datetime.split('T')[1]}</div>
+                    <div style="font-weight:700; margin:6px 0 4px;">❄️ ${escapeHtml(o.name)} ${vip ? '🌟回頭客' : ''}</div>
+                    <div>📞 ${maskPhone(o.phone)}</div>
+                    <div>🔢 ${o.count}部 × $${price} = $${income}</div>
+                    ${o.note ? `<div>📍 ${escapeHtml(o.note)}</div>` : ''}
+                    <button class="delete-btn" data-id="${o.id}" data-name="${escapeHtml(o.name)}">刪除</button>
+                </div>`;
+            }).join('');
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm(`刪除「${btn.getAttribute('data-name')}」？`)) {
+                        let newOrders = allOrders.filter(o => o.id !== btn.getAttribute('data-id'));
+                        await saveToGit(newOrders, '刪除訂單');
+                        closeDetailModal();
+                    }
+                };
+            });
+        }
+        document.getElementById('detailModal').classList.add('open');
+    }
+    
+    function maskPhone(p) { if (!p) return ''; let clean = p.replace(/\D/g,''); if(clean.length===11) return clean.slice(0,3)+'****'+clean.slice(-4); if(clean.length===8) return clean.slice(0,4)+'****'; return p; }
+    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+    
+    document.getElementById('prevBtn').onclick = () => { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(); };
+    document.getElementById('nextBtn').onclick = () => { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(); };
+    document.getElementById('addBtn').onclick = () => {
+        document.getElementById('orderId').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('date').value = new Date().toISOString().slice(0,10);
+        document.getElementById('time').value = '';
+        document.getElementById('count').value = '1';
+        document.getElementById('note').value = '';
+        document.getElementById('unitPrice').value = '';
+        document.getElementById('deleteOrderBtn').style.display = 'none';
+        document.getElementById('vipTip').style.display = 'none';
+        document.getElementById('formTitle').innerText = "➕ 新增訂單";
+        openFormModal();
+    };
+    document.getElementById('pasteBtn').onclick = () => { document.getElementById('chatText').value = ''; document.getElementById('previewArea').style.display = 'none'; openPasteModal(); };
+    document.getElementById('saveOrderBtn').onclick = saveOrder;
+    document.getElementById('deleteOrderBtn').onclick = deleteOrder;
+    document.getElementById('recognizeBtn').onclick = recognizeAndFill;
+    document.getElementById('priceBtn').onclick = () => { document.getElementById('pricePanel').style.display = 'flex'; };
+    document.getElementById('savePriceBtn').onclick = () => {
+        NEW_PRICE = parseInt(document.getElementById('newPrice').value);
+        OLD_PRICE = parseInt(document.getElementById('oldPrice').value);
+        localStorage.setItem('new_price', NEW_PRICE);
+        localStorage.setItem('old_price', OLD_PRICE);
+        document.getElementById('pricePanel').style.display = 'none';
+        renderCalendar();
+        updateStats();
+        alert(`價格已更新\n新客: $${NEW_PRICE}/部\n舊客: $${OLD_PRICE}/部`);
+    };
+    
+    loadOrders();
+</script>
+</body>
+</html>

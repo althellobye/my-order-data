@@ -49,8 +49,7 @@
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
         .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
         .sync-status { font-size: 12px; margin-top: 8px; text-align: center; }
-        .sync-success { color: #065f46; }
-        .sync-error { color: #991b1b; }
+        .price-edit { font-size: 11px; color: #059669; margin-top: 4px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -107,7 +106,7 @@
         <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
         <div class="form-group"><label>數量</label><input type="number" id="count" value="1"></div>
         <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
-        <div class="form-group"><label>單價</label><input type="number" id="price" step="10"></div>
+        <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
 </div>
@@ -133,11 +132,14 @@
     const FILE_PATH = "data.json";
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
     
+    // 默認價格（可在頁面中調整）
+    let DEFAULT_PRICE = 228;
+    
     let allOrders = [];
     let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let NEW_PRICE = 500, OLD_PRICE = 450;
+    let NEW_PRICE = DEFAULT_PRICE, OLD_PRICE = DEFAULT_PRICE;
     let currentReport = "week";
     let githubToken = localStorage.getItem('github_token') || '';
 
@@ -290,7 +292,7 @@
         document.getElementById('time').value = o.datetime.split('T')[1];
         document.getElementById('count').value = o.count;
         document.getElementById('note').value = o.note||'';
-        document.getElementById('price').value = o.price||'';
+        document.getElementById('price').value = o.price||DEFAULT_PRICE;
         document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
         document.getElementById('deleteBtn').style.display = "block";
         closeDetailModal(); openOrderModal();
@@ -385,7 +387,7 @@
 
     document.getElementById('prevMonth').onclick = () => { currentMonth--; if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); };
     document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
-    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = ''; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "➕ 新增訂單"; openOrderModal(); };
+    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = DEFAULT_PRICE; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "➕ 新增訂單"; openOrderModal(); };
     document.getElementById('pasteBtn').onclick = openPasteModal;
     document.getElementById('closeOrderModal').onclick = closeOrderModal;
     document.getElementById('closePasteModal').onclick = closePasteModal;

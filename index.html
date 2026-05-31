@@ -49,7 +49,6 @@
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
         .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
         .sync-status { font-size: 12px; margin-top: 8px; text-align: center; }
-        .price-edit { font-size: 11px; color: #059669; margin-top: 4px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -104,7 +103,7 @@
         <div class="form-group"><label>客戶稱呼</label><input type="text" id="name" placeholder="例: 陳先生"></div>
         <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" placeholder="66668888"></div>
         <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
-        <div class="form-group"><label>數量</label><input type="number" id="count" value="1"></div>
+        <div class="form-group"><label>數量 (部)</label><input type="number" id="count" min="1" value="1"></div>
         <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
         <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
@@ -137,21 +136,19 @@
     let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let NEW_PRICE = DEFAULT_PRICE, OLD_PRICE = DEFAULT_PRICE;
     let currentReport = "week";
     let githubToken = localStorage.getItem('github_token') || '';
 
     function showSyncStatus(msg, isError) {
         let div = document.getElementById('syncStatus');
         div.innerHTML = msg;
-        div.className = `sync-status ${isError ? 'sync-error' : 'sync-success'}`;
+        div.style.color = isError ? '#991b1b' : '#065f46';
         setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 3000);
     }
 
     function normalizePhone(p) { return p ? p.replace(/[\s\+-]/g, '') : ''; }
     function isVip(phone, excludeId) { if(!phone) return false; let n = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === n && o.id !== excludeId); }
-    function getPrice(phone, orderId) { return isVip(phone, orderId) ? OLD_PRICE : NEW_PRICE; }
-    function getIncome(order) { let p = order.price || getPrice(order.phone, order.id); return (order.count || 1) * p; }
+    function getIncome(order) { let p = order.price || DEFAULT_PRICE; return (order.count || 1) * p; }
 
     async function loadFromGitHub() {
         if (!githubToken) { loadFromLocal(); return; }
@@ -263,7 +260,7 @@
         else {
             c.innerHTML = orders.map(o=>{ 
                 let vip = isVip(o.phone, o.id); 
-                let price = o.price || getPrice(o.phone, o.id); 
+                let price = o.price || DEFAULT_PRICE;
                 return `<div class="order-card">
                     <div style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}  ${vip?'🌟回頭客':'✨新客'}</div>
                     <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${o.name}</div>
@@ -307,7 +304,7 @@
         let price = parseInt(document.getElementById('price').value);
         let isEdit = document.getElementById('editId').value !== '';
         if(!name||!phone||!date||!time||!count) { alert("請填寫完整"); return; }
-        if(isNaN(price)||price<=0) price = getPrice(phone, id);
+        if(isNaN(price)||price<=0) price = DEFAULT_PRICE;
         let datetime = `${date}T${time}`;
         if(allOrders.some(o=>o.datetime===datetime && o.id!==id)) { alert(`⚠️ ${date} ${time} 已被預約`); return; }
         let orderData = { id, name, phone, datetime, count, note, price };
@@ -325,7 +322,6 @@
 
     function recognizeText(t) {
         let r = { name:"", phone:"", date:"", time:"", count:1, note:"" };
-        // 識別澳門電話（8位數字）
         let m = t.match(/\b(\d{8})\b/);
         if(m) r.phone = m[1];
         else { m=t.match(/1[3-9]\d{9}/); if(m) r.phone=m[0]; }
@@ -348,7 +344,7 @@
         if(!raw.trim()) { alert("請貼上聊天記錄"); return; }
         let rec = recognizeText(raw);
         let vip = rec.phone ? isVip(rec.phone, '') : false;
-        let price = vip ? OLD_PRICE : NEW_PRICE;
+        let price = DEFAULT_PRICE;
         let div = document.getElementById('preview');
         div.style.display = 'block';
         div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;">
@@ -358,7 +354,7 @@
             <div>📅 日期：${rec.date||'未識別'}</div>
             <div>⏰ 時間：${rec.time||'未識別'}</div>
             <div>🔢 數量：${rec.count}部</div>
-            <div>💰 單價：$${price}/部 ${vip?'(舊客價)':'(新客價)'}</div>
+            <div>💰 單價：$${price}/部</div>
             <div>📍 地址：${rec.note||'無'}</div>
             <button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">📝 填寫</button>
         </div>`;

@@ -61,15 +61,14 @@
     <div class="token-bar">
         <div id="tokenStatus">⚪ 未連接雲端</div>
         <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
-        <button class="btn btn-primary" id="saveTokenBtn" style="margin-top:8px; width:100%;">🔗 連接雲端</button>
+        <button class="btn btn-primary" id="saveTokenBtn">🔗 連接雲端</button>
         <div id="syncStatus" class="sync-status"></div>
     </div>
 </div>
 
-<!-- 年度選擇器 + 統計卡片 -->
 <div class="year-selector">
     <button id="prevYearBtn">←</button>
-    <span id="selectedYear"></span>
+    <span id="selectedYear">2026年</span>
     <button id="nextYearBtn">→</button>
 </div>
 
@@ -110,12 +109,12 @@
     <div class="modal-header"><h3 id="modalTitle">新增訂單</h3><button class="close-btn" id="closeOrderModal">✕</button></div>
     <div class="modal-body">
         <input type="hidden" id="editId">
-        <div class="form-group"><label>客戶稱呼</label><input type="text" id="name" placeholder="例: 陳先生 / Feifei"></div>
+        <div class="form-group"><label>客戶稱呼</label><input type="text" id="name" placeholder="例: 陳先生"></div>
         <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" placeholder="66668888"></div>
         <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
-        <div class="form-group"><label>數量 (部)</label><input type="number" id="count" min="1" value="1"></div>
-        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B"></textarea></div>
-        <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
+        <div class="form-group"><label>數量</label><input type="number" id="count" min="1" value="1"></div>
+        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
+        <div class="form-group"><label>單價</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
 </div>
@@ -135,133 +134,96 @@
 </div>
 
 <script>
+    // ========== 請修改這裡 ==========
     const GH_USER = "althellobye";
     const GH_REPO = "my-order-data";
     const FILE_PATH = "data.json";
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
     
-    let DEFAULT_PRICE = 228;
     let allOrders = [];
     let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let currentReport = "week";
     let selectedYear = new Date().getFullYear();
+    let currentReport = "week";
     let githubToken = localStorage.getItem('github_token') || '';
+    let DEFAULT_PRICE = 228;
 
     function showSyncStatus(msg, isError) {
         let div = document.getElementById('syncStatus');
         div.innerHTML = msg;
         div.style.color = isError ? '#991b1b' : '#065f46';
-        setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 3000);
+        setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 2000);
     }
 
-    function isVip(phone, excludeId) { 
-        if(!phone) return false; 
-        return allOrders.some(o => o.phone === phone && o.id !== excludeId); 
-    }
-    function getIncome(order) { let p = order.price || DEFAULT_PRICE; return (order.count || 1) * p; }
-
-    function encodeToBase64(str) {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
-    function decodeFromBase64(str) {
-        return decodeURIComponent(escape(atob(str)));
-    }
+    function encodeBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+    function decodeBase64(str) { return decodeURIComponent(escape(atob(str))); }
 
     async function loadFromGitHub() {
-        if (!githubToken) { loadFromLocal(); return; }
+        if (!githubToken) { loadLocal(); return; }
         try {
             let res = await fetch(`${API_URL}?t=${Date.now()}`, {
                 headers: { "Authorization": `token ${githubToken}` }
             });
             if (res.status === 401) { showSyncStatus("Token無效", true); return; }
-            if (res.status === 404) { await createGitHubFile(); return; }
+            if (res.status === 404) { await createFile(); return; }
             let data = await res.json();
             fileSha = data.sha;
-            let content = decodeFromBase64(data.content);
+            let content = decodeBase64(data.content);
             allOrders = JSON.parse(content || "[]");
-            localStorage.setItem('ac_orders', JSON.stringify(allOrders));
-            renderAll();
-            showSyncStatus("✅ 已從雲端同步", false);
+            localStorage.setItem('orders_backup', JSON.stringify(allOrders));
+            refreshAll();
+            showSyncStatus("✅ 已同步", false);
             document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-        } catch(e) { 
-            showSyncStatus("⚠️ 雲端失敗，使用本地", true); 
-            loadFromLocal(); 
-        }
+        } catch(e) { showSyncStatus("⚠️ 雲端失敗，使用本地", true); loadLocal(); }
     }
 
-    async function createGitHubFile() {
-        let content = encodeToBase64(JSON.stringify([], null, 2));
+    async function createFile() {
+        let content = encodeBase64(JSON.stringify([], null, 2));
         let res = await fetch(API_URL, {
             method: "PUT",
             headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
             body: JSON.stringify({ message: "初始化", content: content, branch: "main" })
         });
-        if (res.ok) { let d = await res.json(); fileSha = d.content.sha; allOrders = []; renderAll(); showSyncStatus("✅ 已創建雲端文件", false); }
-        else { showSyncStatus("❌ 創建失敗", true); loadFromLocal(); }
+        if (res.ok) { let d = await res.json(); fileSha = d.content.sha; allOrders = []; refreshAll(); showSyncStatus("✅ 已創建", false); }
+        else { showSyncStatus("❌ 創建失敗", true); loadLocal(); }
     }
 
     async function saveToGitHub() {
-        if (!githubToken || !fileSha) { saveToLocal(); return; }
-        let content = encodeToBase64(JSON.stringify(allOrders, null, 2));
+        if (!githubToken || !fileSha) { saveLocal(); return; }
+        let content = encodeBase64(JSON.stringify(allOrders, null, 2));
         try {
             let res = await fetch(API_URL, {
                 method: "PUT",
                 headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
                 body: JSON.stringify({ message: "更新", content: content, sha: fileSha, branch: "main" })
             });
-            if (res.ok) { 
-                let d = await res.json(); 
-                fileSha = d.content.sha; 
-                localStorage.setItem('ac_orders', JSON.stringify(allOrders)); 
-                showSyncStatus("✅ 已同步", false); 
-            }
-            else { saveToLocal(); }
-        } catch(e) { saveToLocal(); }
+            if (res.ok) { let d = await res.json(); fileSha = d.content.sha; localStorage.setItem('orders_backup', JSON.stringify(allOrders)); showSyncStatus("✅ 已保存", false); }
+            else { saveLocal(); }
+        } catch(e) { saveLocal(); }
     }
 
-    function loadFromLocal() { 
-        let s = localStorage.getItem('ac_orders'); 
-        allOrders = s ? JSON.parse(s) : []; 
-        renderAll(); 
-    }
-    function saveToLocal() { 
-        localStorage.setItem('ac_orders', JSON.stringify(allOrders)); 
-        renderAll(); 
-    }
-    async function saveData() { 
-        if (githubToken && fileSha) await saveToGitHub(); 
-        else saveToLocal(); 
-        renderAll(); 
-    }
-    
-    function renderAll() { 
-        renderCalendar(); 
-        updateYearStats(); 
-        if (currentReport === 'week') renderWeekReport();
-        else renderMonthReport();
-    }
+    function loadLocal() { let s = localStorage.getItem('orders_backup'); allOrders = s ? JSON.parse(s) : []; refreshAll(); }
+    function saveLocal() { localStorage.setItem('orders_backup', JSON.stringify(allOrders)); refreshAll(); }
+    function saveData() { if (githubToken && fileSha) saveToGitHub(); else saveLocal(); }
+
+    function refreshAll() { renderCalendar(); updateYearStats(); if (currentReport === 'week') renderWeekReport(); else renderMonthReport(); }
 
     function updateYearStats() {
-        document.getElementById('selectedYear').innerText = `${selectedYear}年`;
-        
-        let yearIncome = 0;
-        let yearOrders = 0;
-        let yearUnits = 0;
-        
+        document.getElementById('selectedYear').innerHTML = `${selectedYear}年`;
+        let income = 0, orders = 0, units = 0;
         for(let o of allOrders) {
-            let orderYear = new Date(o.datetime).getFullYear();
-            if(orderYear === selectedYear) {
-                yearIncome += getIncome(o);
-                yearOrders++;
-                yearUnits += (o.count || 1);
+            let y = new Date(o.datetime).getFullYear();
+            if(y === selectedYear) {
+                let p = o.price || DEFAULT_PRICE;
+                income += (o.count || 1) * p;
+                orders++;
+                units += (o.count || 1);
             }
         }
-        
-        document.getElementById('totalIncome').innerHTML = `$${yearIncome.toLocaleString()}`;
-        document.getElementById('totalOrders').innerText = yearOrders;
-        document.getElementById('totalUnits').innerText = yearUnits;
+        document.getElementById('totalIncome').innerHTML = `$${income.toLocaleString()}`;
+        document.getElementById('totalOrders').innerText = orders;
+        document.getElementById('totalUnits').innerText = units;
     }
 
     function getWeekRange() {
@@ -277,30 +239,34 @@
         let l = new Date(n.getFullYear(), n.getMonth()+1, 0).getDate();
         return { start: s, end: `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(l).padStart(2,'0')}` };
     }
-    
     function renderWeekReport() {
         let r = getWeekRange();
-        let details = [];
-        for(let o of allOrders) { 
-            let d = o.datetime.split('T')[0]; 
-            if(d >= r.start && d <= r.end) details.push({ date: d, name: o.name, count: o.count, income: getIncome(o) }); 
+        let details = [], total = 0;
+        for(let o of allOrders) {
+            let d = o.datetime.split('T')[0];
+            if(d >= r.start && d <= r.end) {
+                let inc = (o.price || DEFAULT_PRICE) * (o.count || 1);
+                details.push({ date: d, name: o.name, count: o.count, income: inc });
+                total += inc;
+            }
         }
         details.sort((a,b)=>a.date.localeCompare(b.date));
-        let total = details.reduce((s,x)=>s+x.income,0);
         let container = document.getElementById('reportList');
         if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px;">暫無訂單</div>';
         else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 本週總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
     }
-
     function renderMonthReport() {
         let r = getMonthRange();
-        let details = [];
-        for(let o of allOrders) { 
-            let d = o.datetime.split('T')[0]; 
-            if(d >= r.start && d <= r.end) details.push({ date: d, name: o.name, count: o.count, income: getIncome(o) }); 
+        let details = [], total = 0;
+        for(let o of allOrders) {
+            let d = o.datetime.split('T')[0];
+            if(d >= r.start && d <= r.end) {
+                let inc = (o.price || DEFAULT_PRICE) * (o.count || 1);
+                details.push({ date: d, name: o.name, count: o.count, income: inc });
+                total += inc;
+            }
         }
         details.sort((a,b)=>a.date.localeCompare(b.date));
-        let total = details.reduce((s,x)=>s+x.income,0);
         let container = document.getElementById('reportList');
         if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px;">暫無訂單</div>';
         else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 本月總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
@@ -321,7 +287,11 @@
             let cell = document.createElement('div'); cell.className = 'date-cell';
             if(ds===today) cell.classList.add('today');
             let num = document.createElement('div'); num.className = 'day-number'; num.innerText = d; cell.appendChild(num);
-            dayOrders.slice(0,2).forEach(o=>{ let vip = isVip(o.phone, o.id); let div = document.createElement('div'); div.className = `order-mini ${vip?'vip':''}`; div.innerHTML = `<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${escapeHtml(o.name)} (${o.count}部)`; cell.appendChild(div); });
+            for(let o of dayOrders.slice(0,2)) {
+                let div = document.createElement('div'); div.className = 'order-mini';
+                div.innerHTML = `<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${o.name} (${o.count}部)`;
+                cell.appendChild(div);
+            }
             if(dayOrders.length>2) { let m=document.createElement('div'); m.style.fontSize='9px'; m.innerText=`+${dayOrders.length-2}`; cell.appendChild(m); }
             cell.onclick = () => showDetail(ds, dayOrders);
             grid.appendChild(cell);
@@ -333,19 +303,7 @@
         let c = document.getElementById('detailList');
         if(orders.length===0) c.innerHTML = '<div style="text-align:center; padding:40px;">暫無訂單</div>';
         else {
-            c.innerHTML = orders.map(o=>{ 
-                let vip = isVip(o.phone, o.id); 
-                let price = o.price || DEFAULT_PRICE;
-                return `<div class="order-card">
-                    <div style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}  ${vip?'🌟回頭客':'✨新客'}</div>
-                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${escapeHtml(o.name)}</div>
-                    <div>📞 ${o.phone || ''}</div>
-                    <div>🔢 ${o.count}部 × $${price} = $${(o.count||1)*price}</div>
-                    ${o.note ? `<div>📍 ${escapeHtml(o.note)}</div>` : ''}
-                    <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">✏️ 編輯</button>
-                    <button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">🗑️ 刪除</button>
-                </div>`;
-            }).join('');
+            c.innerHTML = orders.map(o=>{ let price = o.price || DEFAULT_PRICE; return `<div class="order-card"><div>⏰ ${o.datetime.split('T')[1]}</div><div style="font-size:16px; font-weight:700;">❄️ ${o.name}</div><div>📞 ${o.phone || ''}</div><div>${o.count}部 × $${price} = $${(o.count||1)*price}</div>${o.note ? `<div>📍 ${o.note}</div>` : ''}<button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">編輯</button><button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">刪除</button></div>`; }).join('');
             document.querySelectorAll('.editBtn').forEach(b=>{ b.onclick = () => editOrder(b.getAttribute('data-id')); });
             document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = async () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
         }
@@ -363,7 +321,7 @@
         document.getElementById('count').value = o.count;
         document.getElementById('note').value = o.note||'';
         document.getElementById('price').value = o.price||DEFAULT_PRICE;
-        document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
+        document.getElementById('modalTitle').innerText = "編輯訂單";
         document.getElementById('deleteBtn').style.display = "block";
         closeDetailModal(); openOrderModal();
     }
@@ -395,16 +353,6 @@
         await saveData(); closeOrderModal();
     }
 
-    function escapeHtml(str) {
-        if(!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if(m === '&') return '&amp;';
-            if(m === '<') return '&lt;';
-            if(m === '>') return '&gt;';
-            return m;
-        });
-    }
-
     function recognizeText(t) {
         let r = { name:"", phone:"", date:"", time:"", count:1, note:"" };
         let m = t.match(/\b(\d{8})\b/);
@@ -428,20 +376,9 @@
         let raw = document.getElementById('pasteText').value;
         if(!raw.trim()) { alert("請貼上聊天記錄"); return; }
         let rec = recognizeText(raw);
-        let price = DEFAULT_PRICE;
         let div = document.getElementById('preview');
         div.style.display = 'block';
-        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;">
-            <strong>✅ 識別結果</strong>
-            <div>📛 客戶：${rec.name}</div>
-            <div>📞 電話：${rec.phone||'未識別'}</div>
-            <div>📅 日期：${rec.date||'未識別'}</div>
-            <div>⏰ 時間：${rec.time||'未識別'}</div>
-            <div>🔢 數量：${rec.count}部</div>
-            <div>💰 單價：$${price}/部</div>
-            <div>📍 地址：${rec.note||'無'}</div>
-            <button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">📝 填寫</button>
-        </div>`;
+        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;"><strong>✅ 識別結果</strong><div>📛 客戶：${rec.name}</div><div>📞 電話：${rec.phone||'未識別'}</div><div>📅 日期：${rec.date||'未識別'}</div><div>⏰ 時間：${rec.time||'未識別'}</div><div>🔢 數量：${rec.count}部</div><div>📍 地址：${rec.note||'無'}</div><button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">📝 填寫</button></div>`;
         document.getElementById('applyBtn').onclick = () => {
             document.getElementById('name').value = rec.name;
             document.getElementById('phone').value = rec.phone||'';
@@ -449,10 +386,10 @@
             if(rec.time) document.getElementById('time').value = rec.time;
             document.getElementById('count').value = rec.count;
             document.getElementById('note').value = rec.note||'';
-            document.getElementById('price').value = price;
+            document.getElementById('price').value = DEFAULT_PRICE;
             document.getElementById('editId').value = '';
             document.getElementById('deleteBtn').style.display = 'none';
-            document.getElementById('modalTitle').innerText = "➕ 新增訂單";
+            document.getElementById('modalTitle').innerText = "新增訂單";
             closePasteModal(); openOrderModal();
         };
     }
@@ -467,19 +404,7 @@
     document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
     document.getElementById('prevYearBtn').onclick = () => { selectedYear--; updateYearStats(); };
     document.getElementById('nextYearBtn').onclick = () => { selectedYear++; updateYearStats(); };
-    document.getElementById('addBtn').onclick = () => { 
-        document.getElementById('editId').value = ''; 
-        document.getElementById('name').value = ''; 
-        document.getElementById('phone').value = ''; 
-        document.getElementById('date').value = new Date().toISOString().slice(0,10); 
-        document.getElementById('time').value = ''; 
-        document.getElementById('count').value = '1'; 
-        document.getElementById('note').value = ''; 
-        document.getElementById('price').value = DEFAULT_PRICE; 
-        document.getElementById('deleteBtn').style.display = 'none'; 
-        document.getElementById('modalTitle').innerText = "➕ 新增訂單"; 
-        openOrderModal(); 
-    };
+    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = DEFAULT_PRICE; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "新增訂單"; openOrderModal(); };
     document.getElementById('pasteBtn').onclick = openPasteModal;
     document.getElementById('closeOrderModal').onclick = closeOrderModal;
     document.getElementById('closePasteModal').onclick = closePasteModal;
@@ -487,10 +412,12 @@
     document.getElementById('saveBtn').onclick = saveOrder;
     document.getElementById('deleteBtn').onclick = deleteOrder;
     document.getElementById('recognizeBtn').onclick = doRecognize;
-    document.getElementById('weekTab').onclick = () => { 
-        currentReport = 'week'; 
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
-        document.getElementById('weekTab').classList.add('active'); 
-        renderWeekReport(); 
-    };
-    document.getElementById('month
+    document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderWeekReport(); };
+    document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderMonthReport(); };
+    document.getElementById('saveTokenBtn').onclick = () => { let t = document.getElementById('tokenInput').value.trim(); if(t) { localStorage.setItem('github_token', t); githubToken = t; document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; loadFromGitHub(); } };
+
+    loadLocal();
+    if(githubToken) loadFromGitHub();
+</script>
+</body>
+</html>

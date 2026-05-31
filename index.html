@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>订单日历 · 智能识别版</title>
+    <title>洗冷氣訂單系統 · 智能識別版</title>
     <style>
         * {
             margin: 0;
@@ -115,7 +115,6 @@
         .mini-count { background: white; padding: 2px 8px; border-radius: 30px; font-size: 10px; font-weight: 700; color: #059669; }
         .more-badge { background: #cbd5e1; color: #334155; font-size: 10px; padding: 4px; border-radius: 20px; text-align: center; }
 
-        /* 底部双按钮 */
         .bottom-buttons {
             position: fixed;
             bottom: 24px;
@@ -246,12 +245,21 @@
             cursor: pointer;
         }
         .preview-box { background: #f8fafc; margin: 16px; padding: 16px; border-radius: 24px; }
+        
+        .badge-wash {
+            background: #0ea5e9;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            margin-left: 6px;
+        }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
-    <h1>📅 订单日历</h1>
+    <h1>❄️ 洗冷氣訂單系統</h1>
     <div class="top-actions">
         <button class="top-btn" onclick="resetToken()">重置</button>
         <button class="top-btn" onclick="fetchAllOrders()">刷新</button>
@@ -272,7 +280,7 @@
     <div id="calendarGrid" class="calendar-grid"></div>
 </div>
 
-<!-- 底部双按钮：加号 + 智能粘贴 -->
+<!-- 底部双按钮 -->
 <div class="bottom-buttons">
     <button class="float-btn float-paste" id="smartPasteBtn">🤖</button>
     <button class="float-btn float-add" id="openFormBtn">+</button>
@@ -290,60 +298,56 @@
 <!-- 表单弹窗 -->
 <div id="formModal" class="form-mask">
     <div class="form-container">
-        <h3 id="formModalTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">➕ 新增订单</h3>
+        <h3 id="formModalTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">➕ 新增訂單</h3>
         <input type="hidden" id="editOrderId">
         
         <div class="form-group">
-            <label>📛 订单名称</label>
-            <input type="text" id="orderName" placeholder="例: 奶茶团购">
+            <label>❄️ 訂單名稱 / 客戶稱呼</label>
+            <input type="text" id="orderName" placeholder="例: 陳宅洗冷氣 / 張生洗3部">
         </div>
         <div class="form-group">
-            <label>📞 联系电话</label>
-            <input type="tel" id="orderPhone" placeholder="13800000000">
+            <label>📞 聯繫電話 (澳門 +853 或 中國 1xxxx)</label>
+            <input type="tel" id="orderPhone" placeholder="+853 66668888 或 13812345678">
             <div id="vipHint" class="vip-hint" style="display: none;"></div>
         </div>
         <div class="form-group">
-            <label>📅 日期</label>
+            <label>📅 預約日期</label>
             <input type="date" id="orderDate">
         </div>
         <div class="form-group">
-            <label>⏰ 时间</label>
+            <label>⏰ 預約時間</label>
             <input type="time" id="orderTime">
         </div>
         <div class="form-group">
-            <label>🔢 数量(部)</label>
+            <label>🔢 冷氣機數量 (部)</label>
             <input type="number" id="orderCount" min="1" value="1">
         </div>
         <div class="form-group">
-            <label>📝 备注</label>
-            <textarea id="orderNote" rows="2"></textarea>
+            <label>📝 補充說明 (地址/型號/備註)</label>
+            <textarea id="orderNote" rows="2" placeholder="例: 澳門台山XX大廈10樓B，3部分體機"></textarea>
         </div>
         <div class="form-buttons">
             <button id="cancelFormBtn">取消</button>
-            <button id="deleteFormBtn" style="display:none;">删除</button>
+            <button id="deleteFormBtn" style="display:none;">刪除</button>
             <button id="saveFormBtn" style="background:#059669; color:white;">保存</button>
         </div>
     </div>
 </div>
 
-<!-- 智能粘贴弹窗（独立，不需要先开表单） -->
+<!-- 智能粘贴弹窗 -->
 <div id="pastePanel" class="paste-panel">
     <div class="paste-header">
-        <span style="font-weight: 700;">🤖 智能粘贴 · 从聊天记录识别订单</span>
+        <span style="font-weight: 700;">🤖 智能粘貼 · 從聊天記錄自動識別</span>
         <button class="close-detail" id="closePasteBtn">✕</button>
     </div>
-    <textarea id="chatText" class="paste-textarea" placeholder="直接粘贴聊天记录，例如：
-客户说：明天下午3点，5部苹果16 Pro Max，电话13812345678
+    <textarea id="chatText" class="paste-textarea" placeholder="直接粘貼聊天記錄，例如：
+陳生話：聽日下午3點，洗3部冷氣，地址台山XX大廈，電話+853 66668888
 或者：
-张三 订 奶茶 3杯 今天下午2点 电话13900001111
+張太 要洗2部冷氣 今日下晝2點 電話 853 66668888 澳門筷子基
 
-系统会自动识别：订单名称、电话、日期、时间、数量，然后自动填表"></textarea>
-    <button class="recognize-btn" id="recognizeBtn">🔍 自动识别</button>
+系統會自動識別：客戶稱呼、電話、日期、時間、數量、地址"></textarea>
+    <button class="recognize-btn" id="recognizeBtn">🔍 自動識別並填表</button>
     <div id="recognizePreview" class="preview-box" style="display: none;"></div>
-    <div style="padding: 0 16px 20px; display: flex; gap: 12px;" id="actionButtons" style="display:none;">
-        <button id="applyAndAddBtn" style="flex:1; background:#059669; color:white; border:none; padding:12px; border-radius:40px; font-weight:600;">📝 填表并继续添加</button>
-        <button id="closeAfterApplyBtn" style="flex:1; background:#8b5cf6; color:white; border:none; padding:12px; border-radius:40px; font-weight:600;">✅ 填表并关闭</button>
-    </div>
 </div>
 
 <script>
@@ -358,12 +362,11 @@
     let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let lastRecognized = null;
 
     function getToken() {
         let t = localStorage.getItem('gh_order_token');
         if (!t || t === "") {
-            t = prompt("🔑 请输入 GitHub Token (ghp_开头):");
+            t = prompt("🔑 請輸入 GitHub Token (ghp_開頭):");
             if (t) localStorage.setItem('gh_order_token', t.trim());
         }
         return t;
@@ -371,7 +374,7 @@
 
     window.resetToken = function() {
         localStorage.removeItem('gh_order_token');
-        alert("已清除，刷新页面重新输入");
+        alert("已清除，刷新頁面重新輸入");
         location.reload();
     };
 
@@ -383,7 +386,7 @@
                 headers: { "Authorization": `token ${token}` }
             });
             if (res.status === 401 || res.status === 403) {
-                alert("Token无效，请重置");
+                alert("Token無效，請重置");
                 return;
             }
             const data = await res.json();
@@ -392,7 +395,7 @@
             allOrders = JSON.parse(content || "[]");
             renderCalendar();
         } catch(e) {
-            alert("加载失败: " + e.message);
+            alert("加載失敗: " + e.message);
         }
     };
 
@@ -412,44 +415,62 @@
                 renderCalendar();
                 return true;
             } else {
-                alert("保存冲突，请刷新后重试");
+                alert("保存衝突，請刷新後重試");
                 return false;
             }
         } catch(e) {
-            alert("保存失败");
+            alert("保存失敗");
             return false;
         }
     }
 
     function isVipCustomer(phone, excludeId = null) {
         if (!phone) return false;
-        return allOrders.some(o => o.phone === phone && o.id !== excludeId);
+        const normalized = normalizePhone(phone);
+        return allOrders.some(o => normalizePhone(o.phone) === normalized && o.id !== excludeId);
+    }
+    
+    function normalizePhone(phone) {
+        if (!phone) return '';
+        return phone.replace(/[\s\+-]/g, '').trim();
     }
 
-    // 智能识别函数
+    // 智能识别函数（洗冷气专用）
     function recognizeOrderInfo(rawText) {
         const text = rawText;
-        let result = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
+        let result = { name: "", phone: "", date: "", time: "", count: 1, note: "", address: "" };
         
-        const phoneMatch = text.match(/1[3-9]\d{9}/);
-        if (phoneMatch) result.phone = phoneMatch[0];
+        // 1. 识别电话（澳门 +853 或 中国）
+        let phoneMatch = null;
+        const macauPattern = /(?:\+?853\s*)?(\d{8})/;
+        const macauMatch = text.match(macauPattern);
+        if (macauMatch && macauMatch[1]) {
+            phoneMatch = '+853 ' + macauMatch[1];
+        }
+        if (!phoneMatch) {
+            const chinaMatch = text.match(/1[3-9]\d{9}/);
+            if (chinaMatch) phoneMatch = chinaMatch[0];
+        }
+        if (phoneMatch) result.phone = phoneMatch;
         
-        const countPatterns = [/(\d+)\s*部/, /(\d+)\s*个/, /(\d+)\s*杯/, /(\d+)\s*份/, /(\d+)\s*单/];
+        // 2. 识别数量（X部冷氣 / X部）
+        const countPatterns = [/(\d+)\s*部/, /(\d+)\s*台/, /(\d+)\s*個/, /(\d+)\s*个/];
         for (let pattern of countPatterns) {
             const match = text.match(pattern);
             if (match) { result.count = parseInt(match[1]); break; }
         }
         
+        // 3. 识别日期
         const today = new Date();
         const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         
-        if (text.includes("今天")) {
+        if (text.includes("今日") || text.includes("今天")) {
             result.date = todayStr;
-        } else if (text.includes("明天")) {
+        } else if (text.includes("聽日") || text.includes("明天")) {
             const tom = new Date(today);
             tom.setDate(today.getDate() + 1);
             result.date = `${tom.getFullYear()}-${String(tom.getMonth()+1).padStart(2,'0')}-${String(tom.getDate()).padStart(2,'0')}`;
-        } else if (text.includes("后天")) {
+        } else if (text.includes("後日") || text.includes("后天")) {
             const after = new Date(today);
             after.setDate(today.getDate() + 2);
             result.date = `${after.getFullYear()}-${String(after.getMonth()+1).padStart(2,'0')}-${String(after.getDate()).padStart(2,'0')}`;
@@ -467,86 +488,114 @@
             }
         }
         
+        // 4. 识别时间
         let timeMatch = text.match(/(\d{1,2})[:：](\d{2})/);
         if (timeMatch) {
             result.time = `${String(timeMatch[1]).padStart(2,'0')}:${timeMatch[2]}`;
         } else {
-            timeMatch = text.match(/(\d{1,2})\s*点/);
+            timeMatch = text.match(/(\d{1,2})\s*點/);
+            if (!timeMatch) timeMatch = text.match(/(\d{1,2})\s*点/);
             if (timeMatch) {
                 let hour = parseInt(timeMatch[1]);
-                let isPm = text.includes("下午") || text.includes("晚上");
+                let isPm = text.includes("下午") || text.includes("下晝") || text.includes("夜晚") || text.includes("晚上");
                 if (isPm && hour < 12) hour += 12;
                 result.time = `${String(hour).padStart(2,'0')}:00`;
             }
         }
         
-        let nameMatch = text.match(/(?:订|要|点|买)[了]?\s*([\u4e00-\u9fa5a-zA-Z0-9]{2,10})/);
-        if (nameMatch) result.name = nameMatch[1];
-        if (!result.name || result.name.length < 2) {
-            nameMatch = text.match(/([\u4e00-\u9fa5]{2,6})(?:奶茶|咖啡|手机|电脑|套餐)/);
-            if (nameMatch) result.name = nameMatch[0];
-            else result.name = "待填写";
+        // 5. 识别客户名称/称呼
+        let nameMatch = text.match(/([陳張李黃何鄭梁謝吳劉林蔡許王周][生太小姐女士先生]{0,2})/);
+        if (nameMatch) result.name = nameMatch[0] + " 洗冷氣";
+        if (!result.name) {
+            nameMatch = text.match(/([\u4e00-\u9fa5]{2,4})(?:宅|家|屋企)/);
+            if (nameMatch) result.name = nameMatch[0] + " 洗冷氣";
+            else result.name = "洗冷氣訂單";
         }
+        
+        // 6. 识别地址（澳门常见地址模式）
+        let address = "";
+        const addressPatterns = [
+            /(?:地址|位於|响|喺)[：:]*\s*([^，,。\.\n]{5,30})/,
+            /(澳門|氹仔|路環|台山|筷子基|黑沙環|祐漢|關閘|新橋|沙梨頭|下環|媽閣|望廈|青洲)[^，,。\.\n]{3,25}/
+        ];
+        for (let pattern of addressPatterns) {
+            const match = text.match(pattern);
+            if (match) { address = match[0]; break; }
+        }
+        
+        // 组合备注（包含地址）
+        result.note = address || "";
+        
         return result;
     }
     
-    // 智能粘贴相关函数
+    // 识别后直接打开表单并填好
+    function recognizeAndOpenForm() {
+        const rawText = document.getElementById('chatText').value;
+        if (!rawText.trim()) {
+            alert("請粘貼聊天記錄");
+            return;
+        }
+        const recognized = recognizeOrderInfo(rawText);
+        
+        const preview = document.getElementById('recognizePreview');
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 12px;">✅ 識別結果：</div>
+            <div>❄️ 客戶：${recognized.name}</div>
+            <div>📞 電話：${recognized.phone || '未識別'}</div>
+            <div>📅 日期：${recognized.date || '未識別'}</div>
+            <div>⏰ 時間：${recognized.time || '未識別'}</div>
+            <div>🔢 數量：${recognized.count}部冷氣</div>
+            <div>📍 地址/備註：${recognized.note || '無'}</div>
+            <div style="margin-top: 12px; display: flex; gap: 12px;">
+                <button id="confirmFillBtn" style="flex:1; background:#059669; color:white; border:none; padding:10px; border-radius:30px;">✅ 確認填表</button>
+                <button id="cancelFillBtn" style="flex:1; background:#e2e8f0; border:none; padding:10px; border-radius:30px;">✕ 取消</button>
+            </div>
+        `;
+        
+        document.getElementById('confirmFillBtn').onclick = () => {
+            closePastePanel();
+            openFormWithData(recognized);
+        };
+        document.getElementById('cancelFillBtn').onclick = () => {
+            preview.style.display = 'none';
+        };
+    }
+    
+    function openFormWithData(data) {
+        const modal = document.getElementById('formModal');
+        const deleteBtn = document.getElementById('deleteFormBtn');
+        
+        document.getElementById('formModalTitle').innerText = "➕ 新增訂單";
+        document.getElementById('editOrderId').value = '';
+        document.getElementById('orderName').value = data.name;
+        document.getElementById('orderPhone').value = data.phone || '';
+        if (data.date) document.getElementById('orderDate').value = data.date;
+        if (data.time) document.getElementById('orderTime').value = data.time;
+        document.getElementById('orderCount').value = data.count;
+        document.getElementById('orderNote').value = data.note || '';
+        deleteBtn.style.display = "none";
+        
+        if (data.phone) {
+            checkVipDisplay(data.phone, '');
+        } else {
+            document.getElementById('vipHint').style.display = "none";
+        }
+        
+        modal.classList.add('show');
+    }
+    
     function openPastePanel() {
         document.getElementById('pastePanel').classList.add('open');
         document.getElementById('chatText').value = '';
         document.getElementById('recognizePreview').style.display = 'none';
-        document.getElementById('actionButtons').style.display = 'none';
     }
     
     function closePastePanel() {
         document.getElementById('pastePanel').classList.remove('open');
     }
     
-    function fillFormAndClose(closeAfterFill = true) {
-        if (!lastRecognized) return;
-        document.getElementById('orderName').value = lastRecognized.name;
-        document.getElementById('orderPhone').value = lastRecognized.phone || '';
-        if (lastRecognized.date) document.getElementById('orderDate').value = lastRecognized.date;
-        if (lastRecognized.time) document.getElementById('orderTime').value = lastRecognized.time;
-        document.getElementById('orderCount').value = lastRecognized.count;
-        if (lastRecognized.phone) {
-            checkVipDisplay(lastRecognized.phone, document.getElementById('editOrderId').value);
-        }
-        if (closeAfterFill) {
-            closePastePanel();
-            // 自动打开表单
-            openForm(null, lastRecognized.date || new Date().toISOString().slice(0,10));
-        } else {
-            // 清空并继续
-            document.getElementById('chatText').value = '';
-            document.getElementById('recognizePreview').style.display = 'none';
-            document.getElementById('actionButtons').style.display = 'none';
-            lastRecognized = null;
-        }
-    }
-    
-    function recognizeAndFill() {
-        const rawText = document.getElementById('chatText').value;
-        if (!rawText.trim()) {
-            alert("请粘贴聊天记录");
-            return;
-        }
-        const recognized = recognizeOrderInfo(rawText);
-        lastRecognized = recognized;
-        const preview = document.getElementById('recognizePreview');
-        preview.style.display = 'block';
-        preview.innerHTML = `
-            <div style="font-weight: 700; margin-bottom: 12px;">✅ 识别结果：</div>
-            <div>📛 名称：${recognized.name}</div>
-            <div>📞 电话：${recognized.phone || '未识别'}</div>
-            <div>📅 日期：${recognized.date || '未识别'}</div>
-            <div>⏰ 时间：${recognized.time || '未识别'}</div>
-            <div>🔢 数量：${recognized.count}部</div>
-        `;
-        document.getElementById('actionButtons').style.display = 'flex';
-    }
-    
-    // 渲染日历
     function renderCalendar() {
         const firstDay = new Date(currentYear, currentMonth, 1);
         let startWeekday = firstDay.getDay();
@@ -588,7 +637,7 @@
                     const timeShort = order.datetime.split('T')[1];
                     orderDiv.innerHTML = `
                         <div class="mini-time">${timeShort}</div>
-                        <div class="mini-name">${escapeHtml(order.name)} ${vip ? '🌟' : ''}</div>
+                        <div class="mini-name">❄️ ${escapeHtml(order.name)} ${vip ? '🌟' : ''}</div>
                         <div class="mini-footer"><span class="mini-count">${order.count}部</span></div>
                     `;
                     ordersDiv.appendChild(orderDiv);
@@ -610,29 +659,29 @@
         document.getElementById('detailDateTitle').innerText = dateStr;
         const container = document.getElementById('detailOrderList');
         if (orders.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:40px;">暂无订单<br><button onclick="openFormWithDate('${dateStr}')" style="margin-top:12px; background:#10b981; border:none; padding:10px 24px; border-radius:40px; color:white;">+ 添加订单</button></div>`;
+            container.innerHTML = `<div style="text-align:center; padding:40px;">暫無訂單<br><button onclick="openFormWithDate('${dateStr}')" style="margin-top:12px; background:#10b981; border:none; padding:10px 24px; border-radius:40px; color:white;">+ 新增訂單</button></div>`;
         } else {
             container.innerHTML = orders.map(o => {
                 const vip = isVipCustomer(o.phone, o.id);
                 return `
                     <div class="full-order-card" style="border-left-color: ${vip ? '#f59e0b' : '#10b981'};">
                         <div style="display:flex; justify-content:space-between;">
-                            <span style="font-weight:700;">${o.datetime.split('T')[1]}</span>
-                            <span style="background:#e2e8f0; padding:4px 12px; border-radius:30px;">${o.count}部</span>
+                            <span style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}</span>
+                            <span style="background:#e2e8f0; padding:4px 12px; border-radius:30px;">❄️ ${o.count}部</span>
                         </div>
                         <div style="font-weight:700; margin:8px 0 4px;">${escapeHtml(o.name)} ${vip ? '🌟老客' : ''}</div>
                         <div style="font-size:13px; color:#475569;">📞 ${maskPhone(o.phone)}</div>
-                        ${o.note ? `<div style="font-size:13px;">📝 ${escapeHtml(o.note)}</div>` : ''}
-                        <button class="delete-order-btn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:8px 16px; border-radius:40px; margin-top:10px;">删除</button>
+                        ${o.note ? `<div style="font-size:13px;">📍 ${escapeHtml(o.note)}</div>` : ''}
+                        <button class="delete-order-btn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:8px 16px; border-radius:40px; margin-top:10px;">刪除</button>
                     </div>
                 `;
             }).join('');
             document.querySelectorAll('.delete-order-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const id = btn.getAttribute('data-id');
-                    if (confirm('确认删除？')) {
+                    if (confirm('確認刪除此訂單？')) {
                         const newList = allOrders.filter(o => o.id !== id);
-                        await saveOrdersToGit(newList, `删除订单`);
+                        await saveOrdersToGit(newList, `刪除訂單`);
                         closeDetailPanel();
                         renderCalendar();
                     }
@@ -655,7 +704,7 @@
         const modal = document.getElementById('formModal');
         const deleteBtn = document.getElementById('deleteFormBtn');
         if (order) {
-            document.getElementById('formModalTitle').innerText = "✏️ 编辑订单";
+            document.getElementById('formModalTitle').innerText = "✏️ 編輯訂單";
             document.getElementById('editOrderId').value = order.id;
             document.getElementById('orderName').value = order.name;
             document.getElementById('orderPhone').value = order.phone || '';
@@ -666,7 +715,7 @@
             deleteBtn.style.display = "block";
             checkVipDisplay(order.phone, order.id);
         } else {
-            document.getElementById('formModalTitle').innerText = "➕ 新增订单";
+            document.getElementById('formModalTitle').innerText = "➕ 新增訂單";
             document.getElementById('editOrderId').value = '';
             document.getElementById('orderName').value = '';
             document.getElementById('orderPhone').value = '';
@@ -687,12 +736,12 @@
     function checkVipDisplay(phone, orderId) {
         const hintDiv = document.getElementById('vipHint');
         if (phone && isVipCustomer(phone, orderId)) {
-            const count = allOrders.filter(o => o.phone === phone && o.id !== orderId).length;
-            hintDiv.innerHTML = `🏆 老客！第 ${count+1} 次下单`;
+            const count = allOrders.filter(o => normalizePhone(o.phone) === normalizePhone(phone) && o.id !== orderId).length;
+            hintDiv.innerHTML = `🏆 回頭客！第 ${count+1} 次幫襯 (歷史 ${count} 次)`;
             hintDiv.style.display = "block";
             hintDiv.style.background = "#fef3c7";
         } else if (phone && !isVipCustomer(phone, orderId)) {
-            hintDiv.innerHTML = `✨ 新客户，首次下单 ✨`;
+            hintDiv.innerHTML = `✨ 新客戶，首次幫襯 ✨`;
             hintDiv.style.display = "block";
             hintDiv.style.background = "#d1fae5";
         } else {
@@ -702,76 +751,24 @@
     
     async function handleSaveOrder() {
         const id = document.getElementById('editOrderId').value || ('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
-        const name = document.getElementById('orderName').value.trim();
-        const phone = document.getElementById('orderPhone').value.trim();
+        let name = document.getElementById('orderName').value.trim();
+        let phone = document.getElementById('orderPhone').value.trim();
         const date = document.getElementById('orderDate').value;
         const time = document.getElementById('orderTime').value;
         const count = parseInt(document.getElementById('orderCount').value);
         const note = document.getElementById('orderNote').value.trim();
         const isEdit = document.getElementById('editOrderId').value !== '';
         
-        if (!name || !phone || !date || !time || !count) { alert("请填写完整"); return; }
+        if (!name || !phone || !date || !time || !count) { alert("請填寫完整資料"); return; }
+        
+        if (phone.match(/^\d{8}$/)) {
+            phone = '+853 ' + phone;
+        } else if (phone.match(/^853\d{8}$/)) {
+            phone = '+853 ' + phone.slice(3);
+        }
+        
         const datetime = `${date}T${time}`;
         const conflict = allOrders.some(o => o.datetime === datetime && o.id !== id);
-        if (conflict) { alert(`⚠️ ${date} ${time} 已有订单`); return; }
+        if (conflict) { alert(`⚠️ ${date} ${time} 已有訂單`); return; }
         
-        let newOrders = [...allOrders];
-        const orderData = { id, name, phone, datetime, count, note };
-        if (isEdit) newOrders = newOrders.map(o => o.id === id ? orderData : o);
-        else newOrders.push(orderData);
-        
-        await saveOrdersToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
-        closeForm();
-    }
-    
-    async function handleDeleteFromForm() {
-        const id = document.getElementById('editOrderId').value;
-        const name = document.getElementById('orderName').value;
-        if (!confirm(`删除「${name}」吗？`)) return;
-        const newOrders = allOrders.filter(o => o.id !== id);
-        await saveOrdersToGit(newOrders, `删除:${name}`);
-        closeForm();
-    }
-    
-    function maskPhone(phone) {
-        if (!phone) return '';
-        if (phone.length === 11) return phone.slice(0,3)+'****'+phone.slice(-4);
-        return phone;
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-    }
-    
-    // 绑定事件
-    document.getElementById('prevMonthBtn').onclick = () => {
-        currentMonth--;
-        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-        renderCalendar();
-    };
-    document.getElementById('nextMonthBtn').onclick = () => {
-        currentMonth++;
-        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-        renderCalendar();
-    };
-    document.getElementById('openFormBtn').onclick = () => openForm(null, new Date().toISOString().slice(0,10));
-    document.getElementById('saveFormBtn').onclick = handleSaveOrder;
-    document.getElementById('deleteFormBtn').onclick = handleDeleteFromForm;
-    document.getElementById('cancelFormBtn').onclick = closeForm;
-    document.getElementById('orderPhone').oninput = (e) => checkVipDisplay(e.target.value, document.getElementById('editOrderId').value);
-    
-    // 智能粘贴按钮绑定
-    document.getElementById('smartPasteBtn').onclick = openPastePanel;
-    document.getElementById('closePasteBtn').onclick = closePastePanel;
-    document.getElementById('recognizeBtn').onclick = recognizeAndFill;
-    
-    // 动态创建按钮的事件绑定
-    document.getElementById('applyAndAddBtn').onclick = () => fillFormAndClose(false);
-    document.getElementById('closeAfterApplyBtn').onclick = () => fillFormAndClose(true);
-    
-    // 启动
-    fetchAllOrders();
-</script>
-</body>
-</html>
+        let newOrders = [...allOrders

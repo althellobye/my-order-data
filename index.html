@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>订单日历 · 清晰手机版</title>
+    <title>订单日历 · 智能识别版</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,6 @@
             padding: 12px 10px 90px 10px;
         }
 
-        /* 头部 */
         .top-bar {
             background: white;
             border-radius: 28px;
@@ -53,12 +52,7 @@
             background: #e2e8f0;
             transform: scale(0.96);
         }
-        .top-btn.danger {
-            background: #fff1f0;
-            color: #e11d48;
-        }
 
-        /* 日历卡片 */
         .calendar-card {
             background: white;
             border-radius: 32px;
@@ -66,7 +60,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* 月份导航 */
         .month-bar {
             display: flex;
             justify-content: space-between;
@@ -83,11 +76,6 @@
             font-size: 20px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.15s;
-        }
-        .month-bar button:active {
-            background: #e2e8f0;
-            transform: scale(0.94);
         }
         .month-title {
             font-size: 19px;
@@ -95,13 +83,11 @@
             color: #0f172a;
         }
 
-        /* 星期行 */
         .week-row {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 12px;
-            padding: 0 4px;
         }
         .week-day {
             font-size: 14px;
@@ -110,14 +96,12 @@
             padding: 6px 0;
         }
 
-        /* 日历网格 - 大格子 */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 6px;
         }
 
-        /* 每个格子 */
         .date-cell {
             background: #fafcff;
             border-radius: 18px;
@@ -126,7 +110,6 @@
             display: flex;
             flex-direction: column;
             border: 1px solid #eef2ff;
-            transition: all 0.1s;
             cursor: pointer;
         }
         .date-cell:active {
@@ -139,27 +122,16 @@
             opacity: 0.6;
             cursor: default;
         }
-        .date-cell.empty:active {
-            transform: none;
-        }
         .date-cell.today {
             background: #ecfdf5;
             border: 2px solid #10b981;
         }
-
-        /* 日期数字 */
         .day-num {
             font-size: 17px;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 6px;
-            padding-left: 2px;
         }
-        .date-cell.today .day-num {
-            color: #059669;
-        }
-
-        /* 订单列表 - 直接显示在格子内 */
         .cell-orders {
             display: flex;
             flex-direction: column;
@@ -169,10 +141,8 @@
         .mini-order {
             background: #eef2ff;
             border-radius: 12px;
-            padding: 6px 6px;
+            padding: 6px;
             font-size: 11px;
-            font-weight: 500;
-            line-height: 1.3;
             border-left: 3px solid #059669;
         }
         .mini-order.vip-order {
@@ -183,10 +153,6 @@
             font-size: 10px;
             font-weight: 700;
             color: #059669;
-            margin-bottom: 2px;
-        }
-        .vip-order .mini-time {
-            color: #d97706;
         }
         .mini-name {
             font-weight: 600;
@@ -199,7 +165,6 @@
         .mini-footer {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             margin-top: 3px;
         }
         .mini-count {
@@ -210,43 +175,54 @@
             font-weight: 700;
             color: #059669;
         }
-        .vip-order .mini-count {
-            color: #d97706;
-        }
-        .vip-icon {
-            font-size: 10px;
-            color: #f59e0b;
-        }
         .more-badge {
             background: #cbd5e1;
             color: #334155;
             font-size: 10px;
-            padding: 4px 6px;
+            padding: 4px;
             border-radius: 20px;
             text-align: center;
-            margin-top: 4px;
-            font-weight: 600;
         }
 
-        /* 底部弹出详情 */
-        .detail-panel {
+        /* 智能粘贴按钮 */
+        .smart-paste-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 28px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .smart-paste-btn:active {
+            transform: scale(0.98);
+        }
+
+        .detail-panel, .form-mask, .paste-mask {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: white;
             border-radius: 32px 32px 0 0;
-            max-height: 65vh;
+            max-height: 70vh;
             overflow-y: auto;
             z-index: 200;
             transform: translateY(100%);
             transition: transform 0.3s;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
         }
-        .detail-panel.open {
+        .detail-panel.open, .paste-panel.open {
             transform: translateY(0);
         }
-        .detail-header {
+        .detail-header, .paste-header {
             padding: 20px 20px 12px;
             display: flex;
             justify-content: space-between;
@@ -256,11 +232,7 @@
             top: 0;
             background: white;
         }
-        .detail-date {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        .close-detail {
+        .close-detail, .close-paste {
             background: #f1f5f9;
             border: none;
             width: 36px;
@@ -269,73 +241,62 @@
             font-size: 22px;
             cursor: pointer;
         }
-        .order-list {
-            padding: 12px 16px 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .full-order-card {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 14px;
-            border-left: 5px solid #10b981;
-        }
-        .full-order-card.vip {
-            border-left-color: #f59e0b;
-            background: #fffbeb;
-        }
-        .order-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .order-time-big {
+        .paste-textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 24px;
             font-size: 14px;
-            font-weight: 700;
-            color: #10b981;
+            font-family: monospace;
+            margin: 16px;
+            width: calc(100% - 32px);
+            min-height: 200px;
         }
-        .order-count-big {
-            background: #e2e8f0;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-        .order-name-big {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 8px 0 4px;
-        }
-        .order-phone {
-            font-size: 13px;
-            color: #475569;
-            margin: 4px 0;
-        }
-        .delete-order-btn {
-            background: #fee2e2;
+        .recognize-btn {
+            background: #8b5cf6;
+            color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 14px;
             border-radius: 40px;
-            color: #e11d48;
             font-weight: 600;
-            font-size: 13px;
-            margin-top: 10px;
+            margin: 12px 16px;
+            width: calc(100% - 32px);
             cursor: pointer;
         }
+        .preview-box {
+            background: #f8fafc;
+            margin: 16px;
+            padding: 16px;
+            border-radius: 24px;
+        }
 
-        /* 表单浮层 */
-        .form-mask {
+        .float-add {
             position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
+            bottom: 24px;
+            right: 20px;
+            width: 58px;
+            height: 58px;
+            background: #059669;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 30px;
+            font-weight: 300;
+            box-shadow: 0 6px 16px rgba(5,150,105,0.4);
+            cursor: pointer;
+            z-index: 100;
+        }
+        .float-add:active {
+            transform: scale(0.92);
+        }
+
+        .form-mask {
             z-index: 300;
-            display: flex;
-            align-items: flex-end;
             visibility: hidden;
             opacity: 0;
             transition: 0.2s;
+            align-items: flex-end;
+            display: flex;
         }
         .form-mask.show {
             visibility: visible;
@@ -386,26 +347,6 @@
             border-radius: 20px;
             margin-top: 8px;
         }
-        .float-add {
-            position: fixed;
-            bottom: 24px;
-            right: 20px;
-            width: 58px;
-            height: 58px;
-            background: #059669;
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 30px;
-            font-weight: 300;
-            box-shadow: 0 6px 16px rgba(5,150,105,0.4);
-            cursor: pointer;
-            z-index: 100;
-            transition: 0.15s;
-        }
-        .float-add:active {
-            transform: scale(0.92);
-        }
     </style>
 </head>
 <body>
@@ -434,13 +375,13 @@
 
 <button class="float-add" id="openFormBtn">+</button>
 
-<!-- 底部详情面板 -->
+<!-- 详情面板 -->
 <div id="detailPanel" class="detail-panel">
     <div class="detail-header">
         <span class="detail-date" id="detailDateTitle"></span>
         <button class="close-detail" onclick="closeDetailPanel()">✕</button>
     </div>
-    <div id="detailOrderList" class="order-list"></div>
+    <div id="detailOrderList" class="order-list" style="padding: 12px 16px 30px;"></div>
 </div>
 
 <!-- 表单弹窗 -->
@@ -448,6 +389,12 @@
     <div class="form-container">
         <h3 id="formModalTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">➕ 新增订单</h3>
         <input type="hidden" id="editOrderId">
+        
+        <!-- 智能粘贴按钮 -->
+        <button class="smart-paste-btn" onclick="openPastePanel()">
+            🤖 智能粘贴 · 从聊天记录自动识别
+        </button>
+        
         <div class="form-group">
             <label>📛 订单名称</label>
             <input type="text" id="orderName" placeholder="例: 奶茶团购">
@@ -478,6 +425,24 @@
             <button id="deleteFormBtn" style="background:#fef2f2; color:#e11d48; display:none;">删除</button>
             <button id="saveFormBtn" style="background:#059669; color:white;">保存</button>
         </div>
+    </div>
+</div>
+
+<!-- 智能粘贴弹窗 -->
+<div id="pastePanel" class="detail-panel" style="z-index: 400;">
+    <div class="paste-header">
+        <span style="font-weight: 700;">📋 粘贴聊天记录</span>
+        <button class="close-paste" onclick="closePastePanel()">✕</button>
+    </div>
+    <div style="padding: 16px;">
+        <textarea id="chatText" class="paste-textarea" placeholder="示例：
+客户说：明天下午3点，5部苹果16 Pro Max，电话13812345678
+或者：
+张三 订 奶茶 3杯 今天下午2点 电话13900001111
+
+系统会自动识别：订单名称、电话、日期、时间、数量"></textarea>
+        <button class="recognize-btn" onclick="recognizeAndFill()">🔍 自动识别并填表</button>
+        <div id="recognizePreview" class="preview-box" style="display: none;"></div>
     </div>
 </div>
 
@@ -562,14 +527,177 @@
         if (!phone) return false;
         return allOrders.some(o => o.phone === phone && o.id !== excludeId);
     }
-    function getVipOrderCount(phone, excludeId = null) {
-        return allOrders.filter(o => o.phone === phone && o.id !== excludeId).length;
-    }
 
-    // 渲染日历（格子内直接显示订单：时间+名称+数量+老客标记）
+    // ===== 智能识别核心函数 =====
+    function recognizeOrderInfo(rawText) {
+        const text = rawText;
+        let result = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
+        
+        // 1. 识别电话 (11位手机号)
+        const phoneMatch = text.match(/1[3-9]\d{9}/);
+        if (phoneMatch) result.phone = phoneMatch[0];
+        
+        // 2. 识别数量 (X部 / X个 / X杯 / X份)
+        const countPatterns = [
+            /(\d+)\s*部/,
+            /(\d+)\s*个/,
+            /(\d+)\s*杯/,
+            /(\d+)\s*份/,
+            /(\d+)\s*单/,
+            /数量[：:]\s*(\d+)/
+        ];
+        for (let pattern of countPatterns) {
+            const match = text.match(pattern);
+            if (match) {
+                result.count = parseInt(match[1]);
+                break;
+            }
+        }
+        
+        // 3. 识别日期
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+        
+        // 日期匹配: 今天/明天/后天/ 月日/ 年月日
+        if (text.includes("今天")) {
+            result.date = todayStr;
+        } else if (text.includes("明天")) {
+            const tom = new Date(today);
+            tom.setDate(today.getDate() + 1);
+            result.date = `${tom.getFullYear()}-${String(tom.getMonth()+1).padStart(2,'0')}-${String(tom.getDate()).padStart(2,'0')}`;
+        } else if (text.includes("后天")) {
+            const after = new Date(today);
+            after.setDate(today.getDate() + 2);
+            result.date = `${after.getFullYear()}-${String(after.getMonth()+1).padStart(2,'0')}-${String(after.getDate()).padStart(2,'0')}`;
+        } else {
+            // 匹配 1月15日 或 01-15 或 2025-01-15
+            let dateMatch = text.match(/(\d{1,2})月(\d{1,2})日/);
+            if (dateMatch) {
+                let month = parseInt(dateMatch[1]);
+                let day = parseInt(dateMatch[2]);
+                let year = today.getFullYear();
+                if (month < today.getMonth() + 1) year++;
+                result.date = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            } else {
+                dateMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (dateMatch) result.date = dateMatch[0];
+                else {
+                    dateMatch = text.match(/(\d{1,2})[\/\-](\d{1,2})/);
+                    if (dateMatch && !result.date) {
+                        let month = parseInt(dateMatch[1]);
+                        let day = parseInt(dateMatch[2]);
+                        if (month <= 12 && day <= 31) {
+                            let year = today.getFullYear();
+                            if (month < today.getMonth() + 1) year++;
+                            result.date = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 4. 识别时间 (下午3点 / 14:30 / 15:00)
+        let timeMatch = text.match(/(\d{1,2})[：:.](\d{2})/);
+        if (timeMatch) {
+            result.time = `${String(timeMatch[1]).padStart(2,'0')}:${timeMatch[2]}`;
+        } else {
+            timeMatch = text.match(/(\d{1,2})\s*点/);
+            if (timeMatch) {
+                let hour = parseInt(timeMatch[1]);
+                let isPm = text.includes("下午") || text.includes("晚上");
+                if (isPm && hour < 12) hour += 12;
+                result.time = `${String(hour).padStart(2,'0')}:00`;
+            } else {
+                timeMatch = text.match(/下午(\d{1,2})点/);
+                if (timeMatch) {
+                    let hour = parseInt(timeMatch[1]) + 12;
+                    result.time = `${String(hour).padStart(2,'0')}:00`;
+                }
+            }
+        }
+        
+        // 5. 识别订单名称 (提取商品/服务名)
+        // 常见模式：X订了Y / X要Y / 点一杯Y
+        let nameMatch = text.match(/(?:订|要|点|买|来)[了]?\s*[\u4e00-\u9fa5a-zA-Z0-9]+(?:奶茶|咖啡|手机|电脑|套餐|饭|面|蛋糕|水果)/);
+        if (!nameMatch) {
+            nameMatch = text.match(/([\u4e00-\u9fa5]{2,10})(?:奶茶|咖啡|手机|电脑|套餐|饭|面|蛋糕|水果|杯|部)/);
+        }
+        if (nameMatch) {
+            result.name = nameMatch[0].replace(/[订了要买点来]/, '').trim();
+        }
+        if (!result.name || result.name.length < 2) {
+            // 提取第一个看起来像名称的词
+            const possibleName = text.match(/[\u4e00-\u9fa5]{2,6}(?:奶茶|咖啡|手机|套餐)/);
+            if (possibleName) result.name = possibleName[0];
+            else result.name = "未识别";
+        }
+        
+        // 备注：提取剩余信息
+        result.note = text.replace(result.phone || "", "").replace(result.name, "").substring(0, 100);
+        
+        return result;
+    }
+    
+    function openPastePanel() {
+        document.getElementById('pastePanel').classList.add('open');
+        document.getElementById('chatText').value = '';
+        document.getElementById('recognizePreview').style.display = 'none';
+    }
+    
+    function closePastePanel() {
+        document.getElementById('pastePanel').classList.remove('open');
+    }
+    
+    function recognizeAndFill() {
+        const rawText = document.getElementById('chatText').value;
+        if (!rawText.trim()) {
+            alert("请粘贴聊天记录");
+            return;
+        }
+        
+        const recognized = recognizeOrderInfo(rawText);
+        
+        // 显示预览
+        const preview = document.getElementById('recognizePreview');
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 12px;">✅ 识别结果：</div>
+            <div>📛 订单名称：${recognized.name || '未识别'}</div>
+            <div>📞 电话：${recognized.phone || '未识别'}</div>
+            <div>📅 日期：${recognized.date || '未识别'}</div>
+            <div>⏰ 时间：${recognized.time || '未识别'}</div>
+            <div>🔢 数量：${recognized.count}部</div>
+            <div>📝 备注：${recognized.note || '无'}</div>
+            <button onclick="applyRecognizedToForm()" style="margin-top: 12px; background:#8b5cf6; color:white; border:none; padding:8px 16px; border-radius:30px;">📝 应用到表单</button>
+        `;
+        
+        // 保存识别结果到临时变量
+        window.lastRecognized = recognized;
+    }
+    
+    function applyRecognizedToForm() {
+        const rec = window.lastRecognized;
+        if (!rec) return;
+        
+        document.getElementById('orderName').value = rec.name;
+        document.getElementById('orderPhone').value = rec.phone || '';
+        if (rec.date) document.getElementById('orderDate').value = rec.date;
+        if (rec.time) document.getElementById('orderTime').value = rec.time;
+        document.getElementById('orderCount').value = rec.count;
+        document.getElementById('orderNote').value = rec.note;
+        
+        // 触发老客检查
+        if (rec.phone) {
+            checkVipDisplay(rec.phone, document.getElementById('editOrderId').value);
+        }
+        
+        closePastePanel();
+    }
+    
+    // 日历渲染
     function renderCalendar() {
         const firstDay = new Date(currentYear, currentMonth, 1);
-        let startWeekday = firstDay.getDay(); // 0周日
+        let startWeekday = firstDay.getDay();
         let startOffset = startWeekday === 0 ? 6 : startWeekday - 1;
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const grid = document.getElementById('calendarGrid');
@@ -577,7 +705,6 @@
         document.getElementById('monthTitle').innerHTML = `${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;
         const todayStr = new Date().toISOString().slice(0,10);
         
-        // 空白
         for (let i = 0; i < startOffset; i++) {
             const empty = document.createElement('div');
             empty.className = 'date-cell empty';
@@ -601,7 +728,6 @@
             if (dayOrders.length > 0) {
                 const ordersDiv = document.createElement('div');
                 ordersDiv.className = 'cell-orders';
-                // 最多显示前2个订单，多余的用...表示
                 const showOrders = dayOrders.slice(0, 2);
                 showOrders.forEach(order => {
                     const vip = isVipCustomer(order.phone, order.id);
@@ -610,26 +736,21 @@
                     const timeShort = order.datetime.split('T')[1];
                     orderDiv.innerHTML = `
                         <div class="mini-time">${timeShort}</div>
-                        <div class="mini-name">${escapeHtml(order.name)} ${vip ? '<span class="vip-icon">🌟</span>' : ''}</div>
-                        <div class="mini-footer">
-                            <span class="mini-count">${order.count}部</span>
-                        </div>
+                        <div class="mini-name">${escapeHtml(order.name)} ${vip ? '🌟' : ''}</div>
+                        <div class="mini-footer"><span class="mini-count">${order.count}部</span></div>
                     `;
                     ordersDiv.appendChild(orderDiv);
                 });
                 if (dayOrders.length > 2) {
                     const more = document.createElement('div');
                     more.className = 'more-badge';
-                    more.innerText = `+${dayOrders.length - 2} 个订单`;
+                    more.innerText = `+${dayOrders.length - 2}`;
                     ordersDiv.appendChild(more);
                 }
                 cell.appendChild(ordersDiv);
             }
             
-            cell.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openDetailPanel(dateStr, dayOrders);
-            });
+            cell.addEventListener('click', () => openDetailPanel(dateStr, dayOrders));
             grid.appendChild(cell);
         }
     }
@@ -644,21 +765,20 @@
             container.innerHTML = orders.map(o => {
                 const vip = isVipCustomer(o.phone, o.id);
                 return `
-                    <div class="full-order-card ${vip ? 'vip' : ''}" data-id="${o.id}">
-                        <div class="order-row">
-                            <span class="order-time-big">${o.datetime.split('T')[1]}</span>
-                            <span class="order-count-big">${o.count}部</span>
+                    <div class="full-order-card ${vip ? 'vip' : ''}" style="background:#f8fafc; border-radius:20px; padding:14px; margin-bottom:12px; border-left:5px solid #10b981;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-weight:700;">${o.datetime.split('T')[1]}</span>
+                            <span style="background:#e2e8f0; padding:4px 12px; border-radius:30px;">${o.count}部</span>
                         </div>
-                        <div class="order-name-big">${escapeHtml(o.name)} ${vip ? '🌟老客' : ''}</div>
-                        <div class="order-phone">📞 ${maskPhone(o.phone)}</div>
-                        ${o.note ? `<div class="order-phone">📝 ${escapeHtml(o.note)}</div>` : ''}
-                        <button class="delete-order-btn" data-id="${o.id}">删除订单</button>
+                        <div style="font-weight:700; margin:8px 0 4px;">${escapeHtml(o.name)} ${vip ? '🌟老客' : ''}</div>
+                        <div style="font-size:13px; color:#475569;">📞 ${maskPhone(o.phone)}</div>
+                        ${o.note ? `<div style="font-size:13px;">📝 ${escapeHtml(o.note)}</div>` : ''}
+                        <button class="delete-order-btn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:8px 16px; border-radius:40px; margin-top:10px;">删除</button>
                     </div>
                 `;
             }).join('');
             document.querySelectorAll('.delete-order-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
                     const id = btn.getAttribute('data-id');
                     if (confirm('确认删除？')) {
                         const newList = allOrders.filter(o => o.id !== id);
@@ -672,21 +792,14 @@
         document.getElementById('detailPanel').classList.add('open');
     }
     
-    function closeDetailPanel() {
-        document.getElementById('detailPanel').classList.remove('open');
-    }
-    
-    function openFormWithDate(date) {
-        closeDetailPanel();
-        openForm(null, date);
-    }
+    function closeDetailPanel() { document.getElementById('detailPanel').classList.remove('open'); }
+    function openFormWithDate(date) { closeDetailPanel(); openForm(null, date); }
     
     function openForm(order = null, presetDate = null) {
         const modal = document.getElementById('formModal');
-        const title = document.getElementById('formModalTitle');
         const deleteBtn = document.getElementById('deleteFormBtn');
         if (order) {
-            title.innerText = "✏️ 编辑订单";
+            document.getElementById('formModalTitle').innerText = "✏️ 编辑订单";
             document.getElementById('editOrderId').value = order.id;
             document.getElementById('orderName').value = order.name;
             document.getElementById('orderPhone').value = order.phone || '';
@@ -697,7 +810,7 @@
             deleteBtn.style.display = "block";
             checkVipDisplay(order.phone, order.id);
         } else {
-            title.innerText = "➕ 新增订单";
+            document.getElementById('formModalTitle').innerText = "➕ 新增订单";
             document.getElementById('editOrderId').value = '';
             document.getElementById('orderName').value = '';
             document.getElementById('orderPhone').value = '';
@@ -711,23 +824,19 @@
         modal.classList.add('show');
     }
     
-    function closeForm() {
-        document.getElementById('formModal').classList.remove('show');
-    }
+    function closeForm() { document.getElementById('formModal').classList.remove('show'); }
     
     function checkVipDisplay(phone, orderId) {
         const hintDiv = document.getElementById('vipHint');
         if (phone && isVipCustomer(phone, orderId)) {
-            const count = getVipOrderCount(phone, orderId);
-            hintDiv.innerHTML = `🏆 老客！第 ${count+1} 次下单 (历史${count}单)`;
+            const count = allOrders.filter(o => o.phone === phone && o.id !== orderId).length;
+            hintDiv.innerHTML = `🏆 老客！第 ${count+1} 次下单`;
             hintDiv.style.display = "block";
             hintDiv.style.background = "#fef3c7";
-            hintDiv.style.color = "#b45309";
         } else if (phone && !isVipCustomer(phone, orderId)) {
             hintDiv.innerHTML = `✨ 新客户，首次下单 ✨`;
             hintDiv.style.display = "block";
             hintDiv.style.background = "#d1fae5";
-            hintDiv.style.color = "#065f46";
         } else {
             hintDiv.style.display = "none";
         }
@@ -742,78 +851,16 @@
         const count = parseInt(document.getElementById('orderCount').value);
         const note = document.getElementById('orderNote').value.trim();
         const isEdit = document.getElementById('editOrderId').value !== '';
-        if (!name || !phone || !date || !time || !count) {
-            alert("请填写完整");
-            return;
-        }
+        if (!name || !phone || !date || !time || !count) { alert("请填写完整"); return; }
         const datetime = `${date}T${time}`;
         const conflict = allOrders.some(o => o.datetime === datetime && o.id !== id);
-        if (conflict) {
-            alert(`⚠️ ${date} ${time} 已有订单，请更换时间`);
-            return;
-        }
+        if (conflict) { alert(`⚠️ ${date} ${time} 已有订单`); return; }
         let newOrders = [...allOrders];
         const orderData = { id, name, phone, datetime, count, note };
-        if (isEdit) {
-            newOrders = newOrders.map(o => o.id === id ? orderData : o);
-        } else {
-            newOrders.push(orderData);
-        }
-        const ok = await saveOrdersToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
-        if (ok) {
-            closeForm();
-            renderCalendar();
-        }
-    }
-    
-    async function handleDeleteFromForm() {
-        const id = document.getElementById('editOrderId').value;
-        const name = document.getElementById('orderName').value;
-        if (!confirm(`删除「${name}」吗？`)) return;
-        const newOrders = allOrders.filter(o => o.id !== id);
-        await saveOrdersToGit(newOrders, `删除:${name}`);
+        if (isEdit) newOrders = newOrders.map(o => o.id === id ? orderData : o);
+        else newOrders.push(orderData);
+        await saveOrdersToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
         closeForm();
-        renderCalendar();
     }
     
-    function maskPhone(phone) {
-        if (!phone) return '';
-        if (phone.length === 11) return phone.slice(0,3)+'****'+phone.slice(-4);
-        return phone.slice(-4);
-    }
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-    }
-    
-    // 事件绑定
-    document.getElementById('prevMonthBtn').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-        renderCalendar();
-    });
-    document.getElementById('nextMonthBtn').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-        renderCalendar();
-    });
-    document.getElementById('openFormBtn').addEventListener('click', () => openForm(null, new Date().toISOString().slice(0,10)));
-    document.getElementById('saveFormBtn').addEventListener('click', handleSaveOrder);
-    document.getElementById('deleteFormBtn').addEventListener('click', handleDeleteFromForm);
-    document.getElementById('cancelFormBtn').addEventListener('click', closeForm);
-    document.getElementById('orderPhone').addEventListener('input', (e) => {
-        const oid = document.getElementById('editOrderId').value;
-        checkVipDisplay(e.target.value, oid);
-    });
-    document.getElementById('formModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('formModal')) closeForm();
-    });
-    window.openFormWithDate = openFormWithDate;
-    window.closeDetailPanel = closeDetailPanel;
-    window.resetToken = resetToken;
-    window.fetchAllOrders = fetchAllOrders;
-    
-    fetchAllOrders();
-</script>
-</body>
-</html>
+    async function handle

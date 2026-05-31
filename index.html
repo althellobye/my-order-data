@@ -49,12 +49,16 @@
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
         .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
         .sync-status { font-size: 12px; margin-top: 8px; text-align: center; }
+        .btn-clear { background: #fef2f2; color: #e11d48; margin-left: 8px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>❄️ 洗冷氣訂單系統</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>❄️ 洗冷氣訂單系統</h1>
+        <button class="btn btn-clear" id="clearAllBtn" style="padding: 6px 12px;">🗑️ 清除所有</button>
+    </div>
     <div class="token-bar">
         <div id="tokenStatus">⚪ 未連接雲端</div>
         <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
@@ -104,7 +108,7 @@
         <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" placeholder="66668888"></div>
         <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
         <div class="form-group"><label>數量 (部)</label><input type="number" id="count" min="1" value="1"></div>
-        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
+        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B"></textarea></div>
         <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
@@ -146,8 +150,10 @@
         setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 3000);
     }
 
-    function normalizePhone(p) { return p ? p.replace(/[\s\+-]/g, '') : ''; }
-    function isVip(phone, excludeId) { if(!phone) return false; let n = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === n && o.id !== excludeId); }
+    function isVip(phone, excludeId) { 
+        if(!phone) return false; 
+        return allOrders.some(o => o.phone === phone && o.id !== excludeId); 
+    }
     function getIncome(order) { let p = order.price || DEFAULT_PRICE; return (order.count || 1) * p; }
 
     async function loadFromGitHub() {
@@ -263,10 +269,10 @@
                 let price = o.price || DEFAULT_PRICE;
                 return `<div class="order-card">
                     <div style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}  ${vip?'🌟回頭客':'✨新客'}</div>
-                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${o.name}</div>
+                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${escapeHtml(o.name)}</div>
                     <div>📞 ${o.phone || ''}</div>
                     <div>🔢 ${o.count}部 × $${price} = $${(o.count||1)*price}</div>
-                    ${o.note ? `<div>📍 ${o.note}</div>` : ''}
+                    ${o.note ? `<div>📍 ${escapeHtml(o.note)}</div>` : ''}
                     <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">✏️ 編輯</button>
                     <button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">🗑️ 刪除</button>
                 </div>`;
@@ -320,6 +326,26 @@
         await saveData(); closeOrderModal();
     }
 
+    function clearAllOrders() {
+        if(confirm('⚠️ 警告：這將刪除所有訂單，無法復原！\n確定要繼續嗎？')) {
+            if(confirm('再次確認：真的要刪除全部訂單嗎？')) {
+                allOrders = [];
+                saveData();
+                alert('已清除所有訂單');
+            }
+        }
+    }
+
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
     function recognizeText(t) {
         let r = { name:"", phone:"", date:"", time:"", count:1, note:"" };
         let m = t.match(/\b(\d{8})\b/);
@@ -343,7 +369,6 @@
         let raw = document.getElementById('pasteText').value;
         if(!raw.trim()) { alert("請貼上聊天記錄"); return; }
         let rec = recognizeText(raw);
-        let vip = rec.phone ? isVip(rec.phone, '') : false;
         let price = DEFAULT_PRICE;
         let div = document.getElementById('preview');
         div.style.display = 'block';
@@ -392,6 +417,7 @@
     document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderReport('week'); };
     document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderReport('month'); };
     document.getElementById('saveTokenBtn').onclick = () => { let t = document.getElementById('tokenInput').value.trim(); if(t) { localStorage.setItem('github_token', t); githubToken = t; document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; loadFromGitHub(); alert("Token已保存，正在同步..."); } };
+    document.getElementById('clearAllBtn').onclick = clearAllOrders;
 
     loadFromLocal();
     if(githubToken) { document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; loadFromGitHub(); }

@@ -243,7 +243,6 @@
         else renderMonthReport();
     }
 
-    // 按年度更新統計數字
     function updateYearStats() {
         document.getElementById('selectedYear').innerText = `${selectedYear}年`;
         
@@ -489,4 +488,9 @@
     document.getElementById('deleteBtn').onclick = deleteOrder;
     document.getElementById('recognizeBtn').onclick = doRecognize;
     document.getElementById('weekTab').onclick = () => { 
-        currentReport = 'week';
+        currentReport = 'week'; 
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
+        document.getElementById('weekTab').classList.add('active'); 
+        renderWeekReport(); 
+    };
+    document.getElementById('month

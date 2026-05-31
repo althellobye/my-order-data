@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 永久免费订单日历</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen p-4">
+
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-md relative">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-emerald-600">多人订单管理系统 📅</h1>
+            <button onclick="fetchOrders()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-lg text-sm font-medium transition">
+                🔄 手动刷新
+            </button>
+        </div>
+        
+        <div id="calendar" class="min-h-[600px]"></div>
+
+        <button id="addBtn" class="fixed bottom-8 right-8 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl flex items-center justify-center transition-all transform hover:scale-110 z-40">
+            +
+        </button>
+    </div>
+
+    <div id="orderModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl relative">
+            <h3 id="modalTitle" class="text-xl font-bold mb-4 text-slate-900">添加新订单</h3>
+            
+            <form id="orderForm" class="space-y-4">
+                <input type="hidden" id="orderId">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">订单名称</label>
+                    <input type="text" id="orderName" required class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">时间</label>
+                    <input type="date" id="orderDate" required class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">多少部</label>
+                    <input type="number" id="orderCount" required min="1" class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">补充或其他</label>
+                    <textarea id="orderNote" rows="3" class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" id="deleteBtn" class="hidden bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg font-medium transition">
+                        🗑️ 删除订单
+                    </button>
+                    <div class="flex space-x-2 ml-auto">
+                        <button type="button" id="closeBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium">取消</button>
+                        <button type="submit" id="saveBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium">保存中...</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. 配置你的 GitHub 信息 (请替换以下内容)
+        // ==========================================
+       const GH_USER = "althellobye";
+        const GH_REPO = "my-order-data";
+        const GH_TOKEN = "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"; 
+        const GH_BRANCH = "main"; // 默认一般是 main 或 master
+        const FILE_PATH = "data.json";
+
+        const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+
+        let localOrders = [];
+        let calendar;
+        let fileSha = ""; // GitHub 修改文件必须要提供文件的 SHA 锁
+
+        // ==========================================
+        // 2. 初始化日历
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'zh-cn',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
+                eventClick: function(info) {
+                    openModal(info.event.extendedProps);
+                }
+            });
+            calendar.render();
+            fetchOrders(); // 载入数据
+
+            // 每隔 30 秒自动去 GitHub 刷新一次数据，实现多人协同“看到”
+            setInterval(fetchOrders, 30000);
+        });
+
+        // ==========================================
+        // 3. 从 GitHub 拉取数据
+        // ==========================================
+        async function fetchOrders() {
+            try {
+                // 加上时间戳防止浏览器缓存老数据
+                const response = await fetch(`${API_URL}?ts=${new Date().getTime()}`, {
+                    headers: { "Authorization": `token ${GH_TOKEN}` }
+                });
+                if (!response.ok) throw new Error("获取失败");
+                const data = await response.json();
+                
+                fileSha = data.sha; // 记住这次文件的 SHA
+                // 解密 GitHub 的 Base64 编码数据
+                const content = decodeURIComponent(atob(data.content).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                localOrders = JSON.parse(content || "[]");
+                renderCalendar();
+            } catch (err) {
+                console.error("读取 GitHub 数据失败:", err);
+            }
+        }
+
+        function renderCalendar() {
+            const events = localOrders.map(item => ({
+                id: item.id,
+                title: `${item.name} (${item.count}部)`,
+                start: item.date,
+                extendedProps: item
+            }));
+            calendar.removeAllEvents();
+            calendar.addEventSource(events);
+        }
+
+        // ==========================================
+        // 4. 将最新数据推送到 GitHub 保存
+        // ==========================================
+        async function uploadToGitHub(newData, commitMessage) {
+            document.getElementById('saveBtn').innerText = "同步中...";
+            document.getElementById('saveBtn').disabled = true;
+
+            // 转化为 Base64 编码，支持中文
+            const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 2))));
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${GH_TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: base64Content,
+                        sha: fileSha, // 必须带上最新的 SHA
+                        branch: GH_BRANCH
+                    })
+                });
+
+                if (response.ok) {
+                    const resData = await response.json();
+                    fileSha = resData.content.sha; // 更新本地 SHA
+                    localOrders = newData;
+                    renderCalendar();
+                    closeModal();
+                } else {
+                    alert("⚠️ 所有人都在同时修改导致冲突，系统将自动重试，请稍后重新保存。");
+                    fetchOrders(); // 重新拉取最新 SHA
+                }
+            } catch (err) {
+                alert("同步到云端失败，请检查网络。");
+            } finally {
+                document.getElementById('saveBtn').innerText = "保存";
+                document.getElementById('saveBtn').disabled = false;
+            }
+        }
+
+        // ==========================================
+        // 5. 弹窗与表单交互逻辑
+        // ==========================================
+        const modal = document.getElementById('orderModal');
+        const form = document.getElementById('orderForm');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        function openModal(orderData = null) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('saveBtn').innerText = "保存";
+            
+            if (orderData && orderData.id) {
+                document.getElementById('modalTitle').innerText = "查看/修改订单";
+                document.getElementById('orderId').value = orderData.id;
+                document.getElementById('orderName').value = orderData.name;
+                document.getElementById('orderDate').value = orderData.date;
+                document.getElementById('orderCount').value = orderData.count;
+                document.getElementById('orderNote').value = orderData.note || '';
+                deleteBtn.classList.remove('hidden');
+            } else {
+                document.getElementById('modalTitle').innerText = "添加新订单";
+                form.reset();
+                document.getElementById('orderId').value = '';
+                deleteBtn.classList.add('hidden');
+            }
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('addBtn').addEventListener('click', () => openModal());
+        document.getElementById('closeBtn').addEventListener('click', closeModal);
+
+        // 提交表单（防重、添加、修改）
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('orderId').value || '_' + Math.random().toString(36).substr(2, 9);
+            const name = document.getElementById('orderName').value.trim();
+            const date = document.getElementById('orderDate').value;
+            const count = parseInt(document.getElementById('orderCount').value);
+            const note = document.getElementById('orderNote').value.trim();
+            const isEdit = document.getElementById('orderId').value !== '';
+
+            // ⚠️ 防重逻辑
+            const isDuplicate = localOrders.some(item => item.name === name && item.date === date && item.id !== document.getElementById('orderId').value);
+            if (isDuplicate) {
+                alert(`⚠️ 提示：【${date}】已经存在名称为【${name}】的订单，请勿重复录入！`);
+                return;
+            }
+
+            let updatedOrders = [...localOrders];
+            const orderPayload = { id, name, date, count, note };
+
+            if (isEdit) {
+                updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item);
+            } else {
+                updatedOrders.push(orderPayload);
+            }
+
+            // 先拉取一次最新 SHA 防止别人刚好改了，然后上传
+            await fetchOrders();
+            uploadToGitHub(updatedOrders, `${isEdit ? '修改' : '新增'}订单: ${name}`);
+        });
+
+        // 删除订单（带二次确认）
+        deleteBtn.addEventListener('click', async () => {
+            const id = document.getElementById('orderId').value;
+            const name = document.getElementById('orderName').value;
+
+            const confirmDelete = confirm(`🚨 注意：你确定要删除订单【${name}】吗？`);
+            if (confirmDelete) {
+                const updatedOrders = localOrders.filter(item => item.id !== id);
+                await fetchOrders(); // 刷新 SHA 锁
+                uploadToGitHub(updatedOrders, `删除订单: ${name}`);
+            }
+        });
+    </script>
+</body>
+</html>

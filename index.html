@@ -28,15 +28,8 @@
             align-items: center;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
-        .top-bar h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .top-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .top-bar h1 { font-size: 20px; font-weight: 700; color: #1e293b; }
+        .top-actions { display: flex; gap: 10px; }
         .top-btn {
             background: #f1f5f9;
             border: none;
@@ -44,14 +37,9 @@
             border-radius: 30px;
             font-size: 13px;
             font-weight: 500;
-            color: #475569;
             cursor: pointer;
-            transition: 0.15s;
         }
-        .top-btn:active {
-            background: #e2e8f0;
-            transform: scale(0.96);
-        }
+        .top-btn:active { background: #e2e8f0; transform: scale(0.96); }
 
         .calendar-card {
             background: white;
@@ -74,14 +62,9 @@
             height: 44px;
             border-radius: 30px;
             font-size: 20px;
-            font-weight: 600;
             cursor: pointer;
         }
-        .month-title {
-            font-size: 19px;
-            font-weight: 700;
-            color: #0f172a;
-        }
+        .month-title { font-size: 19px; font-weight: 700; }
 
         .week-row {
             display: grid;
@@ -89,12 +72,7 @@
             text-align: center;
             margin-bottom: 12px;
         }
-        .week-day {
-            font-size: 14px;
-            font-weight: 600;
-            color: #64748b;
-            padding: 6px 0;
-        }
+        .week-day { font-size: 14px; font-weight: 600; color: #64748b; padding: 6px 0; }
 
         .calendar-grid {
             display: grid;
@@ -112,32 +90,17 @@
             border: 1px solid #eef2ff;
             cursor: pointer;
         }
-        .date-cell:active {
-            transform: scale(0.98);
-            background: #f3f4f6;
-        }
+        .date-cell:active { transform: scale(0.98); background: #f3f4f6; }
         .date-cell.empty {
             background: #fefce8;
             border: 1px dashed #fde047;
             opacity: 0.6;
             cursor: default;
         }
-        .date-cell.today {
-            background: #ecfdf5;
-            border: 2px solid #10b981;
-        }
-        .day-num {
-            font-size: 17px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 6px;
-        }
-        .cell-orders {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-        }
+        .date-cell.today { background: #ecfdf5; border: 2px solid #10b981; }
+        .day-num { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+        
+        .cell-orders { display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .mini-order {
             background: #eef2ff;
             border-radius: 12px;
@@ -145,44 +108,12 @@
             font-size: 11px;
             border-left: 3px solid #059669;
         }
-        .mini-order.vip-order {
-            background: #fef3c7;
-            border-left-color: #f59e0b;
-        }
-        .mini-time {
-            font-size: 10px;
-            font-weight: 700;
-            color: #059669;
-        }
-        .mini-name {
-            font-weight: 600;
-            color: #1f2937;
-            font-size: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .mini-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 3px;
-        }
-        .mini-count {
-            background: white;
-            padding: 2px 8px;
-            border-radius: 30px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #059669;
-        }
-        .more-badge {
-            background: #cbd5e1;
-            color: #334155;
-            font-size: 10px;
-            padding: 4px;
-            border-radius: 20px;
-            text-align: center;
-        }
+        .mini-order.vip-order { background: #fef3c7; border-left-color: #f59e0b; }
+        .mini-time { font-size: 10px; font-weight: 700; color: #059669; }
+        .mini-name { font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-footer { display: flex; justify-content: space-between; margin-top: 3px; }
+        .mini-count { background: white; padding: 2px 8px; border-radius: 30px; font-size: 10px; font-weight: 700; color: #059669; }
+        .more-badge { background: #cbd5e1; color: #334155; font-size: 10px; padding: 4px; border-radius: 20px; text-align: center; }
 
         .smart-paste-btn {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
@@ -195,16 +126,10 @@
             font-weight: 600;
             margin-bottom: 16px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
-        .smart-paste-btn:active {
-            transform: scale(0.98);
-        }
+        .smart-paste-btn:active { transform: scale(0.98); }
 
-        .detail-panel {
+        .detail-panel, .paste-panel {
             position: fixed;
             bottom: 0;
             left: 0;
@@ -216,12 +141,9 @@
             z-index: 200;
             transform: translateY(100%);
             transition: transform 0.3s;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
         }
-        .detail-panel.open {
-            transform: translateY(0);
-        }
-        .detail-header {
+        .detail-panel.open, .paste-panel.open { transform: translateY(0); }
+        .detail-header, .paste-header {
             padding: 20px 20px 12px;
             display: flex;
             justify-content: space-between;
@@ -240,9 +162,7 @@
             font-size: 22px;
             cursor: pointer;
         }
-        .order-list {
-            padding: 12px 16px 30px;
-        }
+        .order-list { padding: 12px 16px 30px; }
         .full-order-card {
             background: #f8fafc;
             border-radius: 20px;
@@ -262,14 +182,11 @@
             border-radius: 30px;
             color: white;
             font-size: 30px;
-            font-weight: 300;
             box-shadow: 0 6px 16px rgba(5,150,105,0.4);
             cursor: pointer;
             z-index: 100;
         }
-        .float-add:active {
-            transform: scale(0.92);
-        }
+        .float-add:active { transform: scale(0.92); }
 
         .form-mask {
             position: fixed;
@@ -282,10 +199,7 @@
             opacity: 0;
             transition: 0.2s;
         }
-        .form-mask.show {
-            visibility: visible;
-            opacity: 1;
-        }
+        .form-mask.show { visibility: visible; opacity: 1; }
         .form-container {
             background: white;
             width: 100%;
@@ -294,16 +208,8 @@
             max-height: 85vh;
             overflow-y: auto;
         }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
-            display: block;
-            margin-bottom: 6px;
-        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 14px;
@@ -312,48 +218,10 @@
             font-size: 15px;
             background: #f8fafc;
         }
-        .form-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        .form-buttons button {
-            flex: 1;
-            padding: 14px;
-            border-radius: 40px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-        .vip-hint {
-            font-size: 12px;
-            padding: 8px 12px;
-            border-radius: 20px;
-            margin-top: 8px;
-        }
-        .paste-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 32px 32px 0 0;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 400;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-        .paste-panel.open {
-            transform: translateY(0);
-        }
-        .paste-header {
-            padding: 20px 20px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eef2ff;
-        }
+        .form-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .form-buttons button { flex: 1; padding: 14px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; }
+        .vip-hint { font-size: 12px; padding: 8px 12px; border-radius: 20px; margin-top: 8px; }
+        
         .paste-textarea {
             width: calc(100% - 32px);
             margin: 16px;
@@ -374,12 +242,7 @@
             width: calc(100% - 32px);
             cursor: pointer;
         }
-        .preview-box {
-            background: #f8fafc;
-            margin: 16px;
-            padding: 16px;
-            border-radius: 24px;
-        }
+        .preview-box { background: #f8fafc; margin: 16px; padding: 16px; border-radius: 24px; }
     </style>
 </head>
 <body>
@@ -395,7 +258,7 @@
 <div class="calendar-card">
     <div class="month-bar">
         <button id="prevMonthBtn">←</button>
-        <span class="month-title" id="monthTitle">2025年1月</span>
+        <span class="month-title" id="monthTitle"></span>
         <button id="nextMonthBtn">→</button>
     </div>
     <div class="week-row">
@@ -453,8 +316,8 @@
             <textarea id="orderNote" rows="2"></textarea>
         </div>
         <div class="form-buttons">
-            <button id="cancelFormBtn" style="background:#f1f5f9;">取消</button>
-            <button id="deleteFormBtn" style="background:#fef2f2; color:#e11d48; display:none;">删除</button>
+            <button id="cancelFormBtn">取消</button>
+            <button id="deleteFormBtn" style="display:none;">删除</button>
             <button id="saveFormBtn" style="background:#059669; color:white;">保存</button>
         </div>
     </div>
@@ -477,7 +340,7 @@
 </div>
 
 <script>
-    // ===== GitHub 配置 =====
+    // GitHub 配置
     const GH_USER = "althellobye";
     const GH_REPO = "my-order-data";
     const GH_BRANCH = "main";
@@ -499,13 +362,13 @@
         return t;
     }
 
-    function resetToken() {
+    window.resetToken = function() {
         localStorage.removeItem('gh_order_token');
         alert("已清除，刷新页面重新输入");
         location.reload();
-    }
+    };
 
-    async function fetchAllOrders() {
+    window.fetchAllOrders = async function() {
         const token = getToken();
         if (!token) return;
         try {
@@ -514,7 +377,6 @@
             });
             if (res.status === 401 || res.status === 403) {
                 alert("Token无效，请重置");
-                resetToken();
                 return;
             }
             const data = await res.json();
@@ -523,9 +385,9 @@
             allOrders = JSON.parse(content || "[]");
             renderCalendar();
         } catch(e) {
-            alert("加载失败");
+            alert("加载失败: " + e.message);
         }
-    }
+    };
 
     async function saveOrdersToGit(newOrders, msg) {
         const token = getToken();
@@ -544,7 +406,6 @@
                 return true;
             } else {
                 alert("保存冲突，请刷新后重试");
-                await fetchAllOrders();
                 return false;
             }
         } catch(e) {
@@ -558,23 +419,20 @@
         return allOrders.some(o => o.phone === phone && o.id !== excludeId);
     }
 
-    // ===== 智能识别 =====
+    // 智能识别
     function recognizeOrderInfo(rawText) {
         const text = rawText;
         let result = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
         
-        // 识别电话
         const phoneMatch = text.match(/1[3-9]\d{9}/);
         if (phoneMatch) result.phone = phoneMatch[0];
         
-        // 识别数量
         const countPatterns = [/(\d+)\s*部/, /(\d+)\s*个/, /(\d+)\s*杯/, /(\d+)\s*份/, /(\d+)\s*单/];
         for (let pattern of countPatterns) {
             const match = text.match(pattern);
             if (match) { result.count = parseInt(match[1]); break; }
         }
         
-        // 识别日期
         const today = new Date();
         const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         
@@ -602,7 +460,6 @@
             }
         }
         
-        // 识别时间
         let timeMatch = text.match(/(\d{1,2})[:：](\d{2})/);
         if (timeMatch) {
             result.time = `${String(timeMatch[1]).padStart(2,'0')}:${timeMatch[2]}`;
@@ -616,7 +473,6 @@
             }
         }
         
-        // 识别名称
         let nameMatch = text.match(/(?:订|要|点|买)[了]?\s*([\u4e00-\u9fa5a-zA-Z0-9]{2,10})/);
         if (nameMatch) result.name = nameMatch[1];
         if (!result.name || result.name.length < 2) {
@@ -624,30 +480,27 @@
             if (nameMatch) result.name = nameMatch[0];
             else result.name = "待填写";
         }
-        
         return result;
     }
     
-    function openPastePanel() {
+    window.openPastePanel = function() {
         document.getElementById('pastePanel').classList.add('open');
         document.getElementById('chatText').value = '';
         document.getElementById('recognizePreview').style.display = 'none';
-    }
+    };
     
-    function closePastePanel() {
+    window.closePastePanel = function() {
         document.getElementById('pastePanel').classList.remove('open');
-    }
+    };
     
-    function recognizeAndFill() {
+    window.recognizeAndFill = function() {
         const rawText = document.getElementById('chatText').value;
         if (!rawText.trim()) {
             alert("请粘贴聊天记录");
             return;
         }
-        
         const recognized = recognizeOrderInfo(rawText);
         lastRecognized = recognized;
-        
         const preview = document.getElementById('recognizePreview');
         preview.style.display = 'block';
         preview.innerHTML = `
@@ -657,25 +510,21 @@
             <div>📅 日期：${recognized.date || '未识别'}</div>
             <div>⏰ 时间：${recognized.time || '未识别'}</div>
             <div>🔢 数量：${recognized.count}部</div>
-            <button onclick="applyToForm()" style="margin-top: 12px; background:#8b5cf6; color:white; border:none; padding:8px 16px; border-radius:30px;">📝 应用到表单</button>
+            <button onclick="applyToForm()" style="margin-top:12px; background:#8b5cf6; color:white; border:none; padding:8px 16px; border-radius:30px;">📝 应用到表单</button>
         `;
-    }
+    };
     
-    function applyToForm() {
+    window.applyToForm = function() {
         if (!lastRecognized) return;
         document.getElementById('orderName').value = lastRecognized.name;
         document.getElementById('orderPhone').value = lastRecognized.phone || '';
         if (lastRecognized.date) document.getElementById('orderDate').value = lastRecognized.date;
         if (lastRecognized.time) document.getElementById('orderTime').value = lastRecognized.time;
         document.getElementById('orderCount').value = lastRecognized.count;
-        
-        if (lastRecognized.phone) {
-            checkVipDisplay(lastRecognized.phone, document.getElementById('editOrderId').value);
-        }
+        if (lastRecognized.phone) checkVipDisplay(lastRecognized.phone, document.getElementById('editOrderId').value);
         closePastePanel();
-    }
+    };
     
-    // 日历渲染
     function renderCalendar() {
         const firstDay = new Date(currentYear, currentMonth, 1);
         let startWeekday = firstDay.getDay();
@@ -730,7 +579,6 @@
                 }
                 cell.appendChild(ordersDiv);
             }
-            
             cell.addEventListener('click', () => openDetailPanel(dateStr, dayOrders));
             grid.appendChild(cell);
         }
@@ -772,14 +620,16 @@
         document.getElementById('detailPanel').classList.add('open');
     }
     
-    function closeDetailPanel() { document.getElementById('detailPanel').classList.remove('open'); }
+    window.closeDetailPanel = function() {
+        document.getElementById('detailPanel').classList.remove('open');
+    };
     
-    function openFormWithDate(date) { 
-        closeDetailPanel(); 
-        openForm(null, date); 
-    }
+    window.openFormWithDate = function(date) {
+        closeDetailPanel();
+        openForm(null, date);
+    };
     
-    function openForm(order = null, presetDate = null) {
+    function openForm(order, presetDate) {
         const modal = document.getElementById('formModal');
         const deleteBtn = document.getElementById('deleteFormBtn');
         if (order) {
@@ -808,7 +658,9 @@
         modal.classList.add('show');
     }
     
-    function closeForm() { document.getElementById('formModal').classList.remove('show'); }
+    function closeForm() {
+        document.getElementById('formModal').classList.remove('show');
+    }
     
     function checkVipDisplay(phone, orderId) {
         const hintDiv = document.getElementById('vipHint');
@@ -836,25 +688,15 @@
         const note = document.getElementById('orderNote').value.trim();
         const isEdit = document.getElementById('editOrderId').value !== '';
         
-        if (!name || !phone || !date || !time || !count) { 
-            alert("请填写完整"); 
-            return; 
-        }
-        
+        if (!name || !phone || !date || !time || !count) { alert("请填写完整"); return; }
         const datetime = `${date}T${time}`;
         const conflict = allOrders.some(o => o.datetime === datetime && o.id !== id);
-        if (conflict) { 
-            alert(`⚠️ ${date} ${time} 已有订单`); 
-            return; 
-        }
+        if (conflict) { alert(`⚠️ ${date} ${time} 已有订单`); return; }
         
         let newOrders = [...allOrders];
         const orderData = { id, name, phone, datetime, count, note };
-        if (isEdit) {
-            newOrders = newOrders.map(o => o.id === id ? orderData : o);
-        } else {
-            newOrders.push(orderData);
-        }
+        if (isEdit) newOrders = newOrders.map(o => o.id === id ? orderData : o);
+        else newOrders.push(orderData);
         
         await saveOrdersToGit(newOrders, isEdit ? `更新:${name}` : `新增:${name}`);
         closeForm();
@@ -881,19 +723,24 @@
     }
     
     // 绑定事件
-    document.getElementById('prevMonthBtn').addEventListener('click', () => {
+    document.getElementById('prevMonthBtn').onclick = () => {
         currentMonth--;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         renderCalendar();
-    });
-    document.getElementById('nextMonthBtn').addEventListener('click', () => {
+    };
+    document.getElementById('nextMonthBtn').onclick = () => {
         currentMonth++;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         renderCalendar();
-    });
-    document.getElementById('openFormBtn').addEventListener('click', () => openForm(null, new Date().toISOString().slice(0,10)));
-    document.getElementById('saveFormBtn').addEventListener('click', handleSaveOrder);
-    document.getElementById('deleteFormBtn').addEventListener('click', handleDeleteFromForm);
-    document.getElementById('cancelFormBtn').addEventListener('click', closeForm);
-    document.getElementById('orderPhone').addEventListener('input', (e) => {
-        const oid = document
+    };
+    document.getElementById('openFormBtn').onclick = () => openForm(null, new Date().toISOString().slice(0,10));
+    document.getElementById('saveFormBtn').onclick = handleSaveOrder;
+    document.getElementById('deleteFormBtn').onclick = handleDeleteFromForm;
+    document.getElementById('cancelFormBtn').onclick = closeForm;
+    document.getElementById('orderPhone').oninput = (e) => checkVipDisplay(e.target.value, document.getElementById('editOrderId').value);
+    
+    // 启动
+    fetchAllOrders();
+</script>
+</body>
+</html>

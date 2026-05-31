@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>洗冷氣訂單系統</title>
+    <title>洗冷氣訂單系統 · 多人同步</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; padding: 16px 12px 90px 12px; }
@@ -11,6 +11,7 @@
         .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .btn { background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-primary { background: #059669; color: white; }
+        .btn-purple { background: #8b5cf6; color: white; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 12px; text-align: center; color: white; }
         .stat-label { font-size: 11px; opacity: 0.7; }
@@ -51,15 +52,30 @@
         .vip-badge { font-size: 12px; padding: 8px; border-radius: 16px; margin-top: 8px; }
         .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #10b981; }
         .paste-area { width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 20px; min-height: 140px; margin-bottom: 16px; }
+        .token-bar { background: #e0e7ff; border-radius: 20px; padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .token-status { font-size: 12px; color: #3730a3; }
+        .token-input-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .token-input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #c7d2fe; border-radius: 40px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="card flex-between">
-    <h1>❄️ 洗冷氣訂單</h1>
-    <div style="display: flex; gap: 8px;">
-        <button class="btn" id="resetBtn">重置</button>
-        <button class="btn" id="refreshBtn">刷新</button>
+<div class="card">
+    <div class="flex-between">
+        <h1>❄️ 洗冷氣訂單</h1>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn" id="resetLocalBtn">本地重置</button>
+            <button class="btn" id="refreshBtn">刷新</button>
+        </div>
+    </div>
+    
+    <!-- Token 設置區 -->
+    <div class="token-bar">
+        <span class="token-status" id="tokenStatus">⚪ 未連接 GitHub</span>
+        <div class="token-input-group">
+            <input type="password" id="githubToken" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
+            <button class="btn btn-primary" id="saveTokenBtn">連接</button>
+        </div>
     </div>
 </div>
 
@@ -96,6 +112,7 @@
     <button class="fab fab-add" id="openAddBtn">+</button>
 </div>
 
+<!-- 訂單表單彈窗 -->
 <div id="orderModal" class="modal">
     <div class="modal-header"><h3 id="modalTitle">➕ 新增訂單</h3><button class="close-btn" id="closeOrderBtn">✕</button></div>
     <div class="modal-body">
@@ -110,6 +127,7 @@
     </div>
 </div>
 
+<!-- 智能粘貼彈窗 -->
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteBtn">✕</button></div>
     <div class="modal-body">
@@ -119,19 +137,29 @@
     </div>
 </div>
 
+<!-- 訂單詳情彈窗 -->
 <div id="detailModal" class="modal">
     <div class="modal-header"><h3 id="detailDateTitle"></h3><button class="close-btn" id="closeDetailBtn">✕</button></div>
     <div class="modal-body" id="detailList"></div>
 </div>
 
 <script>
+    // ========== GitHub 配置 ==========
+    const GH_USER = "althellobye";
+    const GH_REPO = "my-order-data";
+    const FILE_PATH = "orders.json";
+    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+    
     let allOrders = [];
+    let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let NEW_PRICE = 500;
     let OLD_PRICE = 450;
     let currentReport = "week";
+    let githubToken = localStorage.getItem('github_token') || '';
     
+    // ========== 輔助函數 ==========
     function normalizePhone(p) { return p ? p.replace(/[\s\+-]/g, '') : ''; }
     function isVip(phone, excludeId) { if(!phone) return false; let norm = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === norm && o.id !== excludeId); }
     function getOrderPrice(phone, orderId) { return isVip(phone, orderId) ? OLD_PRICE : NEW_PRICE; }
@@ -139,17 +167,126 @@
     function maskPhone(p) { if(!p) return ''; let c = p.replace(/\D/g,''); if(c.length===11) return c.slice(0,3)+'****'+c.slice(-4); if(c.length===8) return c.slice(0,4)+'****'; return p; }
     function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
     
-    function loadData() {
-        let saved = localStorage.getItem('ac_orders');
+    // 更新 Token 狀態顯示
+    function updateTokenStatus() {
+        let statusDiv = document.getElementById('tokenStatus');
+        if (githubToken) {
+            statusDiv.innerHTML = '🟢 已連接 GitHub · 多人同步模式';
+            statusDiv.style.color = '#059669';
+        } else {
+            statusDiv.innerHTML = '⚪ 本地模式 · 輸入 Token 可多人同步';
+            statusDiv.style.color = '#3730a3';
+        }
+    }
+    
+    // ========== 從 GitHub 加載 ==========
+    async function loadFromGitHub() {
+        if (!githubToken) {
+            loadFromLocal();
+            return;
+        }
+        try {
+            let res = await fetch(`${API_URL}?t=${Date.now()}`, {
+                headers: { "Authorization": `token ${githubToken}` }
+            });
+            if (res.status === 401) {
+                alert("Token 無效，請重新輸入");
+                localStorage.removeItem('github_token');
+                githubToken = '';
+                updateTokenStatus();
+                loadFromLocal();
+                return;
+            }
+            if (res.status === 404) {
+                // 文件不存在，創建新文件
+                await createNewFile();
+                return;
+            }
+            let data = await res.json();
+            fileSha = data.sha;
+            let content = atob(data.content);
+            allOrders = JSON.parse(content || "[]");
+            localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+            renderAll();
+        } catch(e) {
+            console.error(e);
+            alert("從 GitHub 加載失敗，使用本地備份");
+            loadFromLocal();
+        }
+    }
+    
+    // 創建新文件
+    async function createNewFile() {
+        if (!githubToken) return;
+        let emptyData = [];
+        let content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
+        try {
+            let res = await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "初始化訂單數據", content: content, branch: "main" })
+            });
+            if (res.ok) {
+                let data = await res.json();
+                fileSha = data.content.sha;
+                allOrders = [];
+                renderAll();
+                alert("已創建雲端數據文件");
+            } else {
+                alert("創建失敗，請檢查 Token 權限 (需要 gist 或 repo 權限)");
+            }
+        } catch(e) { alert("創建失敗"); }
+    }
+    
+    // 保存到 GitHub
+    async function saveToGitHub() {
+        if (!githubToken) {
+            saveToLocal();
+            return;
+        }
+        let content = btoa(unescape(encodeURIComponent(JSON.stringify(allOrders, null, 2))));
+        try {
+            let res = await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "更新訂單", content: content, sha: fileSha, branch: "main" })
+            });
+            if (res.ok) {
+                let data = await res.json();
+                fileSha = data.content.sha;
+                localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+            } else {
+                alert("保存到 GitHub 失敗");
+                saveToLocal();
+            }
+        } catch(e) { alert("保存失敗"); saveToLocal(); }
+    }
+    
+    // 本地存儲
+    function loadFromLocal() {
+        let saved = localStorage.getItem('ac_orders_backup');
         if(saved) { try { allOrders = JSON.parse(saved); } catch(e) { allOrders = []; } }
         else { allOrders = []; }
+        renderAll();
+    }
+    
+    function saveToLocal() {
+        localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+        renderAll();
+    }
+    
+    function saveData() {
+        if (githubToken) saveToGitHub();
+        else saveToLocal();
+    }
+    
+    function renderAll() {
         renderCalendar();
         updateStats();
         renderReport(currentReport);
     }
     
-    function saveData() { localStorage.setItem('ac_orders', JSON.stringify(allOrders)); renderCalendar(); updateStats(); renderReport(currentReport); }
-    
+    // ========== 統計與報表 ==========
     function updateStats() {
         let totalUnits = allOrders.reduce((s,o) => s + (o.count||1), 0);
         let totalIncome = allOrders.reduce((s,o) => s + getOrderIncome(o), 0);
@@ -186,6 +323,7 @@
         else container.innerHTML = `<div style="font-weight:700; padding:8px; border-bottom:1px solid #e2e8f0;">💰 總收入: $${total.toLocaleString()}</div>` + details.map(d => `<div class="report-item"><span>📅 ${d.date}</span><span>❄️ ${d.name} (${d.count}部)</span><span style="color:#059669;">$${d.income}</span></div>`).join('');
     }
     
+    // ========== 日曆 ==========
     function renderCalendar() {
         let first = new Date(currentYear, currentMonth, 1);
         let offset = (first.getDay()===0?6:first.getDay()-1);
@@ -292,6 +430,7 @@
         closeOrderModal();
     }
     
+    // ========== 智能識別 ==========
     function recognizeText(t) {
         let r = { name:"", phone:"", date:"", time:"", count:1, note:"" };
         let m = t.match(/(?:\+?853\s*)?(\d{8})/);
@@ -332,49 +471,4 @@
             document.getElementById('deleteOrderBtn').style.display = 'none';
             document.getElementById('modalTitle').innerText = "➕ 新增訂單";
             let vh = document.getElementById('vipHint');
-            if(rec.phone && isVip(rec.phone, '')) { vh.innerHTML = `🏆 回頭客！使用舊客價 $${OLD_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#fef3c7"; }
-            else if(rec.phone) { vh.innerHTML = `✨ 新客戶，使用新客價 $${NEW_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#d1fae5"; }
-            else vh.style.display = "none";
-            closePasteModal();
-            openOrderModal();
-        };
-    }
-    
-    function openOrderModal() { document.getElementById('orderModal').classList.add('open'); }
-    function closeOrderModal() { document.getElementById('orderModal').classList.remove('open'); }
-    function openPasteModal() { document.getElementById('pasteModal').classList.add('open'); document.getElementById('recognizeResult').style.display = 'none'; document.getElementById('pasteText').value = ''; }
-    function closePasteModal() { document.getElementById('pasteModal').classList.remove('open'); }
-    function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
-    
-    document.getElementById('resetBtn').onclick = () => { if(confirm("清除所有數據？")) { localStorage.removeItem('ac_orders'); loadData(); } };
-    document.getElementById('refreshBtn').onclick = () => loadData();
-    document.getElementById('prevMonthBtn').onclick = () => { currentMonth--; if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); };
-    document.getElementById('nextMonthBtn').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
-    document.getElementById('openAddBtn').onclick = () => {
-        document.getElementById('editId').value = '';
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        document.getElementById('orderDate').value = new Date().toISOString().slice(0,10);
-        document.getElementById('orderTime').value = '';
-        document.getElementById('orderCount').value = '1';
-        document.getElementById('orderNote').value = '';
-        document.getElementById('orderPrice').value = '';
-        document.getElementById('deleteOrderBtn').style.display = 'none';
-        document.getElementById('vipHint').style.display = 'none';
-        document.getElementById('modalTitle').innerText = "➕ 新增訂單";
-        openOrderModal();
-    };
-    document.getElementById('openPasteBtn').onclick = openPasteModal;
-    document.getElementById('closeOrderBtn').onclick = closeOrderModal;
-    document.getElementById('closePasteBtn').onclick = closePasteModal;
-    document.getElementById('closeDetailBtn').onclick = closeDetailModal;
-    document.getElementById('saveOrderBtn').onclick = saveOrder;
-    document.getElementById('deleteOrderBtn').onclick = deleteOrder;
-    document.getElementById('doRecognizeBtn').onclick = doRecognize;
-    document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderReport('week'); };
-    document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderReport('month'); };
-    
-    loadData();
-</script>
-</body>
-</html>
+            if(rec.phone && isVip(rec.phone, '')) { vh.innerHTML = `🏆 回頭客！使用舊客價 $${OLD

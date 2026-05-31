@@ -7,79 +7,101 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
-        .fc { max-height: 78vh; font-size: 0.85rem; }
-        /* 🚨 核心美化：重塑订单在日历格子里的长相 */
+        /* 🎨 全新优雅排版样式 */
+        .fc { max-height: 72vh; font-size: 0.85rem; }
+        
+        /* 订单方块精细化排版 */
         .fc-event { 
             cursor: pointer; 
-            padding: 4px 6px !important; 
-            margin: 2px 0 !important; 
-            border-radius: 6px !important; 
+            padding: 5px 6px !important; 
+            margin: 3px 0 !important; 
+            border-radius: 8px !important; 
             border: none !important;
-            background-color: #ecfdf5 !important; /* 极浅绿背景 */
-            color: #065f46 !important; /* 深绿文字 */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            background-color: #f0fdf4 !important; /* 护眼淡绿背景 */
+            box-shadow: 0 1px 3px rgba(16, 185, 129, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
         }
-        /* 确保自定义的内容横向撑开 */
+        .fc-event:active {
+            transform: scale(0.98);
+            background-color: #dcfce7 !important;
+        }
         .fc-event-main { width: 100%; }
-        .fc-toolbar { flex-wrap: wrap; gap: 6px; }
+        
+        /* 日历控制栏移动端适配排版 */
+        .fc-toolbar { flex-wrap: wrap; gap: 8px; justify-content: space-between !important; }
+        .fc-toolbar-chunk { display: flex; align-items: center; gap: 4px; }
+        
         @media (max-width: 640px) {
-            .fc-toolbar-title { font-size: 1.1rem !important; }
-            .fc-button { padding: 0.35em 0.5em !important; font-size: 0.8rem !important; }
+            .fc-toolbar-title { font-size: 1.05rem !important; font-weight: 700; color: #1e293b; }
+            .fc-button { padding: 0.4em 0.6em !important; font-size: 0.75rem !important; border-radius: 8px !important; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-28 font-sans antialiased">
 
-    <div class="w-full max-w-5xl mx-auto p-2 sm:p-6">
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
-            <div class="flex flex-row justify-between items-center mb-4 gap-2">
-                <h1 class="text-xl sm:text-2xl font-bold text-emerald-600 flex items-center gap-1">📅 订单系统</h1>
-                <div class="flex gap-2">
-                    <button onclick="clearToken()" class="bg-red-50 text-red-600 px-2 py-1.5 rounded-xl text-xs font-medium">重置口令</button>
-                    <button onclick="fetchOrders()" class="bg-slate-100 active:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition">🔄 刷新</button>
+    <div class="w-full max-w-5xl mx-auto p-3 sm:p-6">
+        <div class="bg-white p-4 sm:p-6 rounded-3xl shadow-md border border-slate-200/60">
+            
+            <div class="flex flex-row justify-between items-center mb-6 pb-4 border-b border-slate-100 gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📅</span>
+                    <h1 class="text-lg sm:text-2xl font-black tracking-tight text-slate-900">订单日程系统</h1>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="clearToken()" class="bg-rose-50 active:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors">重置口令</button>
+                    <button onclick="fetchOrders()" class="bg-emerald-50 active:bg-emerald-100 text-emerald-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1">
+                        🔄 刷新
+                    </button>
                 </div>
             </div>
-            <div id="calendar"></div>
+            
+            <div id="calendar" class="p-1"></div>
         </div>
     </div>
 
-    <button id="addBtn" class="fixed bottom-6 right-6 bg-emerald-600 active:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl flex items-center justify-center z-40">+</button>
+    <button id="addBtn" class="fixed bottom-6 right-6 bg-emerald-600 active:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl shadow-emerald-600/30 flex items-center justify-center z-40 transition-transform active:scale-90 select-none font-light">
+        +
+    </button>
 
-    <div id="orderModal" class="fixed inset-0 bg-slate-900/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
-            <h3 id="modalTitle" class="text-lg sm:text-xl font-bold mb-4 text-slate-900">添加新订单</h3>
+    <div id="orderModal" class="fixed inset-0 bg-slate-900/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-opacity">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto">
+            
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5 sm:hidden"></div>
+
+            <h3 id="modalTitle" class="text-lg sm:text-xl font-bold mb-5 text-slate-900 tracking-tight">添加新订单</h3>
+            
             <form id="orderForm" class="space-y-4" onsubmit="return false;">
                 <input type="hidden" id="orderId">
                 <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-slate-600">订单名称</label>
-                    <input type="text" id="orderName" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">订单名称</label>
+                    <input type="text" id="orderName" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                 </div>
                 
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs sm:text-sm font-semibold text-slate-600">选择日期</label>
-                        <input type="date" id="orderOnlyDate" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                        <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">选择日期</label>
+                        <input type="date" id="orderOnlyDate" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs sm:text-sm font-semibold text-slate-600">具体时间</label>
-                        <input type="time" id="orderOnlyTime" required class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                        <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">具体时间</label>
+                        <input type="time" id="orderOnlyTime" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-slate-600">多少部</label>
-                    <input type="number" id="orderCount" required min="1" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">多少部</label>
+                    <input type="number" id="orderCount" required min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                 </div>
                 <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-slate-600">补充或其他</label>
-                    <textarea id="orderNote" rows="2" class="w-full mt-1 px-4 py-3 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none"></textarea>
+                    <label class="block text-xs sm:text-sm font-bold text-slate-500 tracking-wider mb-1">补充或其他说明</label>
+                    <textarea id="orderNote" rows="2" placeholder="没有可不填..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all resize-none"></textarea>
                 </div>
-                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 pt-2">
-                    <button type="button" id="deleteBtn" class="hidden bg-rose-50 text-rose-600 py-3 sm:py-2 px-4 rounded-xl font-medium text-sm text-center">🗑️ 删除订单</button>
-                    <div class="flex flex-row gap-2 sm:ml-auto">
-                        <button type="button" id="closeBtn" class="flex-1 sm:flex-none bg-slate-100 text-slate-600 py-3 sm:py-2 px-5 rounded-xl font-medium text-sm">取消</button>
-                        <button type="button" id="submitBtn" class="flex-1 sm:flex-none bg-emerald-600 text-white py-3 sm:py-2 px-5 rounded-xl font-medium text-sm shadow-sm">保存</button>
+                
+                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-3">
+                    <button type="button" id="deleteBtn" class="hidden bg-rose-50 active:bg-rose-100 text-rose-600 py-3 px-4 rounded-xl font-bold text-sm text-center transition-colors">🗑️ 删除订单</button>
+                    <div class="flex flex-row gap-2 sm:ml-auto w-full sm:w-auto">
+                        <button type="button" id="closeBtn" class="flex-1 sm:flex-none bg-slate-100 active:bg-slate-200 text-slate-600 py-3 px-5 rounded-xl font-bold text-sm transition-colors">取消</button>
+                        <button type="button" id="submitBtn" class="flex-1 sm:flex-none bg-emerald-600 active:bg-emerald-700 text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md shadow-emerald-600/10 transition-colors">保存</button>
                     </div>
                 </div>
             </form>
@@ -121,23 +143,22 @@
                 initialView: isMobile ? 'listMonth' : 'dayGridMonth',
                 locale: 'zh-cn',
                 timeZone: 'local',
-                displayEventTime: false, // 关闭自带的丑陋时间前缀，我们用下面的自定义排版
-                buttonText: { today: '今天', month: '月历', week: '周历', day: '日历', list: '订单列表' },
+                displayEventTime: false,
+                buttonText: { today: '今天', month: '月历', week: '周历', day: '日历', list: '列表' },
                 headerToolbar: { left: 'prev,next today', center: 'title', right: isMobile ? 'listMonth,dayGridMonth' : 'dayGridMonth,timeGridWeek' },
                 
-                // 🛠️ 视觉一目了然：自定义订单方块的内部 HTML 排版
+                // 🛠️ 极致一目了然排版：分离时间、名称和数量标签
                 eventContent: function(arg) {
                     const props = arg.event.extendedProps;
                     const timeStr = props.datetime ? props.datetime.split('T')[1] : '';
                     
-                    // 创建一个优雅的 Flex 布局：左边时间，中间名字，右边数量小气泡
                     let customHtml = `
-                        <div class="flex items-center justify-between w-full overflow-hidden text-xs gap-1">
-                            <div class="flex items-center overflow-hidden min-w-0 gap-1.5">
-                                <span class="bg-emerald-800 text-emerald-100 px-1 py-0.5 rounded text-[10px] font-bold font-mono tracking-tight shrink-0">${timeStr}</span>
-                                <span class="truncate font-medium text-emerald-950">${props.name}</span>
+                        <div class="flex items-center justify-between w-full overflow-hidden gap-1.5 py-0.5">
+                            <div class="flex items-center overflow-hidden min-w-0 gap-2">
+                                <span class="bg-emerald-700 text-white px-1.5 py-0.5 rounded text-[10px] font-black font-mono tracking-tight shrink-0 shadow-sm">${timeStr}</span>
+                                <span class="truncate font-bold text-slate-800 text-xs sm:text-sm">${props.name}</span>
                             </div>
-                            <span class="bg-emerald-200/60 text-emerald-900 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0">${props.count}部</span>
+                            <span class="bg-slate-200/80 text-slate-700 px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 tracking-wide">${props.count}部</span>
                         </div>
                     `;
                     return { html: customHtml };
@@ -178,7 +199,7 @@
         function renderCalendar() {
             const events = localOrders.map(item => ({
                 id: item.id,
-                title: item.name, // 备用
+                title: item.name, 
                 start: item.datetime,
                 extendedProps: item
             }));

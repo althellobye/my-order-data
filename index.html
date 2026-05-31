@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>洗冷氣訂單系統</title>
+    <title>洗冷氣訂單系統 · 雲端同步</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; padding: 16px 12px 90px 12px; }
@@ -56,6 +56,7 @@
         .paste-area { width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 20px; min-height: 140px; margin-bottom: 16px; font-family: monospace; font-size: 14px; }
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
         .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; font-size: 14px; }
+        .sync-status { font-size: 11px; margin-top: 8px; color: #059669; }
     </style>
 </head>
 <body>
@@ -65,9 +66,10 @@
         <h1>❄️ 洗冷氣訂單系統</h1>
     </div>
     <div class="token-bar">
-        <div id="tokenStatus">⚪ 未連接 GitHub</div>
-        <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭) 多人同步">
-        <button class="btn btn-primary" id="saveTokenBtn" style="margin-top:8px; width:100%;">連接</button>
+        <div id="tokenStatus">⚪ 未連接 GitHub · 數據僅在本地</div>
+        <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭) 啟用多人同步">
+        <button class="btn btn-primary" id="saveTokenBtn" style="margin-top:8px; width:100%;">🔗 連接並同步</button>
+        <div id="syncStatus" class="sync-status"></div>
     </div>
 </div>
 
@@ -137,13 +139,21 @@
 </div>
 
 <script>
+    // GitHub 配置
+    const GH_USER = "althellobye";
+    const GH_REPO = "my-order-data";
+    const FILE_PATH = "orders.json";
+    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+    
     let allOrders = [];
+    let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let NEW_PRICE = 500;
     let OLD_PRICE = 450;
     let currentReport = "week";
     let githubToken = localStorage.getItem('github_token') || '';
+    let isOnline = false;
 
     function normalizePhone(p) { return p ? p.replace(/[\s\+-]/g, '') : ''; }
     function isVip(phone, excludeId) { if(!phone) return false; let n = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === n && o.id !== excludeId); }
@@ -152,16 +162,121 @@
     function maskPhone(p) { if(!p) return ''; let c = p.replace(/\D/g,''); if(c.length===11) return c.slice(0,3)+'****'+c.slice(-4); if(c.length===8) return c.slice(0,4)+'****'; return p; }
     function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    function loadFromLocal() { 
-        let s = localStorage.getItem('ac_orders'); 
-        allOrders = s ? JSON.parse(s) : []; 
-        renderAll(); 
+    // 顯示同步狀態
+    function showSyncStatus(msg, isError) {
+        let div = document.getElementById('syncStatus');
+        div.innerHTML = msg;
+        div.style.color = isError ? '#e11d48' : '#059669';
+        setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 3000);
     }
-    function saveToLocal() { 
-        localStorage.setItem('ac_orders', JSON.stringify(allOrders)); 
-        renderAll(); 
+
+    // 從 GitHub 加載
+    async function loadFromGitHub() {
+        if (!githubToken) return false;
+        try {
+            let res = await fetch(`${API_URL}?t=${Date.now()}`, {
+                headers: { "Authorization": `token ${githubToken}` }
+            });
+            if (res.status === 401) {
+                showSyncStatus("Token 無效，請重新輸入", true);
+                return false;
+            }
+            if (res.status === 404) {
+                // 文件不存在，創建新文件
+                await createGitHubFile();
+                return true;
+            }
+            let data = await res.json();
+            fileSha = data.sha;
+            let content = atob(data.content);
+            allOrders = JSON.parse(content || "[]");
+            localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+            renderAll();
+            showSyncStatus("✅ 已從雲端同步", false);
+            return true;
+        } catch(e) {
+            showSyncStatus("⚠️ 雲端連接失敗，使用本地數據", true);
+            return false;
+        }
     }
-    function saveData() { saveToLocal(); }
+
+    // 創建 GitHub 文件
+    async function createGitHubFile() {
+        let emptyData = [];
+        let content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
+        try {
+            let res = await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "初始化訂單數據", content: content, branch: "main" })
+            });
+            if (res.ok) {
+                let data = await res.json();
+                fileSha = data.content.sha;
+                allOrders = [];
+                renderAll();
+                showSyncStatus("✅ 已創建雲端文件", false);
+                return true;
+            } else {
+                showSyncStatus("❌ 創建失敗，請檢查 Token 權限", true);
+                return false;
+            }
+        } catch(e) {
+            showSyncStatus("❌ 連接失敗", true);
+            return false;
+        }
+    }
+
+    // 保存到 GitHub
+    async function saveToGitHub() {
+        if (!githubToken) return false;
+        let content = btoa(unescape(encodeURIComponent(JSON.stringify(allOrders, null, 2))));
+        try {
+            let res = await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "更新訂單", content: content, sha: fileSha, branch: "main" })
+            });
+            if (res.ok) {
+                let data = await res.json();
+                fileSha = data.content.sha;
+                localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+                showSyncStatus("✅ 已同步到雲端", false);
+                return true;
+            } else {
+                showSyncStatus("❌ 保存失敗", true);
+                return false;
+            }
+        } catch(e) {
+            showSyncStatus("❌ 連接失敗，數據已保存到本地", true);
+            return false;
+        }
+    }
+
+    // 加載本地備份
+    function loadFromLocal() {
+        let saved = localStorage.getItem('ac_orders_backup');
+        if(saved) {
+            try { allOrders = JSON.parse(saved); } catch(e) { allOrders = []; }
+        } else {
+            allOrders = [];
+        }
+        renderAll();
+    }
+
+    // 保存數據（自動選擇雲端或本地）
+    async function saveData() {
+        if (githubToken && fileSha) {
+            await saveToGitHub();
+        } else if (githubToken && !fileSha) {
+            await createGitHubFile();
+            await saveToGitHub();
+        } else {
+            localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
+            renderAll();
+        }
+        renderAll();
+    }
 
     function renderAll() { 
         renderCalendar(); 
@@ -224,7 +339,7 @@
         
         for(let d = 1; d <= days; d++) {
             let ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            let dayOrders = allOrders.filter(o => o.datetime.startsWith(ds));
+            let dayOrders = allOrders.filter(o => o.datetime && o.datetime.startsWith(ds));
             let cell = document.createElement('div');
             cell.className = 'date-cell';
             if(ds === today) cell.classList.add('today');
@@ -276,7 +391,7 @@
                 </div>`;
             }).join('');
             document.querySelectorAll('.editBtn').forEach(b => { b.onclick = () => editOrder(b.getAttribute('data-id')); });
-            document.querySelectorAll('.delBtn').forEach(b => { b.onclick = () => { if(confirm('確認刪除？')) { allOrders = allOrders.filter(o => o.id !== b.getAttribute('data-id')); saveData(); closeDetailModal(); } }; });
+            document.querySelectorAll('.delBtn').forEach(b => { b.onclick = async () => { if(confirm('確認刪除？')) { allOrders = allOrders.filter(o => o.id !== b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
         }
         document.getElementById('detailModal').classList.add('open');
     }
@@ -318,7 +433,7 @@
         openOrderModal();
     }
 
-    function saveOrder() {
+    async function saveOrder() {
         let id = document.getElementById('editId').value || ('id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6));
         let name = document.getElementById('name').value.trim();
         let phone = document.getElementById('phone').value.trim();
@@ -339,16 +454,16 @@
         let orderData = { id, name, phone, datetime, count, note, price };
         if(isEdit) allOrders = allOrders.map(o => o.id === id ? orderData : o);
         else allOrders.push(orderData);
-        saveData();
+        await saveData();
         closeOrderModal();
     }
 
-    function deleteOrder() {
+    async function deleteOrder() {
         let id = document.getElementById('editId').value;
         let name = document.getElementById('name').value;
         if(!confirm(`刪除「${name}」嗎？`)) return;
         allOrders = allOrders.filter(o => o.id !== id);
-        saveData();
+        await saveData();
         closeOrderModal();
     }
 
@@ -384,67 +499,4 @@
             <div>❄️ 客戶：${rec.name}</div>
             <div>📞 電話：${rec.phone || '未識別'}</div>
             <div>📅 日期：${rec.date || '未識別'}</div>
-            <div>⏰ 時間：${rec.time || '未識別'}</div>
-            <div>🔢 數量：${rec.count}部</div>
-            <div>💰 單價：$${price}/部 ${vip ? '(舊客價)' : '(新客價)'}</div>
-            <div>📍 地址：${rec.note || '無'}</div>
-            <button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">📝 填寫到表單</button>
-        </div>`;
-        document.getElementById('applyBtn').onclick = () => {
-            document.getElementById('name').value = rec.name;
-            document.getElementById('phone').value = rec.phone || '';
-            if(rec.date) document.getElementById('date').value = rec.date;
-            if(rec.time) document.getElementById('time').value = rec.time;
-            document.getElementById('count').value = rec.count;
-            document.getElementById('note').value = rec.note || '';
-            document.getElementById('price').value = price;
-            document.getElementById('editId').value = '';
-            document.getElementById('deleteBtn').style.display = 'none';
-            document.getElementById('modalTitle').innerText = "➕ 新增訂單";
-            let vh = document.getElementById('vipHint');
-            if(rec.phone && isVip(rec.phone, '')) { vh.innerHTML = `🏆 回頭客！使用舊客價 $${OLD_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#fef3c7"; }
-            else if(rec.phone) { vh.innerHTML = `✨ 新客戶，使用新客價 $${NEW_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#d1fae5"; }
-            else vh.style.display = "none";
-            closePasteModal();
-            openOrderModal();
-        };
-    }
-
-    function openOrderModal() { document.getElementById('orderModal').classList.add('open'); }
-    function closeOrderModal() { document.getElementById('orderModal').classList.remove('open'); }
-    function openPasteModal() { document.getElementById('pasteModal').classList.add('open'); document.getElementById('preview').style.display = 'none'; document.getElementById('pasteText').value = ''; }
-    function closePasteModal() { document.getElementById('pasteModal').classList.remove('open'); }
-    function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
-
-    function saveToken() {
-        let t = document.getElementById('tokenInput').value.trim();
-        if(t) {
-            localStorage.setItem('github_token', t);
-            githubToken = t;
-            document.getElementById('tokenStatus').innerHTML = '🟢 已連接 GitHub';
-            alert("Token已保存（數據仍儲存在本地，如需多人同步請後續實現）");
-        }
-    }
-
-    document.getElementById('prevMonth').onclick = () => { currentMonth--; if(currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(); };
-    document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(); };
-    document.getElementById('addBtn').onclick = openAddWithDate;
-    document.getElementById('pasteBtn').onclick = openPasteModal;
-    document.getElementById('closeOrderModal').onclick = closeOrderModal;
-    document.getElementById('closePasteModal').onclick = closePasteModal;
-    document.getElementById('closeDetailModal').onclick = closeDetailModal;
-    document.getElementById('saveBtn').onclick = saveOrder;
-    document.getElementById('deleteBtn').onclick = deleteOrder;
-    document.getElementById('recognizeBtn').onclick = doRecognize;
-    document.getElementById('weekTab').onclick = () => { currentReport = 'week'; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderReport('week'); };
-    document.getElementById('monthTab').onclick = () => { currentReport = 'month'; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderReport('month'); };
-    document.getElementById('saveTokenBtn').onclick = saveToken;
-
-    if(githubToken) document.getElementById('tokenStatus').innerHTML = '🟢 已連接 GitHub';
-    
-    loadFromLocal();
-    window.openAddWithDate = openAddWithDate;
-    window.closeDetailModal = closeDetailModal;
-</script>
-</body>
-</html>
+            <div>⏰ 時間：${rec.time || '

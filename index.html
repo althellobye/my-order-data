@@ -14,15 +14,11 @@
         .stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 12px; text-align: center; color: white; }
         .stat-number { font-size: 20px; font-weight: 800; }
         .stat-label { font-size: 11px; opacity: 0.7; }
-        .report-tabs { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-        .tab-btn { flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; min-width: 70px; }
+        .report-tabs { display: flex; gap: 12px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; }
         .tab-btn.active { background: #059669; color: white; }
-        .year-selector { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 12px; }
-        .year-selector button { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 30px; font-size: 18px; cursor: pointer; }
-        .year-selector span { font-size: 18px; font-weight: 700; min-width: 100px; text-align: center; }
-        .report-list { background: #f8fafc; border-radius: 20px; padding: 8px; max-height: 220px; overflow-y: auto; }
+        .report-list { background: #f8fafc; border-radius: 20px; padding: 8px; max-height: 180px; overflow-y: auto; }
         .report-item { display: flex; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
-        .report-item.month-total { background: #e0e7ff; font-weight: 700; }
         .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .month-nav button { background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 30px; font-size: 20px; cursor: pointer; }
         .month-title { font-size: 18px; font-weight: 700; }
@@ -75,14 +71,8 @@
 
 <div class="card">
     <div class="report-tabs">
-        <button class="tab-btn active" id="weekTab">📅 本週</button>
-        <button class="tab-btn" id="monthTab">📆 本月</button>
-        <button class="tab-btn" id="yearTab">📊 年度</button>
-    </div>
-    <div id="yearSelector" class="year-selector" style="display: none;">
-        <button id="prevYearBtn">←</button>
-        <span id="selectedYear"></span>
-        <button id="nextYearBtn">→</button>
+        <button class="tab-btn active" id="weekTab">📅 本週收入</button>
+        <button class="tab-btn" id="monthTab">📆 本月收入</button>
     </div>
     <div id="reportList" class="report-list">暫無訂單</div>
 </div>
@@ -114,7 +104,7 @@
         <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" placeholder="66668888"></div>
         <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
         <div class="form-group"><label>數量 (部)</label><input type="number" id="count" min="1" value="1"></div>
-        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B / Taipa"></textarea></div>
+        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B"></textarea></div>
         <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
@@ -135,7 +125,6 @@
 </div>
 
 <script>
-    // ========== 請修改這裡 ==========
     const GH_USER = "althellobye";
     const GH_REPO = "my-order-data";
     const FILE_PATH = "data.json";
@@ -147,7 +136,6 @@
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let currentReport = "week";
-    let selectedYear = new Date().getFullYear();
     let githubToken = localStorage.getItem('github_token') || '';
 
     function showSyncStatus(msg, isError) {
@@ -239,9 +227,8 @@
     function renderAll() { 
         renderCalendar(); 
         updateStats(); 
-        if (currentReport === 'week') renderReport('week');
-        else if (currentReport === 'month') renderReport('month');
-        else renderYearReport();
+        if (currentReport === 'week') renderWeekReport();
+        else renderMonthReport();
     }
 
     function updateStats() {
@@ -266,9 +253,8 @@
         return { start: s, end: `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(l).padStart(2,'0')}` };
     }
     
-    function renderReport(period) {
-        document.getElementById('yearSelector').style.display = 'none';
-        let r = period === 'week' ? getWeekRange() : getMonthRange();
+    function renderWeekReport() {
+        let r = getWeekRange();
         let details = [];
         for(let o of allOrders) { 
             let d = o.datetime.split('T')[0]; 
@@ -277,47 +263,22 @@
         details.sort((a,b)=>a.date.localeCompare(b.date));
         let total = details.reduce((s,x)=>s+x.income,0);
         let container = document.getElementById('reportList');
-        let title = period === 'week' ? `📅 本週收入 (${r.start} ~ ${r.end})` : `📆 本月收入 (${r.start} ~ ${r.end})`;
-        if(details.length===0) container.innerHTML = `<div style="text-align:center; padding:20px;">暫無訂單，收入 $0</div>`;
-        else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
+        if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px;">暫無訂單</div>';
+        else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 本週總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
     }
 
-    // 年度報表
-    function renderYearReport() {
-        document.getElementById('yearSelector').style.display = 'flex';
-        document.getElementById('selectedYear').innerText = `${selectedYear}年`;
-        
-        let monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-        let monthlyIncome = new Array(12).fill(0);
-        let monthlyOrders = new Array(12).fill(0);
-        let monthlyUnits = new Array(12).fill(0);
-        
-        for(let o of allOrders) {
-            let d = new Date(o.datetime);
-            let year = d.getFullYear();
-            if(year === selectedYear) {
-                let month = d.getMonth();
-                let income = getIncome(o);
-                monthlyIncome[month] += income;
-                monthlyOrders[month]++;
-                monthlyUnits[month] += (o.count || 1);
-            }
+    function renderMonthReport() {
+        let r = getMonthRange();
+        let details = [];
+        for(let o of allOrders) { 
+            let d = o.datetime.split('T')[0]; 
+            if(d >= r.start && d <= r.end) details.push({ date: d, name: o.name, count: o.count, income: getIncome(o) }); 
         }
-        
-        let totalYearIncome = monthlyIncome.reduce((a,b)=>a+b,0);
+        details.sort((a,b)=>a.date.localeCompare(b.date));
+        let total = details.reduce((s,x)=>s+x.income,0);
         let container = document.getElementById('reportList');
-        
-        let html = `<div style="font-weight:700; padding:8px;">📊 ${selectedYear}年 總收入: $${totalYearIncome.toLocaleString()}</div>`;
-        
-        for(let i = 0; i < 12; i++) {
-            if(monthlyIncome[i] > 0) {
-                html += `<div class="report-item month-total"><span>📆 ${monthNames[i]}</span><span>${monthlyOrders[i]}單 / ${monthlyUnits[i]}部</span><span>$${monthlyIncome[i].toLocaleString()}</span></div>`;
-            } else {
-                html += `<div class="report-item"><span>📆 ${monthNames[i]}</span><span>-</span><span>$0</span></div>`;
-            }
-        }
-        
-        container.innerHTML = html;
+        if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px;">暫無訂單</div>';
+        else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 本月總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
     }
 
     function renderCalendar() {
@@ -485,4 +446,48 @@
         document.getElementById('phone').value = ''; 
         document.getElementById('date').value = new Date().toISOString().slice(0,10); 
         document.getElementById('time').value = ''; 
-        document.getElementById('count').
+        document.getElementById('count').value = '1'; 
+        document.getElementById('note').value = ''; 
+        document.getElementById('price').value = DEFAULT_PRICE; 
+        document.getElementById('deleteBtn').style.display = 'none'; 
+        document.getElementById('modalTitle').innerText = "➕ 新增訂單"; 
+        openOrderModal(); 
+    };
+    document.getElementById('pasteBtn').onclick = openPasteModal;
+    document.getElementById('closeOrderModal').onclick = closeOrderModal;
+    document.getElementById('closePasteModal').onclick = closePasteModal;
+    document.getElementById('closeDetailModal').onclick = closeDetailModal;
+    document.getElementById('saveBtn').onclick = saveOrder;
+    document.getElementById('deleteBtn').onclick = deleteOrder;
+    document.getElementById('recognizeBtn').onclick = doRecognize;
+    document.getElementById('weekTab').onclick = () => { 
+        currentReport = 'week'; 
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
+        document.getElementById('weekTab').classList.add('active'); 
+        renderWeekReport(); 
+    };
+    document.getElementById('monthTab').onclick = () => { 
+        currentReport = 'month'; 
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
+        document.getElementById('monthTab').classList.add('active'); 
+        renderMonthReport(); 
+    };
+    document.getElementById('saveTokenBtn').onclick = () => { 
+        let t = document.getElementById('tokenInput').value.trim(); 
+        if(t) { 
+            localStorage.setItem('github_token', t); 
+            githubToken = t; 
+            document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; 
+            loadFromGitHub(); 
+            alert("Token已保存，正在同步..."); 
+        } 
+    };
+
+    loadFromLocal();
+    if(githubToken) { 
+        document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; 
+        loadFromGitHub(); 
+    }
+</script>
+</body>
+</html>

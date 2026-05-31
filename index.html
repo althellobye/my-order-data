@@ -3,618 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>多人订单管理系统 - 老客识别</title>
+    <title>订单管理系统 - 手机优化版</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
         
-        /* 手机端专属优化 */
         body {
-            background: #f0f2f5;
-            padding: 0;
-            margin: 0;
+            background: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         
-        /* 日历容器 - 手机端格子更大 */
-        .fc {
-            max-height: none !important;
+        /* 订单卡片样式 */
+        .order-card {
             background: white;
-            border-radius: 24px;
-            overflow: hidden;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
         }
         
-        /* 月视图单元格 - 手机端加大 */
-        .fc-daygrid-day-frame {
-            min-height: 85px !important;
-            height: auto !important;
-            padding: 4px !important;
-        }
-        
-        /* 日期数字更大 */
-        .fc-daygrid-day-number {
-            font-size: 16px !important;
-            font-weight: 700 !important;
-            padding: 6px 8px !important;
-            color: #1e293b !important;
-        }
-        
-        /* 周末日期颜色 */
-        .fc-day-sat .fc-daygrid-day-number,
-        .fc-day-sun .fc-daygrid-day-number {
-            color: #ef4444 !important;
-        }
-        
-        /* 今天高亮 */
-        .fc-day-today {
-            background: #ecfdf5 !important;
-        }
-        
-        /* 订单事件卡片 - 手机端更大更清晰 */
-        .fc-daygrid-day-events {
-            padding: 2px 4px !important;
-        }
-        
-        .fc-event {
-            cursor: pointer !important;
-            padding: 8px 8px !important;
-            margin: 4px 0 !important;
-            border-radius: 12px !important;
-            border: none !important;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-            transition: all 0.2s ease !important;
-        }
-        
-        .fc-event:active {
+        .order-card:active {
             transform: scale(0.99);
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
-        }
-        
-        /* 订单内容排版 - 手机端更清晰 */
-        .fc-event-main {
-            width: 100%;
-            padding: 0 !important;
-        }
-        
-        .custom-event {
-            width: 100%;
+            background: #fafafa;
         }
         
         /* 时间标签 */
-        .event-time {
+        .time-badge {
             background: #059669;
             color: white;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 20px;
-            display: inline-block;
-            letter-spacing: 0.5px;
-        }
-        
-        /* 订单名称 */
-        .event-name {
-            font-weight: 700;
             font-size: 13px;
-            color: #1f2937;
-            line-height: 1.3;
-            word-break: break-word;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            display: inline-block;
         }
         
         /* 老客标签 */
         .vip-badge {
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             color: white;
-            font-size: 9px;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 30px;
             display: inline-block;
-            margin-left: 6px;
-            white-space: nowrap;
         }
         
         /* 数量标签 */
-        .event-count {
-            background: #e2e8f0;
-            color: #475569;
+        .count-badge {
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 30px;
+        }
+        
+        /* 日期导航 */
+        .date-nav {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .date-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .date-item {
+            flex-shrink: 0;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 40px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        
+        .date-item.active {
+            background: #059669;
+            border-color: #059669;
+            color: white;
+        }
+        
+        .date-item.active .date-week {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .date-day {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .date-week {
             font-size: 11px;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        /* 电话尾号 */
-        .event-phone {
-            font-size: 10px;
             color: #6b7280;
-            font-family: monospace;
-            margin-left: 6px;
         }
         
-        /* 工具栏手机适配 */
-        .fc-toolbar {
-            flex-wrap: wrap !important;
-            gap: 12px !important;
-            padding: 12px 12px 8px 12px !important;
+        /* 悬浮按钮 */
+        .floating-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: #059669;
+            color: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 300;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 100;
+            border: none;
         }
         
-        .fc-toolbar-title {
-            font-size: 18px !important;
-            font-weight: 800 !important;
-            color: #0f172a !important;
+        .floating-btn:active {
+            transform: scale(0.94);
+            background: #047857;
         }
         
-        .fc-button {
-            padding: 6px 12px !important;
-            font-size: 13px !important;
-            border-radius: 40px !important;
-            background: #f1f5f9 !important;
-            border: none !important;
-            color: #334155 !important;
-            font-weight: 600 !important;
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
         }
         
-        .fc-button-active {
-            background: #059669 !important;
-            color: white !important;
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
         
-        /* 列表视图优化 */
-        .fc-list-day-cushion {
-            background: #f8fafc !important;
-            padding: 12px !important;
+        .modal-container {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 28px 28px 0 0;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s;
         }
         
-        .fc-list-event {
-            padding: 12px !important;
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
         }
         
-        /* 弹窗手机优化 */
-        @media (max-width: 640px) {
-            .fc-daygrid-day-frame {
-                min-height: 100px !important;
-            }
-            
-            .fc-daygrid-day-number {
-                font-size: 15px !important;
-                padding: 4px 6px !important;
-            }
-            
-            .event-name {
-                font-size: 12px;
-            }
-            
-            .event-time {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-            
-            .vip-badge {
-                font-size: 8px;
-                padding: 2px 6px;
-            }
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen pb-28 font-sans">
+<body>
 
-    <div class="w-full max-w-4xl mx-auto p-3 sm:p-5">
-        <!-- 头部卡片 -->
-        <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm mb-4 sticky top-2 z-10">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">📋</span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-black text-slate-800">订单管理系统</h1>
-                        <p class="text-xs text-slate-400">支持老客识别 · 多人协作</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="clearToken()" class="bg-rose-50 active:bg-rose-100 text-rose-500 px-3 py-2 rounded-xl text-xs font-semibold transition-colors">
-                        🔑 重置
-                    </button>
-                    <button onclick="fetchOrders()" class="bg-emerald-50 active:bg-emerald-100 text-emerald-600 px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1">
-                        🔄 刷新
-                    </button>
-                </div>
+    <!-- 主容器 -->
+    <div class="max-w-2xl mx-auto px-4 py-4 pb-28">
+        
+        <!-- 头部 -->
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">📋 订单管理</h1>
+                <p class="text-xs text-gray-400 mt-0.5" id="syncStatus">加载中...</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="clearToken()" class="bg-gray-100 active:bg-gray-200 text-gray-600 px-3 py-2 rounded-full text-sm font-medium transition-colors">
+                    重置
+                </button>
+                <button onclick="fetchOrders()" class="bg-emerald-50 active:bg-emerald-100 text-emerald-600 px-3 py-2 rounded-full text-sm font-medium transition-colors">
+                    刷新
+                </button>
             </div>
         </div>
         
-        <!-- 日历容器 -->
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
-            <div id="calendar" class="p-2"></div>
+        <!-- 日期横向滚动选择器 -->
+        <div class="date-nav flex gap-2 mb-5 pb-1">
+            <div id="dateList" class="flex gap-2">
+                <!-- JS 动态生成日期 -->
+            </div>
+        </div>
+        
+        <!-- 订单列表区域 -->
+        <div id="ordersContainer">
+            <div class="empty-state">
+                <div class="loading mx-auto mb-3"></div>
+                <p>加载订单中...</p>
+            </div>
         </div>
     </div>
 
     <!-- 悬浮加号按钮 -->
-    <button id="addBtn" class="fixed bottom-6 right-6 bg-emerald-600 active:bg-emerald-700 text-white w-14 h-14 rounded-full text-3xl shadow-xl shadow-emerald-600/40 flex items-center justify-center z-40 transition-transform active:scale-90">
-        +
-    </button>
+    <button class="floating-btn" id="addBtn">+</button>
 
     <!-- 订单弹窗 -->
-    <div id="orderModal" class="fixed inset-0 bg-black/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-all">
-        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            
-            <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-5 sm:hidden"></div>
-
-            <h3 id="modalTitle" class="text-xl font-bold mb-5 text-slate-900">添加新订单</h3>
-            
-            <form id="orderForm" class="space-y-4" onsubmit="return false;">
-                <input type="hidden" id="orderId">
+    <div id="orderModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="p-5">
+                <!-- 拖拽条 -->
+                <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-5"></div>
                 
-                <!-- 订单名称 -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">📛 订单名称</label>
-                    <input type="text" id="orderName" required placeholder="例: 奶茶团购" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
-                </div>
+                <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-5">➕ 添加订单</h3>
                 
-                <!-- 联系电话 -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">
-                        📞 联系电话 <span class="text-emerald-500">(自动识别老客)</span>
-                    </label>
-                    <input type="tel" id="orderPhone" required placeholder="13800000000" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
-                    <div id="vipHint" class="text-xs mt-2 hidden"></div>
-                </div>
-                
-                <!-- 日期时间 -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1.5">📅 日期</label>
-                        <input type="date" id="orderOnlyDate" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500">
+                <form id="orderForm" onsubmit="return false;">
+                    <input type="hidden" id="orderId">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">📛 订单名称</label>
+                        <input type="text" id="orderName" required placeholder="例: 奶茶团购" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1.5">⏰ 时间</label>
-                        <input type="time" id="orderOnlyTime" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">
+                            📞 联系电话 <span class="text-emerald-500 text-xs">(自动识别老客)</span>
+                        </label>
+                        <input type="tel" id="orderPhone" required placeholder="13800000000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500 focus:bg-white transition-all">
+                        <div id="vipHint" class="text-xs mt-2 hidden"></div>
                     </div>
-                </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1.5">📅 日期</label>
+                            <input type="date" id="orderDate" required class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1.5">⏰ 时间</label>
+                            <input type="time" id="orderTime" required class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
 
-                <!-- 数量 -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">🔢 多少部</label>
-                    <input type="number" id="orderCount" required min="1" placeholder="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500">
-                </div>
-                
-                <!-- 备注 -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">📝 补充说明</label>
-                    <textarea id="orderNote" rows="2" placeholder="没有可不填..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base outline-none focus:border-emerald-500 resize-none"></textarea>
-                </div>
-                
-                <!-- 按钮 -->
-                <div class="flex gap-3 pt-3">
-                    <button type="button" id="deleteBtn" class="hidden flex-1 bg-rose-50 active:bg-rose-100 text-rose-600 py-3 rounded-xl font-bold text-sm transition-colors">🗑️ 删除</button>
-                    <button type="button" id="closeBtn" class="flex-1 bg-slate-100 active:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-sm transition-colors">取消</button>
-                    <button type="button" id="submitBtn" class="flex-1 bg-emerald-600 active:bg-emerald-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition-colors">保存</button>
-                </div>
-            </form>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">🔢 多少部</label>
+                        <input type="number" id="orderCount" required min="1" placeholder="1" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">📝 补充说明</label>
+                        <textarea id="orderNote" rows="2" placeholder="没有可不填..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none focus:border-emerald-500 resize-none"></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button type="button" id="deleteBtn" class="hidden flex-1 bg-rose-50 active:bg-rose-100 text-rose-600 py-3 rounded-xl font-semibold text-sm transition-colors">🗑️ 删除</button>
+                        <button type="button" id="closeModalBtn" class="flex-1 bg-gray-100 active:bg-gray-200 text-gray-600 py-3 rounded-xl font-semibold text-sm transition-colors">取消</button>
+                        <button type="button" id="submitOrderBtn" class="flex-1 bg-emerald-600 active:bg-emerald-700 text-white py-3 rounded-xl font-semibold text-sm shadow-md transition-colors">保存</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        const GH_USER = "althellobye"; 
-        const GH_REPO = "my-order-data"; 
-        const GH_BRANCH = "main"; 
+        // GitHub 配置
+        const GH_USER = "althellobye";
+        const GH_REPO = "my-order-data";
+        const GH_BRANCH = "main";
         const FILE_PATH = "data.json";
-
         const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
 
-        let localOrders = [];
-        let calendar;
-        let fileSha = ""; 
-
+        let allOrders = [];
+        let fileSha = "";
+        let currentSelectedDate = new Date().toISOString().slice(0, 10);
+        
+        // 获取 Token
         function getAuthToken() {
             let token = localStorage.getItem('gh_order_token');
             if (!token || token.trim() === "") {
-                token = prompt("🔑 首次使用验证：\n请输入 GitHub Token (ghp_开头):");
-                if (token) { localStorage.setItem('gh_order_token', token.trim()); }
+                token = prompt("🔑 请输入 GitHub Token (ghp_开头):");
+                if (token) localStorage.setItem('gh_order_token', token.trim());
             }
             return token;
         }
-
+        
         function clearToken() {
             localStorage.removeItem('gh_order_token');
-            alert("令牌已清除，刷新后重新输入");
+            alert("令牌已清除");
             location.reload();
         }
-
-        function isReturningCustomer(phone, currentOrderId = null) {
+        
+        // 检查老客
+        function isReturningCustomer(phone, excludeId = null) {
             if (!phone) return false;
-            return localOrders.some(order => 
-                order.phone === phone && order.id !== currentOrderId
-            );
+            return allOrders.some(order => order.phone === phone && order.id !== excludeId);
         }
         
-        function getCustomerOrderCount(phone, currentOrderId = null) {
+        function getCustomerOrderCount(phone, excludeId = null) {
             if (!phone) return 0;
-            return localOrders.filter(order => 
-                order.phone === phone && order.id !== currentOrderId
-            ).length;
+            return allOrders.filter(order => order.phone === phone && order.id !== excludeId).length;
         }
-
-        function checkAndShowVipHint(phone, orderId = null) {
-            const vipHint = document.getElementById('vipHint');
+        
+        // 显示老客提示
+        function checkVipHint(phone, orderId = null) {
+            const hint = document.getElementById('vipHint');
             if (phone && isReturningCustomer(phone, orderId)) {
-                const orderCount = getCustomerOrderCount(phone, orderId);
-                vipHint.innerHTML = `🏆 老客！这是第 ${orderCount + 1} 次下单 (历史 ${orderCount} 单)`;
-                vipHint.className = "text-xs mt-2 p-2 bg-amber-50 text-amber-700 rounded-lg border border-amber-200";
+                const count = getCustomerOrderCount(phone, orderId);
+                hint.innerHTML = `🏆 老客！这是第 ${count + 1} 次下单`;
+                hint.className = "text-xs mt-2 p-2 bg-amber-50 text-amber-700 rounded-lg";
             } else if (phone && !isReturningCustomer(phone, orderId)) {
-                vipHint.innerHTML = `✨ 新客户，首次下单 ✨`;
-                vipHint.className = "text-xs mt-2 p-2 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200";
+                hint.innerHTML = `✨ 新客户，首次下单 ✨`;
+                hint.className = "text-xs mt-2 p-2 bg-emerald-50 text-emerald-700 rounded-lg";
             } else {
-                vipHint.className = "text-xs mt-2 hidden";
+                hint.className = "text-xs mt-2 hidden";
             }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const isMobile = window.innerWidth < 768;
-
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: isMobile ? 'dayGridMonth' : 'dayGridMonth',
-                locale: 'zh-cn',
-                timeZone: 'local',
-                displayEventTime: false,
-                height: 'auto',
-                contentHeight: 'auto',
-                buttonText: { today: '今天', month: '月', week: '周', day: '日', list: '列表' },
-                headerToolbar: {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: isMobile ? 'today' : 'today'
-                },
-                
-                // 自定义事件渲染 - 手机端一目了然
-                eventContent: function(arg) {
-                    const props = arg.event.extendedProps;
-                    const timeStr = props.datetime ? props.datetime.split('T')[1] : '';
-                    const isVip = props.isReturning === true;
-                    
-                    return {
-                        html: `
-                            <div class="custom-event" style="padding: 4px 0;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
-                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                        <span class="event-time">${timeStr}</span>
-                                        <span class="event-name">${escapeHtml(props.name)}</span>
-                                        ${isVip ? '<span class="vip-badge">🌟 老客</span>' : ''}
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span class="event-count">${props.count}部</span>
-                                    </div>
-                                </div>
-                                ${props.phone ? `<div style="margin-top: 4px;"><span class="event-phone">📞 ${maskPhone(props.phone)}</span></div>` : ''}
-                            </div>
-                        `
-                    };
-                },
-                eventClick: function(info) { 
-                    openModal(info.event.extendedProps); 
-                },
-                // 让单元格更高
-                dayMaxEvents: true,
-                moreLinkClick: 'popover'
-            });
-            calendar.render();
-            fetchOrders(); 
-            setInterval(fetchOrders, 30000); 
-        });
-
-        function maskPhone(phone) {
-            if (!phone) return '';
-            if (phone.length === 11) return phone.slice(0, 3) + '****' + phone.slice(-4);
-            return phone.slice(-4);
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-
+        
+        // 获取所有订单
         async function fetchOrders() {
             const token = getAuthToken();
             if (!token) return;
-
+            
+            document.getElementById('syncStatus').innerHTML = '<span class="loading w-3 h-3 inline-block align-middle mr-1"></span> 同步中...';
+            
             try {
-                const response = await fetch(`${API_URL}?ts=${new Date().getTime()}`, {
+                const res = await fetch(`${API_URL}?t=${Date.now()}`, {
                     headers: { "Authorization": `token ${token}` }
                 });
-                if (response.status === 401 || response.status === 403) {
-                    alert("❌ 令牌无效，请点击「重置」重新输入！");
+                if (res.status === 401 || res.status === 403) {
+                    alert("令牌无效，请重置");
                     clearToken();
                     return;
                 }
-                const data = await response.json();
-                fileSha = data.sha; 
-                const content = decodeURIComponent(atob(data.content).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
+                const data = await res.json();
+                fileSha = data.sha;
+                const content = decodeURIComponent(atob(data.content));
+                allOrders = JSON.parse(content || "[]");
                 
-                localOrders = JSON.parse(content || "[]");
-                renderCalendar();
-            } catch (err) {
-                console.error("加载失败", err);
+                document.getElementById('syncStatus').innerHTML = `✅ 已同步 · ${allOrders.length}个订单`;
+                renderDateSelector();
+                renderOrdersByDate(currentSelectedDate);
+            } catch(err) {
+                console.error(err);
+                document.getElementById('syncStatus').innerHTML = "⚠️ 加载失败";
             }
         }
-
-        function renderCalendar() {
-            const events = localOrders.map(item => {
-                const isReturning = isReturningCustomer(item.phone, item.id);
-                return {
-                    id: item.id,
-                    title: item.name, 
-                    start: item.datetime,
-                    extendedProps: {
-                        ...item,
-                        isReturning: isReturning
-                    }
-                };
+        
+        // 渲染日期选择器（显示有订单的日期）
+        function renderDateSelector() {
+            // 收集所有有订单的日期
+            const datesWithOrders = new Set();
+            allOrders.forEach(order => {
+                const date = order.datetime.split('T')[0];
+                datesWithOrders.add(date);
             });
-            calendar.removeAllEvents();
-            calendar.addEventSource(events);
+            
+            // 生成最近30天的日期
+            const dates = [];
+            const today = new Date();
+            for (let i = -7; i <= 30; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                const dateStr = d.toISOString().slice(0, 10);
+                const hasOrder = datesWithOrders.has(dateStr);
+                dates.push({ date: dateStr, hasOrder });
+            }
+            
+            const container = document.getElementById('dateList');
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            
+            container.innerHTML = dates.map(d => {
+                const dateObj = new Date(d.date);
+                const day = dateObj.getDate();
+                const weekday = weekdays[dateObj.getDay()];
+                const isActive = d.date === currentSelectedDate;
+                const isToday = d.date === today.toISOString().slice(0, 10);
+                
+                return `
+                    <div class="date-item ${isActive ? 'active' : ''}" data-date="${d.date}" onclick="selectDate('${d.date}')">
+                        <div class="date-day">${day}</div>
+                        <div class="date-week">${weekday}</div>
+                        ${d.hasOrder ? '<div class="text-[10px] mt-0.5">●</div>' : '<div class="text-[10px] mt-0.5 opacity-0">●</div>'}
+                    </div>
+                `;
+            }).join('');
         }
-
-        async function uploadToGitHub(newData, commitMessage) {
+        
+        // 选择日期
+        window.selectDate = function(date) {
+            currentSelectedDate = date;
+            renderDateSelector();
+            renderOrdersByDate(date);
+        };
+        
+        // 按日期渲染订单列表
+        function renderOrdersByDate(date) {
+            const container = document.getElementById('ordersContainer');
+            const dayOrders = allOrders.filter(order => order.datetime.startsWith(date));
+            
+            // 按时间排序
+            dayOrders.sort((a, b) => a.datetime.localeCompare(b.datetime));
+            
+            if (dayOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state bg-white rounded-2xl py-16">
+                        <div class="text-5xl mb-3">📭</div>
+                        <p class="text-gray-400">${date} 暂无订单</p>
+                        <button onclick="openAddModal()" class="mt-4 bg-emerald-500 text-white px-5 py-2 rounded-full text-sm">+ 添加订单</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="mb-3 flex justify-between items-center">
+                    <span class="text-sm text-gray-500">📅 ${date}</span>
+                    <span class="text-xs text-gray-400">${dayOrders.length}个订单</span>
+                </div>
+                ${dayOrders.map(order => renderOrderCard(order)).join('')}
+            `;
+        }
+        
+        // 渲染单个订单卡片
+        function renderOrderCard(order) {
+            const timeStr = order.datetime.split('T')[1];
+            const isVip = isReturningCustomer(order.phone, order.id);
+            const phoneDisplay = order.phone ? order.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
+            
+            return `
+                <div class="order-card" onclick="openEditModal('${order.id}')">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="time-badge">${timeStr}</span>
+                            ${isVip ? '<span class="vip-badge">🌟 老客</span>' : ''}
+                        </div>
+                        <span class="count-badge">${order.count}部</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-lg font-bold text-gray-800">${escapeHtml(order.name)}</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-400">
+                        <span>📞 ${phoneDisplay}</span>
+                        ${order.note ? `<span class="truncate">📝 ${escapeHtml(order.note)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+        }
+        
+        // 保存到 GitHub
+        async function saveToGitHub(newOrders, message) {
             const token = getAuthToken();
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerText;
-            submitBtn.innerText = "⏳ 同步中...";
-            submitBtn.disabled = true;
-
-            const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 2))));
-
+            const btn = document.getElementById('submitOrderBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ 保存中...";
+            btn.disabled = true;
+            
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(newOrders, null, 2))));
+            
             try {
-                const response = await fetch(API_URL, {
+                const res = await fetch(API_URL, {
                     method: "PUT",
                     headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        message: commitMessage,
-                        content: base64Content,
+                        message: message,
+                        content: content,
                         sha: fileSha,
                         branch: GH_BRANCH
                     })
                 });
-
-                if (response.ok) {
-                    const resData = await response.json();
-                    fileSha = resData.content.sha;
-                    localOrders = newData;
-                    renderCalendar();
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.content.sha;
+                    allOrders = newOrders;
                     closeModal();
+                    renderDateSelector();
+                    renderOrdersByDate(currentSelectedDate);
+                    document.getElementById('syncStatus').innerHTML = `✅ 已同步 · ${allOrders.length}个订单`;
                 } else {
-                    alert("⚠️ 多人同时修改，已合并最新数据，请重新保存！");
-                    fetchOrders();
+                    alert("保存失败，可能有人同时修改，请刷新后重试");
+                    await fetchOrders();
                 }
-            } catch (err) {
-                alert("保存失败，请检查网络");
+            } catch(err) {
+                alert("保存失败");
             } finally {
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
-        }
-
-        const modal = document.getElementById('orderModal');
-        const deleteBtn = document.getElementById('deleteBtn');
-        const phoneInput = document.getElementById('orderPhone');
-
-        phoneInput.addEventListener('input', function(e) {
-            const orderId = document.getElementById('orderId').value;
-            checkAndShowVipHint(e.target.value, orderId);
-        });
-
-        function openModal(orderData = null) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('vipHint').className = "text-xs mt-2 hidden";
-            
-            if (orderData && orderData.id) {
-                document.getElementById('modalTitle').innerText = "📝 修改订单";
-                document.getElementById('orderId').value = orderData.id;
-                document.getElementById('orderName').value = orderData.name;
-                document.getElementById('orderPhone').value = orderData.phone || '';
-                
-                const parts = orderData.datetime.split('T');
-                document.getElementById('orderOnlyDate').value = parts[0];
-                document.getElementById('orderOnlyTime').value = parts[1];
-                
-                document.getElementById('orderCount').value = orderData.count;
-                document.getElementById('orderNote').value = orderData.note || '';
-                deleteBtn.classList.remove('hidden');
-                
-                if (orderData.phone) {
-                    checkAndShowVipHint(orderData.phone, orderData.id);
-                }
-            } else {
-                document.getElementById('modalTitle').innerText = "➕ 添加订单";
-                document.getElementById('orderId').value = '';
-                document.getElementById('orderName').value = '';
-                document.getElementById('orderPhone').value = '';
-                document.getElementById('orderOnlyDate').value = '';
-                document.getElementById('orderOnlyTime').value = '';
-                document.getElementById('orderCount').value = '';
-                document.getElementById('orderNote').value = '';
-                deleteBtn.classList.add('hidden');
-            }
-        }
-
-        function closeModal() { 
-            modal.classList.add('hidden'); 
-            modal.classList.remove('flex'); 
         }
         
-        document.getElementById('addBtn').addEventListener('click', () => openModal());
-        document.getElementById('closeBtn').addEventListener('click', closeModal);
-
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const id = document.getElementById('orderId').value || '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        // 打开添加弹窗
+        function openAddModal() {
+            document.getElementById('modalTitle').innerText = "➕ 添加订单";
+            document.getElementById('orderId').value = '';
+            document.getElementById('orderName').value = '';
+            document.getElementById('orderPhone').value = '';
+            document.getElementById('orderDate').value = currentSelectedDate;
+            document.getElementById('orderTime').value = '';
+            document.getElementById('orderCount').value = '';
+            document.getElementById('orderNote').value = '';
+            document.getElementById('deleteBtn').classList.add('hidden');
+            document.getElementById('vipHint').className = "text-xs mt-2 hidden";
+            document.getElementById('orderModal').classList.add('active');
+        }
+        
+        // 打开编辑弹窗
+        window.openEditModal = function(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            document.getElementById('modalTitle').innerText = "✏️ 编辑订单";
+            document.getElementById('orderId').value = order.id;
+            document.getElementById('orderName').value = order.name;
+            document.getElementById('orderPhone').value = order.phone || '';
+            document.getElementById('orderDate').value = order.datetime.split('T')[0];
+            document.getElementById('orderTime').value = order.datetime.split('T')[1];
+            document.getElementById('orderCount').value = order.count;
+            document.getElementById('orderNote').value = order.note || '';
+            document.getElementById('deleteBtn').classList.remove('hidden');
+            checkVipHint(order.phone, order.id);
+            document.getElementById('orderModal').classList.add('active');
+        };
+        
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+        
+        // 保存订单
+        async function saveOrder() {
+            const id = document.getElementById('orderId').value || 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
             const name = document.getElementById('orderName').value.trim();
             const phone = document.getElementById('orderPhone').value.trim();
-            const oDate = document.getElementById('orderOnlyDate').value;
-            const oTime = document.getElementById('orderOnlyTime').value;
+            const date = document.getElementById('orderDate').value;
+            const time = document.getElementById('orderTime').value;
             const count = parseInt(document.getElementById('orderCount').value);
             const note = document.getElementById('orderNote').value.trim();
             const isEdit = document.getElementById('orderId').value !== '';
-
-            if (!name || !phone || !oDate || !oTime || !count) {
-                alert("请完整填写所有必填项！");
+            
+            if (!name || !phone || !date || !time || !count) {
+                alert("请填写完整信息");
                 return;
             }
-
-            const datetime = `${oDate}T${oTime}`;
-
-            document.getElementById('submitBtn').innerText = "⏳ 核对中...";
-            await fetchOrders(); 
-
-            const isTimeOccupied = localOrders.some(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
             
-            if (isTimeOccupied) {
-                const existingOrder = localOrders.find(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
-                alert(`🚨 时间冲突！\n${oDate} ${oTime} 已被【${existingOrder.name}】占用`);
-                document.getElementById('submitBtn').innerText = "保存";
+            const datetime = `${date}T${time}`;
+            
+            // 检查时间冲突
+            const conflict = allOrders.some(o => o.datetime === datetime && o.id !== id);
+            if (conflict) {
+                alert(`⚠️ ${date} ${time} 已有订单，请换个时间`);
                 return;
             }
-
-            let updatedOrders = [...localOrders];
-            const orderPayload = { id, name, phone, datetime, count, note };
-
-            if (isEdit) { 
-                updatedOrders = updatedOrders.map(item => item.id === id ? orderPayload : item); 
-            } else { 
-                updatedOrders.push(orderPayload);
-            }
-
-            const isReturning = isReturningCustomer(phone, id);
-            const confirmMsg = isReturning 
-                ? `🔄 老客再次下单！\n\n订单：${name}\n电话：${maskPhone(phone)}\n时间：${oDate} ${oTime}\n数量：${count}部\n\n确认保存吗？`
-                : `📝 新订单\n\n订单：${name}\n电话：${maskPhone(phone)}\n时间：${oDate} ${oTime}\n数量：${count}部\n\n确认保存？`;
             
-            if (confirm(confirmMsg)) {
-                await uploadToGitHub(updatedOrders, isEdit ? `更新: ${name}` : `新增: ${name}`);
+            let newOrders = [...allOrders];
+            const orderData = { id, name, phone, datetime, count, note };
+            
+            if (isEdit) {
+                newOrders = newOrders.map(o => o.id === id ? orderData : o);
             } else {
-                document.getElementById('submitBtn').innerText = "保存";
+                newOrders.push(orderData);
             }
-        });
-
-        deleteBtn.addEventListener('click', async () => {
+            
+            await saveToGitHub(newOrders, isEdit ? `更新: ${name}` : `新增: ${name}`);
+        }
+        
+        // 删除订单
+        async function deleteOrder() {
             const id = document.getElementById('orderId').value;
             const name = document.getElementById('orderName').value;
-            if (confirm(`🗑️ 确定删除订单【${name}】吗？`)) {
-                const updatedOrders = localOrders.filter(item => item.id !== id);
-                await uploadToGitHub(updatedOrders, `删除: ${name}`);
-            }
+            if (!confirm(`确定删除「${name}」吗？`)) return;
+            
+            const newOrders = allOrders.filter(o => o.id !== id);
+            await saveToGitHub(newOrders, `删除: ${name}`);
+        }
+        
+        // 事件绑定
+        document.getElementById('addBtn').onclick = openAddModal;
+        document.getElementById('closeModalBtn').onclick = closeModal;
+        document.getElementById('submitOrderBtn').onclick = saveOrder;
+        document.getElementById('deleteBtn').onclick = deleteOrder;
+        document.getElementById('orderPhone').addEventListener('input', (e) => {
+            const orderId = document.getElementById('orderId').value;
+            checkVipHint(e.target.value, orderId);
         });
+        
+        // 点击遮罩关闭
+        document.getElementById('orderModal').onclick = (e) => {
+            if (e.target === document.getElementById('orderModal')) closeModal();
+        };
+        
+        // 初始化
+        fetchOrders();
+        
+        // 点击刷新时强制重新加载
+        window.fetchOrders = fetchOrders;
+        window.clearToken = clearToken;
     </script>
 </body>
 </html>

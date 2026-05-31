@@ -127,9 +127,9 @@
 </div>
 
 <script>
-    // ========== GitHub 配置（請修改成您的倉庫）==========
-    const GH_USER = "althellobye";
-    const GH_REPO = "my-order-data";
+    // ========== 請修改這裡 ==========
+    const GH_USER = "althellobye";     // 改成您的 GitHub 用戶名
+    const GH_REPO = "my-order-data";   // 改成您的倉庫名稱
     const FILE_PATH = "data.json";
     const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
     
@@ -152,8 +152,6 @@
     function isVip(phone, excludeId) { if(!phone) return false; let n = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === n && o.id !== excludeId); }
     function getPrice(phone, orderId) { return isVip(phone, orderId) ? OLD_PRICE : NEW_PRICE; }
     function getIncome(order) { let p = order.price || getPrice(order.phone, order.id); return (order.count || 1) * p; }
-    function maskPhone(p) { let c = p.replace(/\D/g,''); if(c.length===11) return c.slice(0,3)+'****'+c.slice(-4); if(c.length===8) return c.slice(0,4)+'****'; return p; }
-    function escapeHtml(s) { return s ? s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
 
     async function loadFromGitHub() {
         if (!githubToken) { loadFromLocal(); return; }
@@ -263,7 +261,19 @@
         let c = document.getElementById('detailList');
         if(orders.length===0) c.innerHTML = '<div style="text-align:center; padding:40px;">暫無訂單</div>';
         else {
-            c.innerHTML = orders.map(o=>{ let vip = isVip(o.phone, o.id); let price = o.price || getPrice(o.phone, o.id); return `<div class="order-card"><div>⏰ ${o.datetime.split('T')[1]}  ${vip?'回頭客':'新客'}</div><div style="font-size:16px; font-weight:700;">${escapeHtml(o.name)}</div><div>📞 ${maskPhone(o.phone)}</div><div>${o.count}部 × $${price} = $${(o.count||1)*price}</div>${o.note?`<div>📍 ${escapeHtml(o.note)}</div>`:''}<button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">編輯</button><button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">刪除</button></div>`; }).join('');
+            c.innerHTML = orders.map(o=>{ 
+                let vip = isVip(o.phone, o.id); 
+                let price = o.price || getPrice(o.phone, o.id); 
+                return `<div class="order-card">
+                    <div style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}  ${vip?'🌟回頭客':'✨新客'}</div>
+                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${o.name}</div>
+                    <div>📞 ${o.phone || ''}</div>
+                    <div>🔢 ${o.count}部 × $${price} = $${(o.count||1)*price}</div>
+                    ${o.note ? `<div>📍 ${o.note}</div>` : ''}
+                    <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">✏️ 編輯</button>
+                    <button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">🗑️ 刪除</button>
+                </div>`;
+            }).join('');
             document.querySelectorAll('.editBtn').forEach(b=>{ b.onclick = () => editOrder(b.getAttribute('data-id')); });
             document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = async () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
         }
@@ -281,7 +291,7 @@
         document.getElementById('count').value = o.count;
         document.getElementById('note').value = o.note||'';
         document.getElementById('price').value = o.price||'';
-        document.getElementById('modalTitle').innerText = "編輯訂單";
+        document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
         document.getElementById('deleteBtn').style.display = "block";
         closeDetailModal(); openOrderModal();
     }
@@ -341,7 +351,17 @@
         let price = vip ? OLD_PRICE : NEW_PRICE;
         let div = document.getElementById('preview');
         div.style.display = 'block';
-        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;"><strong>✅ 識別結果</strong><div>客戶：${rec.name}</div><div>電話：${rec.phone||'未識別'}</div><div>日期：${rec.date||'未識別'}</div><div>時間：${rec.time||'未識別'}</div><div>數量：${rec.count}部</div><div>單價：$${price}/部</div><div>地址：${rec.note||'無'}</div><button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">填寫</button></div>`;
+        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;">
+            <strong>✅ 識別結果</strong>
+            <div>📛 客戶：${rec.name}</div>
+            <div>📞 電話：${rec.phone||'未識別'}</div>
+            <div>📅 日期：${rec.date||'未識別'}</div>
+            <div>⏰ 時間：${rec.time||'未識別'}</div>
+            <div>🔢 數量：${rec.count}部</div>
+            <div>💰 單價：$${price}/部 ${vip?'(舊客價)':'(新客價)'}</div>
+            <div>📍 地址：${rec.note||'無'}</div>
+            <button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">📝 填寫</button>
+        </div>`;
         document.getElementById('applyBtn').onclick = () => {
             document.getElementById('name').value = rec.name;
             document.getElementById('phone').value = rec.phone||'';
@@ -352,7 +372,7 @@
             document.getElementById('price').value = price;
             document.getElementById('editId').value = '';
             document.getElementById('deleteBtn').style.display = 'none';
-            document.getElementById('modalTitle').innerText = "新增訂單";
+            document.getElementById('modalTitle').innerText = "➕ 新增訂單";
             closePasteModal(); openOrderModal();
         };
     }
@@ -365,7 +385,7 @@
 
     document.getElementById('prevMonth').onclick = () => { currentMonth--; if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); };
     document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
-    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = ''; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "新增訂單"; openOrderModal(); };
+    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = ''; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "➕ 新增訂單"; openOrderModal(); };
     document.getElementById('pasteBtn').onclick = openPasteModal;
     document.getElementById('closeOrderModal').onclick = closeOrderModal;
     document.getElementById('closePasteModal').onclick = closePasteModal;

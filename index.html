@@ -76,7 +76,7 @@
 
     <script>
         // ==========================================
-        // 1. 固定配置（只需填你的用户名和仓库名）
+        // 1. 固定配置
         // ==========================================
         const GH_USER = "althellobye"; 
         const GH_REPO = "my-order-data"; 
@@ -218,7 +218,6 @@
                 document.getElementById('orderId').value = orderData.id;
                 document.getElementById('orderName').value = orderData.name;
                 
-                // 拆分时间回填到两个输入框
                 const parts = orderData.datetime.split('T');
                 document.getElementById('orderOnlyDate').value = parts[0];
                 document.getElementById('orderOnlyTime').value = parts[1];
@@ -256,16 +255,19 @@
                 return;
             }
 
-            // 把日期和时间重新合并为标准的存储格式
             const datetime = `${oDate}T${oTime}`;
 
             document.getElementById('submitBtn').innerText = "正在核对云端...";
             await fetchOrders(); // 强行拉最新云端数据
 
-            // 精准撞单防重
-            const isDuplicate = localOrders.some(item => item.name === name && item.datetime === datetime && item.id !== document.getElementById('orderId').value);
-            if (isDuplicate) {
-                alert(`⚠️ 撞单拦截提示：\n\n该时间【${oDate} ${oTime}】已存在相同的订单【${name}】！\n请修改时间或名称后再试。`);
+            // ⚠️ 彻底修复：精准撞时间拦截！
+            // 只要云端有任何订单的 datetime 跟你现在输入的一模一样（且不是当前正在修改的这笔单子本身），就直接拦截！
+            const isTimeOccupied = localOrders.some(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
+            
+            if (isTimeOccupied) {
+                // 找出那个撞单的订单名字，给用户看，体验更好
+                const existingOrder = localOrders.find(item => item.datetime === datetime && item.id !== document.getElementById('orderId').value);
+                alert(`🚨 撞单拦截！\n\n【${oDate} ${oTime}】这个时间已经被订单【${existingOrder.name}】占用了！\n请更换其他时间。`);
                 document.getElementById('submitBtn').innerText = "保存";
                 return;
             }

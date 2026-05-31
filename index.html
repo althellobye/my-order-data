@@ -3,86 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>洗冷氣訂單系統 · 雲端同步</title>
+    <title>洗冷氣訂單系統</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; padding: 16px 12px 90px 12px; }
-        .card { background: white; border-radius: 24px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.15s; }
-        .btn:active { transform: scale(0.96); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f2f5; font-family: system-ui, sans-serif; padding: 16px 12px 90px 12px; }
+        .card { background: white; border-radius: 24px; padding: 16px; margin-bottom: 16px; }
+        .btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 40px; font-size: 13px; cursor: pointer; }
         .btn-primary { background: #059669; color: white; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 12px; text-align: center; color: white; }
-        .stat-label { font-size: 11px; opacity: 0.7; }
         .stat-number { font-size: 20px; font-weight: 800; }
+        .stat-label { font-size: 11px; opacity: 0.7; }
         .report-tabs { display: flex; gap: 12px; margin-bottom: 12px; }
-        .tab-btn { flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 40px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .tab-btn { flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; }
         .tab-btn.active { background: #059669; color: white; }
-        .report-list { background: #f8fafc; border-radius: 20px; padding: 8px; max-height: 200px; overflow-y: auto; }
+        .report-list { background: #f8fafc; border-radius: 20px; padding: 8px; max-height: 180px; overflow-y: auto; }
         .report-item { display: flex; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
         .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .month-nav button { background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 30px; font-size: 20px; cursor: pointer; }
         .month-title { font-size: 18px; font-weight: 700; }
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
-        .weekday { font-size: 13px; font-weight: 600; color: #64748b; padding: 6px 0; }
+        .weekday { font-size: 13px; font-weight: 600; color: #64748b; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .date-cell { background: #fafcff; border-radius: 14px; padding: 8px 4px; min-height: 95px; border: 1px solid #eef2ff; cursor: pointer; transition: 0.1s; }
-        .date-cell:active { transform: scale(0.98); background: #f3f4f6; }
+        .date-cell { background: #fafcff; border-radius: 14px; padding: 6px 4px; min-height: 90px; border: 1px solid #eef2ff; cursor: pointer; }
         .date-cell.today { background: #ecfdf5; border: 2px solid #10b981; }
-        .day-number { font-size: 15px; font-weight: 700; margin-bottom: 4px; padding-left: 4px; }
-        .order-mini { background: #eef2ff; border-radius: 8px; padding: 3px 5px; margin-bottom: 3px; font-size: 9px; border-left: 2px solid #059669; }
+        .day-number { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .order-mini { background: #eef2ff; border-radius: 8px; padding: 2px 4px; margin-bottom: 2px; font-size: 9px; border-left: 2px solid #059669; }
         .order-mini.vip { background: #fef3c7; border-left-color: #f59e0b; }
         .fab-group { position: fixed; bottom: 24px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
-        .fab { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; transition: 0.1s; }
-        .fab:active { transform: scale(0.92); }
+        .fab { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; }
         .fab-add { background: #059669; color: white; }
         .fab-paste { background: #8b5cf6; color: white; font-size: 22px; }
         .modal { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 28px 28px 0 0; max-height: 85vh; overflow-y: auto; z-index: 200; transform: translateY(100%); transition: transform 0.3s; }
         .modal.open { transform: translateY(0); }
-        .modal-header { padding: 20px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2ff; background: white; position: sticky; top: 0; }
-        .modal-header h3 { font-size: 18px; font-weight: 700; }
+        .modal-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2ff; }
         .close-btn { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 30px; font-size: 22px; cursor: pointer; }
         .modal-body { padding: 20px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 15px; background: #f8fafc; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 20px; }
         .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
         .form-buttons { display: flex; gap: 12px; margin-top: 20px; }
         .form-buttons button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; }
-        .vip-badge { font-size: 12px; padding: 8px; border-radius: 16px; margin-top: 8px; }
         .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #10b981; }
-        .paste-area { width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 20px; min-height: 140px; margin-bottom: 16px; font-family: monospace; font-size: 14px; }
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
-        .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; font-size: 14px; }
-        .sync-status { font-size: 11px; margin-top: 8px; color: #059669; }
+        .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="flex-between">
-        <h1>❄️ 洗冷氣訂單系統</h1>
-    </div>
+    <h1>❄️ 洗冷氣訂單系統</h1>
     <div class="token-bar">
-        <div id="tokenStatus">⚪ 未連接 GitHub · 數據僅在本地</div>
-        <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭) 啟用多人同步">
-        <button class="btn btn-primary" id="saveTokenBtn" style="margin-top:8px; width:100%;">🔗 連接並同步</button>
-        <div id="syncStatus" class="sync-status"></div>
+        <div id="tokenStatus">⚪ 未連接 GitHub</div>
+        <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
+        <button class="btn btn-primary" id="saveTokenBtn" style="margin-top:8px; width:100%;">連接</button>
     </div>
 </div>
 
 <div class="stats-grid">
-    <div class="stat-card"><div class="stat-label">💰 總收入</div><div class="stat-number" id="totalIncome">$0</div></div>
-    <div class="stat-card"><div class="stat-label">📋 總訂單</div><div class="stat-number" id="totalOrders">0</div></div>
-    <div class="stat-card"><div class="stat-label">❄️ 總洗機</div><div class="stat-number" id="totalUnits">0</div></div>
+    <div class="stat-card"><div class="stat-label">總收入</div><div class="stat-number" id="totalIncome">$0</div></div>
+    <div class="stat-card"><div class="stat-label">總訂單</div><div class="stat-number" id="totalOrders">0</div></div>
+    <div class="stat-card"><div class="stat-label">總洗機</div><div class="stat-number" id="totalUnits">0</div></div>
 </div>
 
 <div class="card">
     <div class="report-tabs">
-        <button class="tab-btn active" id="weekTab">📅 本週收入</button>
-        <button class="tab-btn" id="monthTab">📆 本月收入</button>
+        <button class="tab-btn active" id="weekTab">本週收入</button>
+        <button class="tab-btn" id="monthTab">本月收入</button>
     </div>
     <div id="reportList" class="report-list">暫無訂單</div>
 </div>
@@ -106,183 +94,52 @@
     <button class="fab fab-add" id="addBtn">+</button>
 </div>
 
-<!-- 訂單彈窗 -->
 <div id="orderModal" class="modal">
-    <div class="modal-header"><h3 id="modalTitle">➕ 新增訂單</h3><button class="close-btn" id="closeOrderModal">✕</button></div>
+    <div class="modal-header"><h3 id="modalTitle">新增訂單</h3><button class="close-btn" id="closeOrderModal">✕</button></div>
     <div class="modal-body">
         <input type="hidden" id="editId">
-        <div class="form-group"><label>📛 客戶稱呼</label><input type="text" id="name" placeholder="例: 陳先生"></div>
-        <div class="form-group"><label>📞 聯絡電話</label><input type="tel" id="phone" placeholder="+853 66668888"><div id="vipHint" class="vip-badge" style="display:none;"></div></div>
-        <div class="form-row"><div class="form-group"><label>📅 日期</label><input type="date" id="date"></div><div class="form-group"><label>⏰ 時間</label><input type="time" id="time"></div></div>
-        <div class="form-group"><label>🔢 冷氣機數量</label><input type="number" id="count" min="1" value="1"></div>
-        <div class="form-group"><label>📍 地址 / 備註</label><textarea id="note" rows="2" placeholder="例: 澳門台山XX大廈10樓B"></textarea></div>
-        <div class="form-group"><label>💰 單價 (每部)</label><input type="number" id="price" step="10" placeholder="自動計算"></div>
-        <div class="form-buttons"><button id="deleteBtn" style="display:none; background:#fef2f2; color:#e11d48;">🗑️ 刪除</button><button id="saveBtn" style="background:#059669; color:white;">💾 保存</button></div>
+        <div class="form-group"><label>客戶稱呼</label><input type="text" id="name"></div>
+        <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone"></div>
+        <div class="form-row"><div class="form-group"><label>日期</label><input type="date" id="date"></div><div class="form-group"><label>時間</label><input type="time" id="time"></div></div>
+        <div class="form-group"><label>數量</label><input type="number" id="count" value="1"></div>
+        <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
+        <div class="form-group"><label>單價</label><input type="number" id="price"></div>
+        <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
 </div>
 
-<!-- 智能粘貼彈窗 -->
 <div id="pasteModal" class="modal">
-    <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
+    <div class="modal-header"><h3>智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
-        <textarea id="pasteText" class="paste-area" placeholder="貼上聊天記錄，例如：
-陳生話：聽日下午3點，洗3部冷氣，地址台山XX大廈，電話+853 66668888"></textarea>
-        <button id="recognizeBtn" style="width:100%; background:#8b5cf6; color:white; border:none; padding:14px; border-radius:40px; font-size:16px;">🔍 自動識別</button>
+        <textarea id="pasteText" rows="6" style="width:100%; padding:12px; border-radius:20px; border:1px solid #ccc;"></textarea>
+        <button id="recognizeBtn" style="margin-top:12px; width:100%; background:#8b5cf6; color:white; border:none; padding:12px; border-radius:40px;">自動識別</button>
         <div id="preview" style="margin-top:16px; display:none;"></div>
     </div>
 </div>
 
-<!-- 詳情彈窗 -->
 <div id="detailModal" class="modal">
     <div class="modal-header"><h3 id="detailTitle"></h3><button class="close-btn" id="closeDetailModal">✕</button></div>
     <div class="modal-body" id="detailList"></div>
 </div>
 
 <script>
-    // GitHub 配置
-    const GH_USER = "althellobye";
-    const GH_REPO = "my-order-data";
-    const FILE_PATH = "orders.json";
-    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
-    
     let allOrders = [];
-    let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-    let NEW_PRICE = 500;
-    let OLD_PRICE = 450;
+    let NEW_PRICE = 500, OLD_PRICE = 450;
     let currentReport = "week";
     let githubToken = localStorage.getItem('github_token') || '';
-    let isOnline = false;
 
     function normalizePhone(p) { return p ? p.replace(/[\s\+-]/g, '') : ''; }
     function isVip(phone, excludeId) { if(!phone) return false; let n = normalizePhone(phone); return allOrders.some(o => normalizePhone(o.phone) === n && o.id !== excludeId); }
     function getPrice(phone, orderId) { return isVip(phone, orderId) ? OLD_PRICE : NEW_PRICE; }
     function getIncome(order) { let p = order.price || getPrice(order.phone, order.id); return (order.count || 1) * p; }
-    function maskPhone(p) { if(!p) return ''; let c = p.replace(/\D/g,''); if(c.length===11) return c.slice(0,3)+'****'+c.slice(-4); if(c.length===8) return c.slice(0,4)+'****'; return p; }
-    function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+    function maskPhone(p) { let c = p.replace(/\D/g,''); if(c.length===11) return c.slice(0,3)+'****'+c.slice(-4); if(c.length===8) return c.slice(0,4)+'****'; return p; }
+    function escapeHtml(s) { return s ? s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
 
-    // 顯示同步狀態
-    function showSyncStatus(msg, isError) {
-        let div = document.getElementById('syncStatus');
-        div.innerHTML = msg;
-        div.style.color = isError ? '#e11d48' : '#059669';
-        setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 3000);
-    }
-
-    // 從 GitHub 加載
-    async function loadFromGitHub() {
-        if (!githubToken) return false;
-        try {
-            let res = await fetch(`${API_URL}?t=${Date.now()}`, {
-                headers: { "Authorization": `token ${githubToken}` }
-            });
-            if (res.status === 401) {
-                showSyncStatus("Token 無效，請重新輸入", true);
-                return false;
-            }
-            if (res.status === 404) {
-                // 文件不存在，創建新文件
-                await createGitHubFile();
-                return true;
-            }
-            let data = await res.json();
-            fileSha = data.sha;
-            let content = atob(data.content);
-            allOrders = JSON.parse(content || "[]");
-            localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
-            renderAll();
-            showSyncStatus("✅ 已從雲端同步", false);
-            return true;
-        } catch(e) {
-            showSyncStatus("⚠️ 雲端連接失敗，使用本地數據", true);
-            return false;
-        }
-    }
-
-    // 創建 GitHub 文件
-    async function createGitHubFile() {
-        let emptyData = [];
-        let content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
-        try {
-            let res = await fetch(API_URL, {
-                method: "PUT",
-                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "初始化訂單數據", content: content, branch: "main" })
-            });
-            if (res.ok) {
-                let data = await res.json();
-                fileSha = data.content.sha;
-                allOrders = [];
-                renderAll();
-                showSyncStatus("✅ 已創建雲端文件", false);
-                return true;
-            } else {
-                showSyncStatus("❌ 創建失敗，請檢查 Token 權限", true);
-                return false;
-            }
-        } catch(e) {
-            showSyncStatus("❌ 連接失敗", true);
-            return false;
-        }
-    }
-
-    // 保存到 GitHub
-    async function saveToGitHub() {
-        if (!githubToken) return false;
-        let content = btoa(unescape(encodeURIComponent(JSON.stringify(allOrders, null, 2))));
-        try {
-            let res = await fetch(API_URL, {
-                method: "PUT",
-                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "更新訂單", content: content, sha: fileSha, branch: "main" })
-            });
-            if (res.ok) {
-                let data = await res.json();
-                fileSha = data.content.sha;
-                localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
-                showSyncStatus("✅ 已同步到雲端", false);
-                return true;
-            } else {
-                showSyncStatus("❌ 保存失敗", true);
-                return false;
-            }
-        } catch(e) {
-            showSyncStatus("❌ 連接失敗，數據已保存到本地", true);
-            return false;
-        }
-    }
-
-    // 加載本地備份
-    function loadFromLocal() {
-        let saved = localStorage.getItem('ac_orders_backup');
-        if(saved) {
-            try { allOrders = JSON.parse(saved); } catch(e) { allOrders = []; }
-        } else {
-            allOrders = [];
-        }
-        renderAll();
-    }
-
-    // 保存數據（自動選擇雲端或本地）
-    async function saveData() {
-        if (githubToken && fileSha) {
-            await saveToGitHub();
-        } else if (githubToken && !fileSha) {
-            await createGitHubFile();
-            await saveToGitHub();
-        } else {
-            localStorage.setItem('ac_orders_backup', JSON.stringify(allOrders));
-            renderAll();
-        }
-        renderAll();
-    }
-
-    function renderAll() { 
-        renderCalendar(); 
-        updateStats(); 
-        renderReport(currentReport); 
-    }
+    function loadData() { let s = localStorage.getItem('ac_orders'); allOrders = s ? JSON.parse(s) : []; renderAll(); }
+    function saveData() { localStorage.setItem('ac_orders', JSON.stringify(allOrders)); renderAll(); }
+    function renderAll() { renderCalendar(); updateStats(); renderReport(currentReport); }
 
     function updateStats() {
         let units = allOrders.reduce((s,o) => s + (o.count||1), 0);
@@ -315,57 +172,27 @@
         details.sort((a,b)=>a.date.localeCompare(b.date));
         let total = details.reduce((s,x)=>s+x.income,0);
         let container = document.getElementById('reportList');
-        if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">📭 暫無訂單</div>';
-        else container.innerHTML = `<div style="font-weight:700; padding:8px; border-bottom:1px solid #e2e8f0;">💰 總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>📅 ${x.date}</span><span>❄️ ${x.name} (${x.count}部)</span><span style="color:#059669;">$${x.income}</span></div>`).join('');
+        if(details.length===0) container.innerHTML = '<div style="text-align:center; padding:20px;">暫無訂單</div>';
+        else container.innerHTML = `<div style="font-weight:700; padding:8px;">💰 總收入: $${total.toLocaleString()}</div>` + details.map(x => `<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
     }
 
     function renderCalendar() {
         let first = new Date(currentYear, currentMonth, 1);
-        let offset = (first.getDay() === 0 ? 6 : first.getDay() - 1);
-        let days = new Date(currentYear, currentMonth + 1, 0).getDate();
+        let offset = (first.getDay()===0?6:first.getDay()-1);
+        let days = new Date(currentYear, currentMonth+1, 0).getDate();
         let grid = document.getElementById('calendarGrid');
         grid.innerHTML = "";
         document.getElementById('monthTitle').innerHTML = `${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;
         let today = new Date().toISOString().slice(0,10);
-        
-        for(let i = 0; i < offset; i++) {
-            let empty = document.createElement('div');
-            empty.className = 'date-cell';
-            empty.style.background = '#fefce8';
-            empty.style.opacity = '0.5';
-            empty.style.cursor = 'default';
-            grid.appendChild(empty);
-        }
-        
-        for(let d = 1; d <= days; d++) {
+        for(let i=0;i<offset;i++) { let e=document.createElement('div'); e.className='date-cell'; e.style.background='#fefce8'; e.style.opacity='0.5'; grid.appendChild(e); }
+        for(let d=1;d<=days;d++) {
             let ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            let dayOrders = allOrders.filter(o => o.datetime && o.datetime.startsWith(ds));
-            let cell = document.createElement('div');
-            cell.className = 'date-cell';
-            if(ds === today) cell.classList.add('today');
-            
-            let num = document.createElement('div');
-            num.className = 'day-number';
-            num.innerText = d;
-            cell.appendChild(num);
-            
-            if(dayOrders.length > 0) {
-                dayOrders.slice(0, 2).forEach(o => {
-                    let vip = isVip(o.phone, o.id);
-                    let div = document.createElement('div');
-                    div.className = `order-mini ${vip ? 'vip' : ''}`;
-                    div.innerHTML = `<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${o.name} (${o.count}部)`;
-                    cell.appendChild(div);
-                });
-                if(dayOrders.length > 2) {
-                    let more = document.createElement('div');
-                    more.style.fontSize = '9px';
-                    more.style.color = '#64748b';
-                    more.innerText = `+${dayOrders.length - 2}`;
-                    cell.appendChild(more);
-                }
-            }
-            
+            let dayOrders = allOrders.filter(o=>o.datetime && o.datetime.startsWith(ds));
+            let cell = document.createElement('div'); cell.className = 'date-cell';
+            if(ds===today) cell.classList.add('today');
+            let num = document.createElement('div'); num.className = 'day-number'; num.innerText = d; cell.appendChild(num);
+            dayOrders.slice(0,2).forEach(o=>{ let vip = isVip(o.phone, o.id); let div = document.createElement('div'); div.className = `order-mini ${vip?'vip':''}`; div.innerHTML = `<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${o.name} (${o.count}部)`; cell.appendChild(div); });
+            if(dayOrders.length>2) { let m=document.createElement('div'); m.style.fontSize='9px'; m.innerText=`+${dayOrders.length-2}`; cell.appendChild(m); }
             cell.onclick = () => showDetail(ds, dayOrders);
             grid.appendChild(cell);
         }
@@ -374,67 +201,33 @@
     function showDetail(dateStr, orders) {
         document.getElementById('detailTitle').innerHTML = `📅 ${dateStr}`;
         let c = document.getElementById('detailList');
-        if(orders.length === 0) {
-            c.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">📭 暫無訂單<br><button onclick="closeDetailModal();openAddWithDate()" style="margin-top:12px; background:#059669; color:white; border:none; padding:8px 20px; border-radius:30px;">+ 新增訂單</button></div>';
-        } else {
-            c.innerHTML = orders.map(o => {
-                let vip = isVip(o.phone, o.id);
-                let price = o.price || getPrice(o.phone, o.id);
-                return `<div class="order-card">
-                    <div style="font-weight:700;">⏰ ${o.datetime.split('T')[1]}  ${vip ? '🌟回頭客' : '✨新客'}</div>
-                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${escapeHtml(o.name)}</div>
-                    <div>📞 ${maskPhone(o.phone)}</div>
-                    <div>🔢 ${o.count}部 × $${price} = $${(o.count||1)*price}</div>
-                    ${o.note ? `<div>📍 ${escapeHtml(o.note)}</div>` : ''}
-                    <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">✏️ 編輯</button>
-                    <button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">🗑️ 刪除</button>
-                </div>`;
-            }).join('');
-            document.querySelectorAll('.editBtn').forEach(b => { b.onclick = () => editOrder(b.getAttribute('data-id')); });
-            document.querySelectorAll('.delBtn').forEach(b => { b.onclick = async () => { if(confirm('確認刪除？')) { allOrders = allOrders.filter(o => o.id !== b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
+        if(orders.length===0) c.innerHTML = '<div style="text-align:center; padding:40px;">暫無訂單</div>';
+        else {
+            c.innerHTML = orders.map(o=>{ let vip = isVip(o.phone, o.id); let price = o.price || getPrice(o.phone, o.id); return `<div class="order-card"><div>⏰ ${o.datetime.split('T')[1]}  ${vip?'回頭客':'新客'}</div><div style="font-size:16px; font-weight:700;">${escapeHtml(o.name)}</div><div>📞 ${maskPhone(o.phone)}</div><div>${o.count}部 × $${price} = $${(o.count||1)*price}</div>${o.note?`<div>📍 ${escapeHtml(o.note)}</div>`:''}<button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">編輯</button><button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">刪除</button></div>`; }).join('');
+            document.querySelectorAll('.editBtn').forEach(b=>{ b.onclick = () => editOrder(b.getAttribute('data-id')); });
+            document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); saveData(); closeDetailModal(); } }; });
         }
         document.getElementById('detailModal').classList.add('open');
     }
 
-    function openAddWithDate() {
-        let today = new Date().toISOString().slice(0,10);
-        document.getElementById('editId').value = '';
-        document.getElementById('name').value = '';
-        document.getElementById('phone').value = '';
-        document.getElementById('date').value = today;
-        document.getElementById('time').value = '';
-        document.getElementById('count').value = '1';
-        document.getElementById('note').value = '';
-        document.getElementById('price').value = '';
-        document.getElementById('deleteBtn').style.display = 'none';
-        document.getElementById('vipHint').style.display = 'none';
-        document.getElementById('modalTitle').innerText = "➕ 新增訂單";
-        openOrderModal();
-    }
-
     function editOrder(id) {
-        let o = allOrders.find(o => o.id === id);
+        let o = allOrders.find(o=>o.id===id);
         if(!o) return;
         document.getElementById('editId').value = o.id;
         document.getElementById('name').value = o.name;
-        document.getElementById('phone').value = o.phone || '';
+        document.getElementById('phone').value = o.phone||'';
         document.getElementById('date').value = o.datetime.split('T')[0];
         document.getElementById('time').value = o.datetime.split('T')[1];
         document.getElementById('count').value = o.count;
-        document.getElementById('note').value = o.note || '';
-        document.getElementById('price').value = o.price || '';
-        document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
+        document.getElementById('note').value = o.note||'';
+        document.getElementById('price').value = o.price||'';
+        document.getElementById('modalTitle').innerText = "編輯訂單";
         document.getElementById('deleteBtn').style.display = "block";
-        let vh = document.getElementById('vipHint');
-        if(o.phone && isVip(o.phone, o.id)) { vh.innerHTML = `🏆 回頭客！使用舊客價 $${OLD_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#fef3c7"; }
-        else if(o.phone) { vh.innerHTML = `✨ 新客戶，使用新客價 $${NEW_PRICE}/部`; vh.style.display = "block"; vh.style.background = "#d1fae5"; }
-        else vh.style.display = "none";
-        closeDetailModal();
-        openOrderModal();
+        closeDetailModal(); openOrderModal();
     }
 
-    async function saveOrder() {
-        let id = document.getElementById('editId').value || ('id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6));
+    function saveOrder() {
+        let id = document.getElementById('editId').value || ('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
         let name = document.getElementById('name').value.trim();
         let phone = document.getElementById('phone').value.trim();
         let date = document.getElementById('date').value;
@@ -443,46 +236,40 @@
         let note = document.getElementById('note').value.trim();
         let price = parseInt(document.getElementById('price').value);
         let isEdit = document.getElementById('editId').value !== '';
-        
-        if(!name || !phone || !date || !time || !count) { alert("請填寫完整資料"); return; }
+        if(!name||!phone||!date||!time||!count) { alert("請填寫完整"); return; }
         if(phone.match(/^\d{8}$/)) phone = '+853 ' + phone;
-        if(isNaN(price) || price <= 0) price = getPrice(phone, id);
-        
+        if(isNaN(price)||price<=0) price = getPrice(phone, id);
         let datetime = `${date}T${time}`;
-        if(allOrders.some(o => o.datetime === datetime && o.id !== id)) { alert(`⚠️ ${date} ${time} 已被預約`); return; }
-        
+        if(allOrders.some(o=>o.datetime===datetime && o.id!==id)) { alert(`⚠️ ${date} ${time} 已被預約`); return; }
         let orderData = { id, name, phone, datetime, count, note, price };
-        if(isEdit) allOrders = allOrders.map(o => o.id === id ? orderData : o);
+        if(isEdit) allOrders = allOrders.map(o=>o.id===id?orderData:o);
         else allOrders.push(orderData);
-        await saveData();
-        closeOrderModal();
+        saveData(); closeOrderModal();
     }
 
-    async function deleteOrder() {
-        let id = document.getElementById('editId').value;
-        let name = document.getElementById('name').value;
+    function deleteOrder() {
+        let id = document.getElementById('editId').value, name = document.getElementById('name').value;
         if(!confirm(`刪除「${name}」嗎？`)) return;
-        allOrders = allOrders.filter(o => o.id !== id);
-        await saveData();
-        closeOrderModal();
+        allOrders = allOrders.filter(o=>o.id!==id);
+        saveData(); closeOrderModal();
     }
 
     function recognizeText(t) {
-        let r = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
+        let r = { name:"", phone:"", date:"", time:"", count:1, note:"" };
         let m = t.match(/(?:\+?853\s*)?(\d{8})/);
-        if(m) r.phone = '+853 ' + m[1];
-        else { m = t.match(/1[3-9]\d{9}/); if(m) r.phone = m[0]; }
-        m = t.match(/(\d+)\s*[部台]/); if(m) r.count = parseInt(m[1]);
+        if(m) r.phone = '+853 '+m[1];
+        else { m=t.match(/1[3-9]\d{9}/); if(m) r.phone=m[0]; }
+        m = t.match(/(\d+)\s*[部台]/); if(m) r.count=parseInt(m[1]);
         let today = new Date();
-        let fmt = (y,m,d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if(t.includes("今日") || t.includes("今天")) r.date = fmt(today.getFullYear(), today.getMonth()+1, today.getDate());
-        else if(t.includes("聽日") || t.includes("明天")) { let d = new Date(today); d.setDate(today.getDate()+1); r.date = fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
-        else if(t.includes("後日") || t.includes("后天")) { let d = new Date(today); d.setDate(today.getDate()+2); r.date = fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
-        else { let dm = t.match(/(\d{1,2})月(\d{1,2})[日號]/); if(dm) { let mo = parseInt(dm[1]), da = parseInt(dm[2]), yr = today.getFullYear(); if(mo < today.getMonth()+1) yr++; r.date = fmt(yr, mo, da); } }
-        let tm = t.match(/(\d{1,2})[:：](\d{2})/); if(tm) r.time = `${String(tm[1]).padStart(2,'0')}:${tm[2]}`;
-        else { tm = t.match(/(\d{1,2})\s*[點点]/); if(tm) { let h = parseInt(tm[1]); if((t.includes("下午") || t.includes("下晝")) && h < 12) h += 12; r.time = `${String(h).padStart(2,'0')}:00`; } }
-        let nm = t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/); r.name = nm ? nm[0] + " 洗冷氣" : "洗冷氣訂單";
-        let ad = t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/); if(ad) r.note = ad[1];
+        let fmt=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if(t.includes("今日")||t.includes("今天")) r.date=fmt(today.getFullYear(), today.getMonth()+1, today.getDate());
+        else if(t.includes("聽日")||t.includes("明天")) { let d=new Date(today); d.setDate(today.getDate()+1); r.date=fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
+        else if(t.includes("後日")||t.includes("后天")) { let d=new Date(today); d.setDate(today.getDate()+2); r.date=fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
+        else { let dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/); if(dm) { let mo=parseInt(dm[1]), da=parseInt(dm[2]), yr=today.getFullYear(); if(mo<today.getMonth()+1) yr++; r.date=fmt(yr, mo, da); } }
+        let tm=t.match(/(\d{1,2})[:：](\d{2})/); if(tm) r.time=`${String(tm[1]).padStart(2,'0')}:${tm[2]}`;
+        else { tm=t.match(/(\d{1,2})\s*[點点]/); if(tm) { let h=parseInt(tm[1]); if((t.includes("下午")||t.includes("下晝"))&&h<12) h+=12; r.time=`${String(h).padStart(2,'0')}:00`; } }
+        let nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/); r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";
+        let ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/); if(ad) r.note=ad[1];
         return r;
     }
 
@@ -494,9 +281,43 @@
         let price = vip ? OLD_PRICE : NEW_PRICE;
         let div = document.getElementById('preview');
         div.style.display = 'block';
-        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;">
-            <strong>✅ 識別結果</strong>
-            <div>❄️ 客戶：${rec.name}</div>
-            <div>📞 電話：${rec.phone || '未識別'}</div>
-            <div>📅 日期：${rec.date || '未識別'}</div>
-            <div>⏰ 時間：${rec.time || '
+        div.innerHTML = `<div style="background:#f1f5f9; padding:14px; border-radius:20px;"><strong>✅ 識別結果</strong><div>客戶：${rec.name}</div><div>電話：${rec.phone||'未識別'}</div><div>日期：${rec.date||'未識別'}</div><div>時間：${rec.time||'未識別'}</div><div>數量：${rec.count}部</div><div>單價：$${price}/部</div><div>地址：${rec.note||'無'}</div><button id="applyBtn" style="margin-top:14px; width:100%; background:#059669; color:white; border:none; padding:12px; border-radius:40px;">填寫</button></div>`;
+        document.getElementById('applyBtn').onclick = () => {
+            document.getElementById('name').value = rec.name;
+            document.getElementById('phone').value = rec.phone||'';
+            if(rec.date) document.getElementById('date').value = rec.date;
+            if(rec.time) document.getElementById('time').value = rec.time;
+            document.getElementById('count').value = rec.count;
+            document.getElementById('note').value = rec.note||'';
+            document.getElementById('price').value = price;
+            document.getElementById('editId').value = '';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('modalTitle').innerText = "新增訂單";
+            closePasteModal(); openOrderModal();
+        };
+    }
+
+    function openOrderModal() { document.getElementById('orderModal').classList.add('open'); }
+    function closeOrderModal() { document.getElementById('orderModal').classList.remove('open'); }
+    function openPasteModal() { document.getElementById('pasteModal').classList.add('open'); document.getElementById('preview').style.display = 'none'; document.getElementById('pasteText').value = ''; }
+    function closePasteModal() { document.getElementById('pasteModal').classList.remove('open'); }
+    function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
+
+    document.getElementById('prevMonth').onclick = () => { currentMonth--; if(currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(); };
+    document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
+    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = ''; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "新增訂單"; openOrderModal(); };
+    document.getElementById('pasteBtn').onclick = openPasteModal;
+    document.getElementById('closeOrderModal').onclick = closeOrderModal;
+    document.getElementById('closePasteModal').onclick = closePasteModal;
+    document.getElementById('closeDetailModal').onclick = closeDetailModal;
+    document.getElementById('saveBtn').onclick = saveOrder;
+    document.getElementById('deleteBtn').onclick = deleteOrder;
+    document.getElementById('recognizeBtn').onclick = doRecognize;
+    document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderReport('week'); };
+    document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderReport('month'); };
+    document.getElementById('saveTokenBtn').onclick = () => { let t = document.getElementById('tokenInput').value.trim(); if(t) { localStorage.setItem('github_token', t); githubToken = t; document.getElementById('tokenStatus').innerHTML = '🟢 已連接 GitHub'; alert("Token已保存"); } };
+
+    loadData();
+</script>
+</body>
+</html>

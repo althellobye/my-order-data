@@ -31,8 +31,13 @@
         .date-cell { background: #fafcff; border-radius: 14px; padding: 6px 4px; min-height: 90px; border: 1px solid #eef2ff; cursor: pointer; }
         .date-cell.today { background: #ecfdf5; border: 2px solid #10b981; }
         .day-number { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-        .order-mini { background: #eef2ff; border-radius: 8px; padding: 2px 4px; margin-bottom: 2px; font-size: 9px; border-left: 2px solid #059669; }
-        .order-mini.vip { background: #fef3c7; border-left-color: #f59e0b; }
+        
+        /* 訂單狀態顏色 */
+        .order-mini { border-radius: 8px; padding: 2px 4px; margin-bottom: 2px; font-size: 9px; border-left: 2px solid; }
+        .order-mini.pending { background: #dcfce7; border-left-color: #22c55e; }  /* 未開始 - 綠色 */
+        .order-mini.progress { background: #fef3c7; border-left-color: #f59e0b; } /* 進行中 - 黃色 */
+        .order-mini.completed { background: #fee2e2; border-left-color: #ef4444; } /* 已完成 - 紅色 */
+        
         .fab-group { position: fixed; bottom: 24px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
         .fab { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; }
         .fab-add { background: #059669; color: white; }
@@ -48,7 +53,10 @@
         .form-row { display: flex; gap: 12px; }
         .form-buttons { display: flex; gap: 12px; margin-top: 20px; }
         .form-buttons button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; }
-        .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #10b981; }
+        .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid; }
+        .order-card.pending { border-left-color: #22c55e; }
+        .order-card.progress { border-left-color: #f59e0b; background: #fffbeb; }
+        .order-card.completed { border-left-color: #ef4444; background: #fef2f2; }
         .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
         .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
         .sync-status { font-size: 12px; margin-top: 8px; text-align: center; }
@@ -115,6 +123,13 @@
         <div class="form-group"><label>數量</label><input type="number" id="count" min="1" value="1"></div>
         <div class="form-group"><label>地址/備註</label><textarea id="note" rows="2"></textarea></div>
         <div class="form-group"><label>單價</label><input type="number" id="price" step="10" value="228"></div>
+        <div class="form-group"><label>訂單狀態</label>
+            <select id="status" style="width:100%; padding:12px; border-radius:20px; border:1px solid #e2e8f0;">
+                <option value="pending">🟢 未開始</option>
+                <option value="progress">🟡 進行中</option>
+                <option value="completed">🔴 已完成</option>
+            </select>
+        </div>
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
 </div>
@@ -209,6 +224,32 @@
 
     function refreshAll() { renderCalendar(); updateYearStats(); if (currentReport === 'week') renderWeekReport(); else renderMonthReport(); }
 
+    // 獲取訂單狀態（根據時間自動判斷）
+    function getOrderStatus(order) {
+        if (order.status) return order.status; // 使用手動設定的狀態
+        
+        // 自動判斷：根據時間
+        const now = new Date();
+        const orderTime = new Date(order.datetime);
+        
+        if (orderTime < now) {
+            return 'completed'; // 已完成
+        } else if (orderTime.toDateString() === now.toDateString()) {
+            return 'progress'; // 進行中（今天）
+        } else {
+            return 'pending'; // 未開始
+        }
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'pending': return '🟢 未開始';
+            case 'progress': return '🟡 進行中';
+            case 'completed': return '🔴 已完成';
+            default: return '🟢 未開始';
+        }
+    }
+
     function updateYearStats() {
         document.getElementById('selectedYear').innerHTML = `${selectedYear}年`;
         let income = 0, orders = 0, units = 0;
@@ -288,7 +329,10 @@
             if(ds===today) cell.classList.add('today');
             let num = document.createElement('div'); num.className = 'day-number'; num.innerText = d; cell.appendChild(num);
             for(let o of dayOrders.slice(0,2)) {
-                let div = document.createElement('div'); div.className = 'order-mini';
+                let status = getOrderStatus(o);
+                let statusClass = status === 'pending' ? 'pending' : (status === 'progress' ? 'progress' : 'completed');
+                let div = document.createElement('div'); 
+                div.className = `order-mini ${statusClass}`;
                 div.innerHTML = `<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${o.name} (${o.count}部)`;
                 cell.appendChild(div);
             }
@@ -303,7 +347,22 @@
         let c = document.getElementById('detailList');
         if(orders.length===0) c.innerHTML = '<div style="text-align:center; padding:40px;">暫無訂單</div>';
         else {
-            c.innerHTML = orders.map(o=>{ let price = o.price || DEFAULT_PRICE; return `<div class="order-card"><div>⏰ ${o.datetime.split('T')[1]}</div><div style="font-size:16px; font-weight:700;">❄️ ${o.name}</div><div>📞 ${o.phone || ''}</div><div>${o.count}部 × $${price} = $${(o.count||1)*price}</div>${o.note ? `<div>📍 ${o.note}</div>` : ''}<button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">編輯</button><button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">刪除</button></div>`; }).join('');
+            c.innerHTML = orders.map(o=>{ 
+                let price = o.price || DEFAULT_PRICE;
+                let status = getOrderStatus(o);
+                let statusClass = status === 'pending' ? 'pending' : (status === 'progress' ? 'progress' : 'completed');
+                let statusText = getStatusText(status);
+                return `<div class="order-card ${statusClass}">
+                    <div>⏰ ${o.datetime.split('T')[1]}</div>
+                    <div style="font-size:16px; font-weight:700; margin:6px 0;">❄️ ${o.name}</div>
+                    <div>📞 ${o.phone || ''}</div>
+                    <div>🔢 ${o.count}部 × $${price} = $${(o.count||1)*price}</div>
+                    <div>📌 狀態：${statusText}</div>
+                    ${o.note ? `<div>📍 ${o.note}</div>` : ''}
+                    <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0; border:none; padding:6px 12px; border-radius:30px; margin-top:8px; margin-right:8px;">✏️ 編輯</button>
+                    <button class="delBtn" data-id="${o.id}" style="background:#fee2e2; border:none; padding:6px 12px; border-radius:30px; color:#e11d48; margin-top:8px;">🗑️ 刪除</button>
+                </div>`;
+            }).join('');
             document.querySelectorAll('.editBtn').forEach(b=>{ b.onclick = () => editOrder(b.getAttribute('data-id')); });
             document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = async () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
         }
@@ -321,6 +380,7 @@
         document.getElementById('count').value = o.count;
         document.getElementById('note').value = o.note||'';
         document.getElementById('price').value = o.price||DEFAULT_PRICE;
+        document.getElementById('status').value = o.status || getOrderStatus(o);
         document.getElementById('modalTitle').innerText = "編輯訂單";
         document.getElementById('deleteBtn').style.display = "block";
         closeDetailModal(); openOrderModal();
@@ -335,12 +395,13 @@
         let count = parseInt(document.getElementById('count').value);
         let note = document.getElementById('note').value.trim();
         let price = parseInt(document.getElementById('price').value);
+        let status = document.getElementById('status').value;
         let isEdit = document.getElementById('editId').value !== '';
         if(!name||!phone||!date||!time||!count) { alert("請填寫完整"); return; }
         if(isNaN(price)||price<=0) price = DEFAULT_PRICE;
         let datetime = `${date}T${time}`;
         if(allOrders.some(o=>o.datetime===datetime && o.id!==id)) { alert(`⚠️ ${date} ${time} 已被預約`); return; }
-        let orderData = { id, name, phone, datetime, count, note, price };
+        let orderData = { id, name, phone, datetime, count, note, price, status };
         if(isEdit) allOrders = allOrders.map(o=>o.id===id?orderData:o);
         else allOrders.push(orderData);
         await saveData(); closeOrderModal();
@@ -387,6 +448,7 @@
             document.getElementById('count').value = rec.count;
             document.getElementById('note').value = rec.note||'';
             document.getElementById('price').value = DEFAULT_PRICE;
+            document.getElementById('status').value = 'pending';
             document.getElementById('editId').value = '';
             document.getElementById('deleteBtn').style.display = 'none';
             document.getElementById('modalTitle').innerText = "新增訂單";
@@ -404,20 +466,4 @@
     document.getElementById('nextMonth').onclick = () => { currentMonth++; if(currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(); };
     document.getElementById('prevYearBtn').onclick = () => { selectedYear--; updateYearStats(); };
     document.getElementById('nextYearBtn').onclick = () => { selectedYear++; updateYearStats(); };
-    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('phone').value = ''; document.getElementById('date').value = new Date().toISOString().slice(0,10); document.getElementById('time').value = ''; document.getElementById('count').value = '1'; document.getElementById('note').value = ''; document.getElementById('price').value = DEFAULT_PRICE; document.getElementById('deleteBtn').style.display = 'none'; document.getElementById('modalTitle').innerText = "新增訂單"; openOrderModal(); };
-    document.getElementById('pasteBtn').onclick = openPasteModal;
-    document.getElementById('closeOrderModal').onclick = closeOrderModal;
-    document.getElementById('closePasteModal').onclick = closePasteModal;
-    document.getElementById('closeDetailModal').onclick = closeDetailModal;
-    document.getElementById('saveBtn').onclick = saveOrder;
-    document.getElementById('deleteBtn').onclick = deleteOrder;
-    document.getElementById('recognizeBtn').onclick = doRecognize;
-    document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderWeekReport(); };
-    document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderMonthReport(); };
-    document.getElementById('saveTokenBtn').onclick = () => { let t = document.getElementById('tokenInput').value.trim(); if(t) { localStorage.setItem('github_token', t); githubToken = t; document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端'; loadFromGitHub(); } };
-
-    loadLocal();
-    if(githubToken) loadFromGitHub();
-</script>
-</body>
-</html>
+    document.getElementById('addBtn').onclick = () => { document.getElementById('editId').value = ''; document.getElementById('name').value = ''; document.getElementById('

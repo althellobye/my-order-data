@@ -6,7 +6,7 @@
     <title>洗冷氣訂單系統</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; padding: 16px 12px 90px 12px; }
+        body { background: #f0f2f5; font-family: system-ui, sans-serif; padding: 16px 12px 90px 12px; }
         .card { background: white; border-radius: 24px; padding: 16px; margin-bottom: 16px; }
         .btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 40px; font-size: 13px; cursor: pointer; }
         .btn-primary { background: #059669; color: white; }
@@ -147,77 +147,22 @@
 </div>
 
 <script>
-    const GH_USER = "althellobye";
-    const GH_REPO = "my-order-data";
-    const FILE_PATH = "data.json";
-    const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
-    
     let allOrders = [];
-    let fileSha = "";
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
     let selectedYear = new Date().getFullYear();
     let currentReport = "week";
-    let githubToken = localStorage.getItem('github_token') || '';
     let DEFAULT_PRICE = 228;
 
-    function showSyncStatus(msg, isError) {
-        let div = document.getElementById('syncStatus');
-        div.innerHTML = msg;
-        div.style.color = isError ? '#991b1b' : '#065f46';
-        setTimeout(() => { if(div.innerHTML === msg) div.innerHTML = ''; }, 2000);
+    function loadLocal() { 
+        let s = localStorage.getItem('orders_backup'); 
+        allOrders = s ? JSON.parse(s) : []; 
+        refreshAll(); 
     }
-
-    function encodeBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
-    function decodeBase64(str) { return decodeURIComponent(escape(atob(str))); }
-
-    async function loadFromGitHub() {
-        if (!githubToken) { loadLocal(); return; }
-        try {
-            let res = await fetch(`${API_URL}?t=${Date.now()}`, {
-                headers: { "Authorization": `token ${githubToken}` }
-            });
-            if (res.status === 401) { showSyncStatus("Token無效", true); return; }
-            if (res.status === 404) { await createFile(); return; }
-            let data = await res.json();
-            fileSha = data.sha;
-            let content = decodeBase64(data.content);
-            allOrders = JSON.parse(content || "[]");
-            localStorage.setItem('orders_backup', JSON.stringify(allOrders));
-            refreshAll();
-            showSyncStatus("✅ 已同步", false);
-            document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-        } catch(e) { showSyncStatus("⚠️ 雲端失敗，使用本地", true); loadLocal(); }
+    function saveLocal() { 
+        localStorage.setItem('orders_backup', JSON.stringify(allOrders)); 
+        refreshAll(); 
     }
-
-    async function createFile() {
-        let content = encodeBase64(JSON.stringify([], null, 2));
-        let res = await fetch(API_URL, {
-            method: "PUT",
-            headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "初始化", content: content, branch: "main" })
-        });
-        if (res.ok) { let d = await res.json(); fileSha = d.content.sha; allOrders = []; refreshAll(); showSyncStatus("✅ 已創建", false); }
-        else { showSyncStatus("❌ 創建失敗", true); loadLocal(); }
-    }
-
-    async function saveToGitHub() {
-        if (!githubToken || !fileSha) { saveLocal(); return; }
-        let content = encodeBase64(JSON.stringify(allOrders, null, 2));
-        try {
-            let res = await fetch(API_URL, {
-                method: "PUT",
-                headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ message: "更新", content: content, sha: fileSha, branch: "main" })
-            });
-            if (res.ok) { let d = await res.json(); fileSha = d.content.sha; localStorage.setItem('orders_backup', JSON.stringify(allOrders)); showSyncStatus("✅ 已保存", false); }
-            else { saveLocal(); }
-        } catch(e) { saveLocal(); }
-    }
-
-    function loadLocal() { let s = localStorage.getItem('orders_backup'); allOrders = s ? JSON.parse(s) : []; refreshAll(); }
-    function saveLocal() { localStorage.setItem('orders_backup', JSON.stringify(allOrders)); refreshAll(); }
-    function saveData() { if (githubToken && fileSha) saveToGitHub(); else saveLocal(); }
 
     function refreshAll() { renderCalendar(); updateYearStats(); if (currentReport === 'week') renderWeekReport(); else renderMonthReport(); }
 
@@ -347,7 +292,7 @@
                 </div>`;
             }).join('');
             document.querySelectorAll('.editBtn').forEach(b=>{ b.onclick = () => editOrder(b.getAttribute('data-id')); });
-            document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = async () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); await saveData(); closeDetailModal(); } }; });
+            document.querySelectorAll('.delBtn').forEach(b=>{ b.onclick = () => { if(confirm('確認刪除？')){ allOrders = allOrders.filter(o=>o.id!==b.getAttribute('data-id')); saveLocal(); closeDetailModal(); } }; });
         }
         document.getElementById('detailModal').classList.add('open');
     }
@@ -369,7 +314,7 @@
         closeDetailModal(); openOrderModal();
     }
 
-    async function saveOrder() {
+    function saveOrder() {
         let id = document.getElementById('editId').value || ('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
         let name = document.getElementById('name').value.trim();
         let phone = document.getElementById('phone').value.trim();
@@ -387,14 +332,14 @@
         let orderData = { id, name, phone, datetime, count, note, price, status };
         if(isEdit) allOrders = allOrders.map(o=>o.id===id?orderData:o);
         else allOrders.push(orderData);
-        await saveData(); closeOrderModal();
+        saveLocal(); closeOrderModal();
     }
 
-    async function deleteOrder() {
+    function deleteOrder() {
         let id = document.getElementById('editId').value, name = document.getElementById('name').value;
         if(!confirm(`刪除「${name}」嗎？`)) return;
         allOrders = allOrders.filter(o=>o.id!==id);
-        await saveData(); closeOrderModal();
+        saveLocal(); closeOrderModal();
     }
 
     function recognizeText(t) {
@@ -467,4 +412,14 @@
     document.getElementById('closeOrderModal').onclick = closeOrderModal;
     document.getElementById('closePasteModal').onclick = closePasteModal;
     document.getElementById('closeDetailModal').onclick = closeDetailModal;
-    document.getElementById('saveBtn').onclick = saveOrder
+    document.getElementById('saveBtn').onclick = saveOrder;
+    document.getElementById('deleteBtn').onclick = deleteOrder;
+    document.getElementById('recognizeBtn').onclick = doRecognize;
+    document.getElementById('weekTab').onclick = () => { currentReport='week'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('weekTab').classList.add('active'); renderWeekReport(); };
+    document.getElementById('monthTab').onclick = () => { currentReport='month'; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('monthTab').classList.add('active'); renderMonthReport(); };
+    document.getElementById('saveTokenBtn').onclick = () => { alert("本版本為本地模式，無需Token。數據保存在瀏覽器中。"); };
+
+    loadLocal();
+</script>
+</body>
+</html>

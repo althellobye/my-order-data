@@ -94,9 +94,10 @@
     "name": "打不過就加入",
     "phone": "63943036",
     "datetime": "2026-06-06T02:30",
-    "count": 2,
+    "count": 3,
     "note": "提督馬路郎悅居5樓B 新苗樓上",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780236884484_5hr2mb",

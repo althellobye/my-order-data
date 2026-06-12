@@ -131,9 +131,10 @@
     "name": "晶晶",
     "phone": "62350811",
     "datetime": "2026-06-13T02:30",
-    "count": 2,
+    "count": 3,
     "note": "嘉應花園第一座18楼G",
-    "price": 218
+    "price": 218,
+    "status": "pending"
   },
   {
     "id": "id_1780304883361_zw9jgf",

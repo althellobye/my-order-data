@@ -550,5 +550,15 @@
     "note": "賈伯樂提督街12號駿景園9A",
     "price": 218,
     "status": "pending"
+  },
+  {
+    "id": "id_1782206713732_gp8yle",
+    "name": "Lychee",
+    "phone": "63242309",
+    "datetime": "2026-06-25T02:00",
+    "count": 2,
+    "note": "澳門勞動節街裕華大廈12座10樓G",
+    "price": 238,
+    "status": "pending"
   }
 ]

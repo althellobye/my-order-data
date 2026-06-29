@@ -650,5 +650,15 @@
     "note": "",
     "price": 238,
     "status": "pending"
+  },
+  {
+    "id": "id_1782723824327_z0xrfk",
+    "name": "鴻",
+    "phone": "68694940",
+    "datetime": "2026-06-29T03:30",
+    "count": 3,
+    "note": "大明閣2座10樓C共清洗 2=3部",
+    "price": 238,
+    "status": "pending"
   }
 ]

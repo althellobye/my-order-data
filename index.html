@@ -17,6 +17,9 @@
         .year-selector{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px}
         .year-selector button{background:#f1f5f9;border:none;width:40px;height:40px;border-radius:30px;font-size:18px;cursor:pointer}
         .year-selector span{font-size:18px;font-weight:700;min-width:100px;text-align:center;background:#f8fafc;padding:8px 16px;border-radius:40px}
+        .month-selector{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:12px}
+        .month-selector button{background:#f1f5f9;border:none;width:36px;height:36px;border-radius:30px;font-size:16px;cursor:pointer}
+        .month-selector span{font-size:16px;font-weight:600;min-width:120px;text-align:center}
         .report-tabs{display:flex;gap:12px;margin-bottom:8px}
         .tab-btn{flex:1;background:#e2e8f0;border:none;padding:10px;border-radius:40px;font-weight:600;cursor:pointer}
         .tab-btn.active{background:#059669;color:#fff}
@@ -60,6 +63,7 @@
         .token-input{width:100%;padding:10px;border:1px solid #c7d2fe;border-radius:40px;margin-top:8px}
         .sync-status{font-size:12px;margin-top:8px;text-align:center}
         select{width:100%;padding:10px 12px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;font-size:14px}
+        .view-month-btn{background:#dbeafe;border:1px solid #93c5fd;padding:4px 12px;border-radius:30px;font-size:12px;cursor:pointer;margin-left:8px}
         @media(max-width:480px){.date-cell{min-height:60px;padding:3px 2px}.order-mini{font-size:7px}.day-number{font-size:11px}}
     </style>
 </head>
@@ -87,6 +91,11 @@
     <div class="report-tabs">
         <button class="tab-btn active" id="weekTab">📅 本週收入</button>
         <button class="tab-btn" id="monthTab">📆 本月收入</button>
+    </div>
+    <div class="month-selector" id="monthSelector" style="display:none;">
+        <button id="prevMonthStatBtn">←</button>
+        <span id="statMonthDisplay">2026年 6月</span>
+        <button id="nextMonthStatBtn">→</button>
     </div>
     <div id="reportSummary" class="report-summary">💰 收入: $0 &nbsp;|&nbsp; ❄️ 洗機: 0部</div>
     <div id="reportList" class="report-list">暫無訂單</div>
@@ -144,6 +153,29 @@ var selectedYear = new Date().getFullYear();
 var currentReport = "week";
 var githubToken = localStorage.getItem('github_token') || "";
 var DEFAULT_PRICE = 228;
+var statMonth = new Date().getMonth();
+var statYear = new Date().getFullYear();
+
+// 每天00:00自動更新日期
+function checkDateChange() {
+    var now = new Date();
+    var stored = localStorage.getItem('last_date_check');
+    var today = now.toDateString();
+    if(stored !== today) {
+        localStorage.setItem('last_date_check', today);
+        // 重新渲染，更新訂單顏色
+        refreshAll();
+        // 顯示通知
+        var status = document.getElementById('syncStatus');
+        status.innerHTML = '🔄 日期已更新，訂單狀態已刷新';
+        status.style.color = '#059669';
+        setTimeout(function() { if(status.innerHTML === '🔄 日期已更新，訂單狀態已刷新') status.innerHTML = ''; }, 3000);
+    }
+}
+// 每分鐘檢查一次日期變化
+setInterval(checkDateChange, 60000);
+// 頁面加載時立即檢查
+checkDateChange();
 
 function showStatus(msg, isErr) {
     var d = document.getElementById('syncStatus');
@@ -236,7 +268,7 @@ function refreshAll() {
     renderCalendar();
     updateYearStats();
     if(currentReport === 'week') renderReport('week');
-    else renderReport('month');
+    else renderMonthStatReport(statYear, statMonth);
 }
 
 function getStatus(o) {
@@ -283,15 +315,51 @@ function getWeekRange() {
     return { start: f(m), end: f(s) };
 }
 
-function getMonthRange() {
-    var n = new Date();
-    var s = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-01';
-    var l = new Date(n.getFullYear(), n.getMonth()+1, 0).getDate();
-    return { start: s, end: n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(l).padStart(2,'0') };
+function getMonthRange(year, month) {
+    var s = year + '-' + String(month+1).padStart(2,'0') + '-01';
+    var l = new Date(year, month+1, 0).getDate();
+    return { start: s, end: year + '-' + String(month+1).padStart(2,'0') + '-' + String(l).padStart(2,'0') };
 }
 
 function renderReport(period) {
-    var r = period === 'week' ? getWeekRange() : getMonthRange();
+    var r = period === 'week' ? getWeekRange() : getMonthRange(new Date().getFullYear(), new Date().getMonth());
+    if(period === 'week') {
+        document.getElementById('monthSelector').style.display = 'none';
+    } else {
+        document.getElementById('monthSelector').style.display = 'flex';
+        document.getElementById('statMonthDisplay').innerHTML = statYear + '年 ' + (statMonth+1) + '月';
+    }
+    var details = [];
+    var totalInc = 0, totalUnits = 0;
+    for(var i = 0; i < allOrders.length; i++) {
+        var o = allOrders[i];
+        var dt = o.datetime.split('T')[0];
+        if(dt >= r.start && dt <= r.end) {
+            var inc = (o.price || DEFAULT_PRICE) * (o.count || 1);
+            details.push({ date: dt, name: o.name, count: o.count, income: inc });
+            totalInc += inc;
+            totalUnits += (o.count || 1);
+        }
+    }
+    details.sort(function(a,b) { return a.date.localeCompare(b.date); });
+    var c = document.getElementById('reportList');
+    var summary = document.getElementById('reportSummary');
+    summary.innerHTML = '💰 收入: $' + totalInc.toLocaleString() + ' &nbsp;|&nbsp; ❄️ 洗機: ' + totalUnits + '部';
+    if(details.length === 0) {
+        c.innerHTML = '<div style="text-align:center;padding:20px;">暫無訂單</div>';
+    } else {
+        var html = '';
+        for(var i = 0; i < details.length; i++) {
+            html += '<div class="report-item"><span>' + details[i].date + '</span><span>' + details[i].name + '(' + details[i].count + '部)</span><span>$' + details[i].income + '</span></div>';
+        }
+        c.innerHTML = html;
+    }
+}
+
+function renderMonthStatReport(year, month) {
+    document.getElementById('monthSelector').style.display = 'flex';
+    document.getElementById('statMonthDisplay').innerHTML = year + '年 ' + (month+1) + '月';
+    var r = getMonthRange(year, month);
     var details = [];
     var totalInc = 0, totalUnits = 0;
     for(var i = 0; i < allOrders.length; i++) {
@@ -578,7 +646,20 @@ document.getElementById('monthTab').onclick = function() {
     var btns = document.querySelectorAll('.tab-btn');
     for(var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
     document.getElementById('monthTab').classList.add('active');
-    renderReport('month');
+    // 顯示當前月份
+    statMonth = new Date().getMonth();
+    statYear = new Date().getFullYear();
+    renderMonthStatReport(statYear, statMonth);
+};
+document.getElementById('prevMonthStatBtn').onclick = function() {
+    statMonth--;
+    if(statMonth < 0) { statMonth = 11; statYear--; }
+    renderMonthStatReport(statYear, statMonth);
+};
+document.getElementById('nextMonthStatBtn').onclick = function() {
+    statMonth++;
+    if(statMonth > 11) { statMonth = 0; statYear++; }
+    renderMonthStatReport(statYear, statMonth);
 };
 document.getElementById('saveTokenBtn').onclick = function() {
     var t = document.getElementById('tokenInput').value.trim();

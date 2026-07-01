@@ -5,62 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>洗冷氣訂單系統</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#f0f2f5;font-family:system-ui,-apple-system,'Segoe UI',Roboto;padding:16px 12px 90px 12px}
-        .card{background:#fff;border-radius:24px;padding:16px;margin-bottom:16px}
-        .btn{background:#e2e8f0;border:none;padding:8px 16px;border-radius:40px;font-size:13px;cursor:pointer}
-        .btn-primary{background:#059669;color:#fff}
-        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-        .stat-card{background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:20px;padding:12px;text-align:center;color:#fff}
-        .stat-number{font-size:20px;font-weight:800}
-        .stat-label{font-size:11px;opacity:.7}
-        .year-selector{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px}
-        .year-selector button{background:#f1f5f9;border:none;width:40px;height:40px;border-radius:30px;font-size:18px;cursor:pointer}
-        .year-selector span{font-size:18px;font-weight:700;min-width:100px;text-align:center;background:#f8fafc;padding:8px 16px;border-radius:40px}
-        .report-tabs{display:flex;gap:12px;margin-bottom:12px}
-        .tab-btn{flex:1;background:#e2e8f0;border:none;padding:10px;border-radius:40px;font-weight:600;cursor:pointer}
-        .tab-btn.active{background:#059669;color:#fff}
-        .report-list{background:#f8fafc;border-radius:20px;padding:8px;max-height:180px;overflow-y:auto}
-        .report-item{display:flex;justify-content:space-between;padding:10px 8px;border-bottom:1px solid #e2e8f0;font-size:13px}
-        .month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-        .month-nav button{background:#f1f5f9;border:none;width:44px;height:44px;border-radius:30px;font-size:20px;cursor:pointer}
-        .month-title{font-size:18px;font-weight:700}
-        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:10px}
-        .weekday{font-size:13px;font-weight:600;color:#64748b}
-        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-        .date-cell{background:#fafcff;border-radius:14px;padding:6px 4px;min-height:90px;border:1px solid #eef2ff;cursor:pointer}
-        .date-cell.today{background:#ecfdf5;border:2px solid #10b981}
-        .day-number{font-size:14px;font-weight:700;margin-bottom:4px}
-        .order-mini{border-radius:8px;padding:2px 4px;margin-bottom:2px;font-size:9px;border-left:2px solid}
-        .order-mini.pending{background:#dcfce7;border-left-color:#22c55e}
-        .order-mini.progress{background:#fef3c7;border-left-color:#f59e0b}
-        .order-mini.completed{background:#fee2e2;border-left-color:#ef4444}
-        .fab-group{position:fixed;bottom:24px;right:20px;display:flex;flex-direction:column;gap:12px;z-index:100}
-        .fab{width:56px;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);border:none}
-        .fab-add{background:#059669;color:#fff}
-        .fab-paste{background:#8b5cf6;color:#fff;font-size:22px}
-        .modal{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:28px 28px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .3s}
-        .modal.open{transform:translateY(0)}
-        .modal-header{padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eef2ff}
-        .close-btn{background:#f1f5f9;border:none;width:36px;height:36px;border-radius:30px;font-size:22px;cursor:pointer}
-        .modal-body{padding:20px}
-        .form-group{margin-bottom:16px}
-        .form-group label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
-        .form-group input,.form-group textarea{width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:20px}
-        .form-row{display:flex;gap:12px}
-        .form-buttons{display:flex;gap:12px;margin-top:20px}
-        .form-buttons button{flex:1;padding:12px;border-radius:40px;font-weight:600;border:none;cursor:pointer}
-        .order-card{background:#f8fafc;border-radius:20px;padding:12px;margin-bottom:12px;border-left:4px solid}
-        .order-card.pending{border-left-color:#22c55e}
-        .order-card.progress{border-left-color:#f59e0b;background:#fffbeb}
-        .order-card.completed{border-left-color:#ef4444;background:#fef2f2}
-        .token-bar{background:#e0e7ff;border-radius:20px;padding:12px;margin-bottom:12px}
-        .token-input{width:100%;padding:10px;border:1px solid #c7d2fe;border-radius:40px;margin-top:8px}
-        .sync-status{font-size:12px;margin-top:8px;text-align:center}
-        select{width:100%;padding:12px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;font-size:15px}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f2f5; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; padding: 16px 12px 90px 12px; }
+        .card { background: white; border-radius: 24px; padding: 16px; margin-bottom: 16px; }
+        .btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 40px; font-size: 13px; cursor: pointer; }
+        .btn-primary { background: #059669; color: white; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; padding: 12px; text-align: center; color: white; }
+        .stat-number { font-size: 20px; font-weight: 800; }
+        .stat-label { font-size: 11px; opacity: 0.7; }
+        .year-selector { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .year-selector button { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 30px; font-size: 18px; cursor: pointer; }
+        .year-selector span { font-size: 18px; font-weight: 700; min-width: 100px; text-align: center; background: #f8fafc; padding: 8px 16px; border-radius: 40px; }
+        .report-tabs { display: flex; gap: 12px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; background: #e2e8f0; border: none; padding: 10px; border-radius: 40px; font-weight: 600; cursor: pointer; }
+        .tab-btn.active { background: #059669; color: white; }
+        .report-list { background: #f8fafc; border-radius: 20px; padding: 8px; max-height: 220px; overflow-y: auto; }
+        .report-item { display: flex; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        .report-summary { display: flex; justify-content: space-around; padding: 10px 8px; background: #e0e7ff; border-radius: 16px; margin-bottom: 8px; font-weight: 600; }
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .month-nav button { background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 30px; font-size: 20px; cursor: pointer; }
+        .month-title { font-size: 18px; font-weight: 700; }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
+        .weekday { font-size: 13px; font-weight: 600; color: #64748b; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .date-cell { background: #fafcff; border-radius: 12px; padding: 4px 3px; min-height: 80px; border: 1px solid #eef2ff; cursor: pointer; overflow: hidden; }
+        .date-cell.today { background: #ecfdf5; border: 2px solid #10b981; }
+        .day-number { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+        .order-mini { border-radius: 6px; padding: 2px 3px; margin-bottom: 2px; font-size: 8px; border-left: 2px solid; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .order-mini.pending { background: #dcfce7; border-left-color: #22c55e; }
+        .order-mini.progress { background: #fef3c7; border-left-color: #f59e0b; }
+        .order-mini.completed { background: #fee2e2; border-left-color: #ef4444; }
+        .more-indicator { font-size: 8px; color: #64748b; text-align: center; }
+        .fab-group { position: fixed; bottom: 24px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
+        .fab { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; }
+        .fab-add { background: #059669; color: white; }
+        .fab-paste { background: #8b5cf6; color: white; font-size: 22px; }
+        .modal { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 28px 28px 0 0; max-height: 85vh; overflow-y: auto; z-index: 200; transform: translateY(100%); transition: transform 0.3s; }
+        .modal.open { transform: translateY(0); }
+        .modal-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2ff; }
+        .close-btn { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 30px; font-size: 22px; cursor: pointer; }
+        .modal-body { padding: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 20px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-buttons { display: flex; gap: 12px; margin-top: 20px; }
+        .form-buttons button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; }
+        .order-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; border-left: 4px solid; }
+        .order-card.pending { border-left-color: #22c55e; }
+        .order-card.progress { border-left-color: #f59e0b; background: #fffbeb; }
+        .order-card.completed { border-left-color: #ef4444; background: #fef2f2; }
+        .token-bar { background: #e0e7ff; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
+        .token-input { width: 100%; padding: 10px; border: 1px solid #c7d2fe; border-radius: 40px; margin-top: 8px; }
+        .sync-status { font-size: 12px; margin-top: 8px; text-align: center; }
+        select { width: 100%; padding: 12px; border-radius: 20px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 15px; }
+        @media (max-width: 480px) { .date-cell { min-height: 65px; padding: 3px 2px; } .order-mini { font-size: 7px; padding: 1px 2px; } .day-number { font-size: 11px; } }
     </style>
 </head>
 <body>
+
 <div class="card">
     <h1>❄️ 洗冷氣訂單系統</h1>
     <div class="token-bar">
@@ -70,23 +74,28 @@
         <div id="syncStatus" class="sync-status"></div>
     </div>
 </div>
+
 <div class="year-selector">
     <button id="prevYearBtn">←</button>
     <span id="selectedYear">2026年</span>
     <button id="nextYearBtn">→</button>
 </div>
+
 <div class="stats-grid">
     <div class="stat-card"><div class="stat-label">💰 年度總收入</div><div class="stat-number" id="totalIncome">$0</div></div>
     <div class="stat-card"><div class="stat-label">📋 年度總訂單</div><div class="stat-number" id="totalOrders">0</div></div>
     <div class="stat-card"><div class="stat-label">❄️ 年度總洗機</div><div class="stat-number" id="totalUnits">0</div></div>
 </div>
+
 <div class="card">
     <div class="report-tabs">
-        <button class="tab-btn active" id="weekTab">📅 本週收入</button>
-        <button class="tab-btn" id="monthTab">📆 本月收入</button>
+        <button class="tab-btn active" id="weekTab">📅 本週</button>
+        <button class="tab-btn" id="monthTab">📆 本月</button>
     </div>
+    <div id="reportSummary" class="report-summary">💰 收入: $0 &nbsp;|&nbsp; ❄️ 洗機: 0部</div>
     <div id="reportList" class="report-list">暫無訂單</div>
 </div>
+
 <div class="card">
     <div class="month-nav">
         <button id="prevMonth">←</button>
@@ -96,10 +105,12 @@
     <div class="weekdays"><div class="weekday">一</div><div class="weekday">二</div><div class="weekday">三</div><div class="weekday">四</div><div class="weekday">五</div><div class="weekday">六</div><div class="weekday">日</div></div>
     <div id="calendarGrid" class="calendar-grid"></div>
 </div>
+
 <div class="fab-group">
     <button class="fab fab-paste" id="pasteBtn">🤖</button>
     <button class="fab fab-add" id="addBtn">+</button>
 </div>
+
 <div id="orderModal" class="modal">
     <div class="modal-header"><h3 id="modalTitle">新增訂單</h3><button class="close-btn" id="closeOrderModal">✕</button></div>
     <div class="modal-body">
@@ -114,6 +125,7 @@
         <div class="form-buttons"><button id="deleteBtn" style="display:none;">刪除</button><button id="saveBtn" style="background:#059669; color:white;">保存</button></div>
     </div>
 </div>
+
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
@@ -122,42 +134,282 @@
         <div id="preview" style="margin-top:16px; display:none;"></div>
     </div>
 </div>
+
 <div id="detailModal" class="modal">
     <div class="modal-header"><h3 id="detailTitle"></h3><button class="close-btn" id="closeDetailModal">✕</button></div>
     <div class="modal-body" id="detailList"></div>
 </div>
+
 <script>
-let allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth(),selectedYear=new Date().getFullYear(),currentReport="week",githubToken=localStorage.getItem('github_token')||'',DEFAULT_PRICE=228;
+// ========== GitHub 配置（請修改）==========
+const GH_USER = "althellobye";
+const GH_REPO = "my-order-data";
+const FILE_PATH = "data.json";
+const API_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+
+let allOrders=[], fileSha="";
+let currentYear=new Date().getFullYear(), currentMonth=new Date().getMonth();
+let selectedYear=new Date().getFullYear();
+let currentReport="week";
+let githubToken=localStorage.getItem('github_token')||'';
+let DEFAULT_PRICE=228;
+
 function showSyncStatus(msg,isError){let d=document.getElementById('syncStatus');d.innerHTML=msg;d.style.color=isError?'#991b1b':'#065f46';setTimeout(()=>{if(d.innerHTML===msg)d.innerHTML='';},3000);}
 function encodeBase64(str){return btoa(unescape(encodeURIComponent(str)));}
 function decodeBase64(str){return decodeURIComponent(escape(atob(str)));}
-async function loadFromGitHub(){if(!githubToken){loadLocal();return;}try{let r=await fetch(`https://api.github.com/repos/althellobye/my-order-data/contents/data.json?t=${Date.now()}`,{headers:{"Authorization":`token ${githubToken}`}});if(r.status===401){showSyncStatus("Token無效",true);return;}if(r.status===404){await createFile();return;}let d=await r.json();fileSha=d.sha;let c=decodeBase64(d.content);allOrders=JSON.parse(c||"[]");localStorage.setItem('orders_backup',JSON.stringify(allOrders));refreshAll();showSyncStatus("✅ 已從雲端同步",false);document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';}catch(e){showSyncStatus("⚠️ 雲端失敗，使用本地",true);loadLocal();}}
-async function createFile(){let c=encodeBase64(JSON.stringify([],null,2));let r=await fetch(`https://api.github.com/repos/althellobye/my-order-data/contents/data.json`,{method:"PUT",headers:{"Authorization":`token ${githubToken}`,"Content-Type":"application/json"},body:JSON.stringify({message:"初始化",content:c,branch:"main"})});if(r.ok){let d=await r.json();fileSha=d.content.sha;allOrders=[];refreshAll();showSyncStatus("✅ 已創建",false);}else{showSyncStatus("❌ 創建失敗",true);loadLocal();}}
-async function saveToGitHub(){if(!githubToken||!fileSha){saveLocal();return;}let c=encodeBase64(JSON.stringify(allOrders,null,2));try{let r=await fetch(`https://api.github.com/repos/althellobye/my-order-data/contents/data.json`,{method:"PUT",headers:{"Authorization":`token ${githubToken}`,"Content-Type":"application/json"},body:JSON.stringify({message:"更新",content:c,sha:fileSha,branch:"main"})});if(r.ok){let d=await r.json();fileSha=d.content.sha;localStorage.setItem('orders_backup',JSON.stringify(allOrders));showSyncStatus("✅ 已同步",false);}else{saveLocal();}}catch(e){saveLocal();}}
+
+async function loadFromGitHub(){
+    if(!githubToken){loadLocal();return;}
+    try{
+        let r=await fetch(`${API_URL}?t=${Date.now()}`,{headers:{"Authorization":`token ${githubToken}`}});
+        if(r.status===401){showSyncStatus("Token無效",true);return;}
+        if(r.status===404){await createFile();return;}
+        let d=await r.json();fileSha=d.sha;
+        let c=decodeBase64(d.content);
+        allOrders=JSON.parse(c||"[]");
+        localStorage.setItem('orders_backup',JSON.stringify(allOrders));
+        refreshAll();
+        showSyncStatus("✅ 已從雲端同步",false);
+        document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';
+    }catch(e){showSyncStatus("⚠️ 雲端失敗，使用本地",true);loadLocal();}
+}
+
+async function createFile(){
+    let c=encodeBase64(JSON.stringify([],null,2));
+    let r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":`token ${githubToken}`,"Content-Type":"application/json"},body:JSON.stringify({message:"初始化",content:c,branch:"main"})});
+    if(r.ok){let d=await r.json();fileSha=d.content.sha;allOrders=[];refreshAll();showSyncStatus("✅ 已創建",false);}
+    else{showSyncStatus("❌ 創建失敗",true);loadLocal();}
+}
+
+async function saveToGitHub(){
+    if(!githubToken||!fileSha){saveLocal();return;}
+    let c=encodeBase64(JSON.stringify(allOrders,null,2));
+    try{
+        let r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":`token ${githubToken}`,"Content-Type":"application/json"},body:JSON.stringify({message:"更新",content:c,sha:fileSha,branch:"main"})});
+        if(r.ok){let d=await r.json();fileSha=d.content.sha;localStorage.setItem('orders_backup',JSON.stringify(allOrders));showSyncStatus("✅ 已同步",false);}
+        else{saveLocal();}
+    }catch(e){saveLocal();}
+}
+
 function loadLocal(){let s=localStorage.getItem('orders_backup');allOrders=s?JSON.parse(s):[];refreshAll();}
 function saveLocal(){localStorage.setItem('orders_backup',JSON.stringify(allOrders));refreshAll();}
 function saveData(){if(githubToken&&fileSha)saveToGitHub();else saveLocal();}
 function refreshAll(){renderCalendar();updateYearStats();if(currentReport==='week')renderWeekReport();else renderMonthReport();}
-function getOrderStatus(o){if(o.status)return o.status;let n=new Date(),ot=new Date(o.datetime);if(ot<n)return'completed';else if(ot.toDateString()===n.toDateString())return'progress';else return'pending';}
+
+function getOrderStatus(o){
+    if(o.status)return o.status;
+    let n=new Date(),ot=new Date(o.datetime);
+    if(ot<n)return'completed';
+    else if(ot.toDateString()===n.toDateString())return'progress';
+    else return'pending';
+}
+
 function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🟡 進行中';return'🔴 已完成';}
-function updateYearStats(){document.getElementById('selectedYear').innerHTML=`${selectedYear}年`;let inc=0,ord=0,unt=0;for(let o of allOrders){let y=new Date(o.datetime).getFullYear();if(y===selectedYear){let p=o.price||DEFAULT_PRICE;inc+=(o.count||1)*p;ord++;unt+=(o.count||1);}}document.getElementById('totalIncome').innerHTML=`$${inc.toLocaleString()}`;document.getElementById('totalOrders').innerText=ord;document.getElementById('totalUnits').innerText=unt;}
-function getWeekRange(){let n=new Date(),d=n.getDay();let m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));let s=new Date(m);s.setDate(m.getDate()+6);let f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;return{start:f(m),end:f(s)};}
-function getMonthRange(){let n=new Date();let s=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-01`;let l=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();return{start:s,end:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(l).padStart(2,'0')}`};}
-function renderWeekReport(){let r=getWeekRange();let d=[],t=0;for(let o of allOrders){let dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){let inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});t+=inc;}}d.sort((a,b)=>a.date.localeCompare(b.date));let c=document.getElementById('reportList');if(d.length===0)c.innerHTML='<div style="text-align:center;padding:20px;">暫無訂單</div>';else c.innerHTML=`<div style="font-weight:700;padding:8px;">💰 本週總收入: $${t.toLocaleString()}</div>`+d.map(x=>`<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');}
-function renderMonthReport(){let r=getMonthRange();let d=[],t=0;for(let o of allOrders){let dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){let inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});t+=inc;}}d.sort((a,b)=>a.date.localeCompare(b.date));let c=document.getElementById('reportList');if(d.length===0)c.innerHTML='<div style="text-align:center;padding:20px;">暫無訂單</div>';else c.innerHTML=`<div style="font-weight:700;padding:8px;">💰 本月總收入: $${t.toLocaleString()}</div>`+d.map(x=>`<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');}
-function renderCalendar(){let f=new Date(currentYear,currentMonth,1);let off=(f.getDay()===0?6:f.getDay()-1);let days=new Date(currentYear,currentMonth+1,0).getDate();let g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=`${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;let today=new Date().toISOString().slice(0,10);for(let i=0;i<off;i++){let e=document.createElement('div');e.className='date-cell';e.style.background='#fefce8';e.style.opacity='0.5';g.appendChild(e);}for(let d=1;d<=days;d++){let ds=`${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;let dayOrders=allOrders.filter(o=>o.datetime&&o.datetime.startsWith(ds));let cell=document.createElement('div');cell.className='date-cell';if(ds===today)cell.classList.add('today');let num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);for(let o of dayOrders.slice(0,2)){let s=getOrderStatus(o);let div=document.createElement('div');div.className=`order-mini ${s}`;div.innerHTML=`<span style="font-weight:700;">${o.datetime.split('T')[1]}</span> ${o.name} (${o.count}部)`;cell.appendChild(div);}if(dayOrders.length>2){let m=document.createElement('div');m.style.fontSize='9px';m.innerText=`+${dayOrders.length-2}`;cell.appendChild(m);}cell.onclick=()=>showDetail(ds,dayOrders);g.appendChild(cell);}}
-function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML=`📅 ${ds}`;let c=document.getElementById('detailList');if(orders.length===0)c.innerHTML='<div style="text-align:center;padding:40px;">暫無訂單</div>';else{c.innerHTML=orders.map(o=>{let p=o.price||DEFAULT_PRICE;let s=getOrderStatus(o);return `<div class="order-card ${s}"><div>⏰ ${o.datetime.split('T')[1]}</div><div style="font-size:16px;font-weight:700;margin:6px 0;">❄️ ${escapeHtml(o.name)}</div><div>📞 ${o.phone||''}</div><div>🔢 ${o.count}部 × $${p} = $${(o.count||1)*p}</div><div>📌 ${getStatusText(s)}</div>${o.note?`<div>📍 ${escapeHtml(o.note)}</div>`:''}<button class="editBtn" data-id="${o.id}" style="background:#e2e8f0;border:none;padding:6px 12px;border-radius:30px;margin-top:8px;margin-right:8px;">✏️ 編輯</button><button class="delBtn" data-id="${o.id}" style="background:#fee2e2;border:none;padding:6px 12px;border-radius:30px;color:#e11d48;margin-top:8px;">🗑️ 刪除</button></div>`;}).join('');document.querySelectorAll('.editBtn').forEach(b=>{b.onclick=()=>editOrder(b.getAttribute('data-id'));});document.querySelectorAll('.delBtn').forEach(b=>{b.onclick=async()=>{if(confirm('確認刪除？')){allOrders=allOrders.filter(o=>o.id!==b.getAttribute('data-id'));await saveData();closeDetailModal();}};});}document.getElementById('detailModal').classList.add('open');}
-function editOrder(id){let o=allOrders.find(o=>o.id===id);if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
-async function saveOrder(){let id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));let name=document.getElementById('name').value.trim();let phone=document.getElementById('phone').value.trim();let date=document.getElementById('date').value;let time=document.getElementById('time').value;let count=parseInt(document.getElementById('count').value);let note=document.getElementById('note').value.trim();let price=parseInt(document.getElementById('price').value);let status=document.getElementById('status').value;let isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;let datetime=`${date}T${time}`;if(allOrders.some(o=>o.datetime===datetime&&o.id!==id)){alert(`⚠️ ${date} ${time} 已被預約`);return;}let orderData={id,name,phone,datetime,count,note,price,status};if(isEdit)allOrders=allOrders.map(o=>o.id===id?orderData:o);else allOrders.push(orderData);await saveData();closeOrderModal();}
-async function deleteOrder(){let id=document.getElementById('editId').value,name=document.getElementById('name').value;if(!confirm(`刪除「${name}」嗎？`))return;allOrders=allOrders.filter(o=>o.id!==id);await saveData();closeOrderModal();}
-function escapeHtml(s){if(!s)return '';return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);}
-function recognizeText(t){let r={name:"",phone:"",date:"",time:"",count:1,note:""};let m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);let today=new Date();let fmt=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());else if(t.includes("聽日")||t.includes("明天")){let d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else if(t.includes("後日")||t.includes("后天")){let d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else{let dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){let mo=parseInt(dm[1]),da=parseInt(dm[2]),yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}let tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=`${String(tm[1]).padStart(2,'0')}:${tm[2]}`;else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){let h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=`${String(h).padStart(2,'0')}:00`;}}let nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";let ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];return r;}
-function doRecognize(){let raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}let rec=recognizeText(raw);let div=document.getElementById('preview');div.style.display='block';div.innerHTML=`<div style="background:#f1f5f9;padding:14px;border-radius:20px;"><strong>✅ 識別結果</strong><div>📛 客戶：${rec.name}</div><div>📞 電話：${rec.phone||'未識別'}</div><div>📅 日期：${rec.date||'未識別'}</div><div>⏰ 時間：${rec.time||'未識別'}</div><div>🔢 數量：${rec.count}部</div><div>📍 地址：${rec.note||'無'}</div><button id="applyBtn" style="margin-top:14px;width:100%;background:#059669;color:white;border:none;padding:12px;border-radius:40px;">📝 填寫</button></div>`;document.getElementById('applyBtn').onclick=()=>{document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
+
+function updateYearStats(){
+    document.getElementById('selectedYear').innerHTML=`${selectedYear}年`;
+    let inc=0,ord=0,unt=0;
+    for(let o of allOrders){
+        let y=new Date(o.datetime).getFullYear();
+        if(y===selectedYear){
+            let p=o.price||DEFAULT_PRICE;
+            inc+=(o.count||1)*p;ord++;unt+=(o.count||1);
+        }
+    }
+    document.getElementById('totalIncome').innerHTML=`$${inc.toLocaleString()}`;
+    document.getElementById('totalOrders').innerText=ord;
+    document.getElementById('totalUnits').innerText=unt;
+}
+
+function getWeekRange(){
+    let n=new Date(),d=n.getDay();
+    let m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));
+    let s=new Date(m);s.setDate(m.getDate()+6);
+    let f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return{start:f(m),end:f(s)};
+}
+function getMonthRange(){
+    let n=new Date();
+    let s=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-01`;
+    let l=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+    return{start:s,end:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(l).padStart(2,'0')}`};
+}
+
+function renderReport(period){
+    let r=period==='week'?getWeekRange():getMonthRange();
+    let d=[],totalInc=0,totalUnits=0;
+    for(let o of allOrders){
+        let dt=o.datetime.split('T')[0];
+        if(dt>=r.start&&dt<=r.end){
+            let inc=(o.price||DEFAULT_PRICE)*(o.count||1);
+            d.push({date:dt,name:o.name,count:o.count,income:inc});
+            totalInc+=inc;totalUnits+=(o.count||1);
+        }
+    }
+    d.sort((a,b)=>a.date.localeCompare(b.date));
+    let c=document.getElementById('reportList');
+    let summary=document.getElementById('reportSummary');
+    summary.innerHTML=`💰 收入: $${totalInc.toLocaleString()} &nbsp;|&nbsp; ❄️ 洗機: ${totalUnits}部`;
+    if(d.length===0)c.innerHTML='<div style="text-align:center;padding:20px;">暫無訂單</div>';
+    else c.innerHTML=d.map(x=>`<div class="report-item"><span>${x.date}</span><span>${x.name}(${x.count}部)</span><span>$${x.income}</span></div>`).join('');
+}
+function renderWeekReport(){renderReport('week');}
+function renderMonthReport(){renderReport('month');}
+
+function renderCalendar(){
+    let f=new Date(currentYear,currentMonth,1);
+    let off=(f.getDay()===0?6:f.getDay()-1);
+    let days=new Date(currentYear,currentMonth+1,0).getDate();
+    let g=document.getElementById('calendarGrid');
+    g.innerHTML="";
+    document.getElementById('monthTitle').innerHTML=`${currentYear}年${String(currentMonth+1).padStart(2,'0')}月`;
+    let today=new Date().toISOString().slice(0,10);
+    for(let i=0;i<off;i++){let e=document.createElement('div');e.className='date-cell';e.style.background='#fefce8';e.style.opacity='0.5';g.appendChild(e);}
+    for(let d=1;d<=days;d++){
+        let ds=`${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        let dayOrders=allOrders.filter(o=>o.datetime&&o.datetime.startsWith(ds));
+        let cell=document.createElement('div');cell.className='date-cell';
+        if(ds===today)cell.classList.add('today');
+        let num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);
+        let maxShow=3;
+        let showOrders=dayOrders.slice(0,maxShow);
+        for(let o of showOrders){
+            let s=getOrderStatus(o);
+            let div=document.createElement('div');
+            div.className=`order-mini ${s}`;
+            let timeStr=o.datetime.split('T')[1];
+            let nameStr=o.name.length>6?o.name.slice(0,6)+'…':o.name;
+            div.innerHTML=`<span style="font-weight:600;">${timeStr}</span> ${nameStr}(${o.count})`;
+            cell.appendChild(div);
+        }
+        if(dayOrders.length>maxShow){
+            let more=document.createElement('div');
+            more.className='more-indicator';
+            more.innerText=`+${dayOrders.length-maxShow}`;
+            cell.appendChild(more);
+        }
+        cell.onclick=()=>showDetail(ds,dayOrders);
+        g.appendChild(cell);
+    }
+}
+
+function showDetail(ds,orders){
+    document.getElementById('detailTitle').innerHTML=`📅 ${ds}`;
+    let c=document.getElementById('detailList');
+    if(orders.length===0)c.innerHTML='<div style="text-align:center;padding:40px;">暫無訂單</div>';
+    else{
+        c.innerHTML=orders.map(o=>{
+            let p=o.price||DEFAULT_PRICE;let s=getOrderStatus(o);
+            return `<div class="order-card ${s}">
+                <div>⏰ ${o.datetime.split('T')[1]}</div>
+                <div style="font-size:16px;font-weight:700;margin:6px 0;">❄️ ${escapeHtml(o.name)}</div>
+                <div>📞 ${o.phone||''}</div>
+                <div>🔢 ${o.count}部 × $${p} = $${(o.count||1)*p}</div>
+                <div>📌 ${getStatusText(s)}</div>
+                ${o.note?`<div>📍 ${escapeHtml(o.note)}</div>`:''}
+                <button class="editBtn" data-id="${o.id}" style="background:#e2e8f0;border:none;padding:6px 12px;border-radius:30px;margin-top:8px;margin-right:8px;">✏️ 編輯</button>
+                <button class="delBtn" data-id="${o.id}" style="background:#fee2e2;border:none;padding:6px 12px;border-radius:30px;color:#e11d48;margin-top:8px;">🗑️ 刪除</button>
+            </div>`;
+        }).join('');
+        document.querySelectorAll('.editBtn').forEach(b=>{b.onclick=()=>editOrder(b.getAttribute('data-id'));});
+        document.querySelectorAll('.delBtn').forEach(b=>{b.onclick=async()=>{if(confirm('確認刪除？')){allOrders=allOrders.filter(o=>o.id!==b.getAttribute('data-id'));await saveData();closeDetailModal();}};});
+    }
+    document.getElementById('detailModal').classList.add('open');
+}
+
+function editOrder(id){
+    let o=allOrders.find(o=>o.id===id);
+    if(!o)return;
+    document.getElementById('editId').value=o.id;
+    document.getElementById('name').value=o.name;
+    document.getElementById('phone').value=o.phone||'';
+    document.getElementById('date').value=o.datetime.split('T')[0];
+    document.getElementById('time').value=o.datetime.split('T')[1];
+    document.getElementById('count').value=o.count;
+    document.getElementById('note').value=o.note||'';
+    document.getElementById('price').value=o.price||DEFAULT_PRICE;
+    document.getElementById('status').value=o.status||getOrderStatus(o);
+    document.getElementById('modalTitle').innerText="✏️ 編輯訂單";
+    document.getElementById('deleteBtn').style.display="block";
+    closeDetailModal();openOrderModal();
+}
+
+async function saveOrder(){
+    let id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
+    let name=document.getElementById('name').value.trim();
+    let phone=document.getElementById('phone').value.trim();
+    let date=document.getElementById('date').value;
+    let time=document.getElementById('time').value;
+    let count=parseInt(document.getElementById('count').value);
+    let note=document.getElementById('note').value.trim();
+    let price=parseInt(document.getElementById('price').value);
+    let status=document.getElementById('status').value;
+    let isEdit=document.getElementById('editId').value!=='';
+    if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}
+    if(isNaN(price)||price<=0)price=DEFAULT_PRICE;
+    let datetime=`${date}T${time}`;
+    if(allOrders.some(o=>o.datetime===datetime&&o.id!==id)){alert(`⚠️ ${date} ${time} 已被預約`);return;}
+    let orderData={id,name,phone,datetime,count,note,price,status};
+    if(isEdit)allOrders=allOrders.map(o=>o.id===id?orderData:o);
+    else allOrders.push(orderData);
+    await saveData();closeOrderModal();
+}
+
+async function deleteOrder(){
+    let id=document.getElementById('editId').value,name=document.getElementById('name').value;
+    if(!confirm(`刪除「${name}」嗎？`))return;
+    allOrders=allOrders.filter(o=>o.id!==id);
+    await saveData();closeOrderModal();
+}
+
+function escapeHtml(s){if(!s)return'';return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);}
+
+function recognizeText(t){
+    let r={name:"",phone:"",date:"",time:"",count:1,note:""};
+    let m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}
+    m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);
+    let today=new Date();
+    let fmt=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());
+    else if(t.includes("聽日")||t.includes("明天")){let d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}
+    else if(t.includes("後日")||t.includes("后天")){let d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}
+    else{let dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){let mo=parseInt(dm[1]),da=parseInt(dm[2]),yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}
+    let tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=`${String(tm[1]).padStart(2,'0')}:${tm[2]}`;
+    else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){let h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=`${String(h).padStart(2,'0')}:00`;}}
+    let nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";
+    let ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];
+    return r;
+}
+
+function doRecognize(){
+    let raw=document.getElementById('pasteText').value;
+    if(!raw.trim()){alert("請貼上聊天記錄");return;}
+    let rec=recognizeText(raw);
+    let div=document.getElementById('preview');
+    div.style.display='block';
+    div.innerHTML=`<div style="background:#f1f5f9;padding:14px;border-radius:20px;"><strong>✅ 識別結果</strong><div>📛 客戶：${rec.name}</div><div>📞 電話：${rec.phone||'未識別'}</div><div>📅 日期：${rec.date||'未識別'}</div><div>⏰ 時間：${rec.time||'未識別'}</div><div>🔢 數量：${rec.count}部</div><div>📍 地址：${rec.note||'無'}</div><button id="applyBtn" style="margin-top:14px;width:100%;background:#059669;color:white;border:none;padding:12px;border-radius:40px;">📝 填寫</button></div>`;
+    document.getElementById('applyBtn').onclick=()=>{
+        document.getElementById('name').value=rec.name;
+        document.getElementById('phone').value=rec.phone||'';
+        if(rec.date)document.getElementById('date').value=rec.date;
+        if(rec.time)document.getElementById('time').value=rec.time;
+        document.getElementById('count').value=rec.count;
+        document.getElementById('note').value=rec.note||'';
+        document.getElementById('price').value=DEFAULT_PRICE;
+        document.getElementById('status').value='pending';
+        document.getElementById('editId').value='';
+        document.getElementById('deleteBtn').style.display='none';
+        document.getElementById('modalTitle').innerText="➕ 新增訂單";
+        closePasteModal();openOrderModal();
+    };
+}
+
 function openOrderModal(){document.getElementById('orderModal').classList.add('open');}
 function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
 function openPasteModal(){document.getElementById('pasteModal').classList.add('open');document.getElementById('preview').style.display='none';document.getElementById('pasteText').value='';}
 function closePasteModal(){document.getElementById('pasteModal').classList.remove('open');}
 function closeDetailModal(){document.getElementById('detailModal').classList.remove('open');}
+
 document.getElementById('prevMonth').onclick=()=>{currentMonth--;if(currentMonth<0){currentMonth=11;currentYear--;}renderCalendar();};
 document.getElementById('nextMonth').onclick=()=>{currentMonth++;if(currentMonth>11){currentMonth=0;currentYear++;}renderCalendar();};
 document.getElementById('prevYearBtn').onclick=()=>{selectedYear--;updateYearStats();};
@@ -172,8 +424,4 @@ document.getElementById('deleteBtn').onclick=deleteOrder;
 document.getElementById('recognizeBtn').onclick=doRecognize;
 document.getElementById('weekTab').onclick=()=>{currentReport='week';document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('weekTab').classList.add('active');renderWeekReport();};
 document.getElementById('monthTab').onclick=()=>{currentReport='month';document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('monthTab').classList.add('active');renderMonthReport();};
-document.getElementById('saveTokenBtn').onclick=()=>{let t=document.getElementById('tokenInput').value.trim();if(t){localStorage.setItem('github_token',t);githubToken=t;document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGitHub();alert("Token已保存，正在同步...");}};
-loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGitHub();}
-</script>
-</body>
-</html>
+document.getElementById('saveTokenBtn').onclick=()

@@ -161,7 +161,8 @@
     "datetime": "2026-07-04T10:00",
     "count": 3,
     "note": "文第士街 漢益大廈 5樓b",
-    "price": 228
+    "price": 228,
+    "status": "pending"
   },
   {
     "id": "id_1780389512117_82c5j5",

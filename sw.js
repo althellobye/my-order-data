@@ -1,5 +1,5 @@
 const CACHE_NAME = 'zb-order-v2';
-const FILES = ['/', '/index.html', '/manifest.json'];
+const FILES = ['/', '/my-order-data/index.html', '/my-order-data/manifest.json'];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(

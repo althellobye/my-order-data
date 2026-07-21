@@ -20,366 +20,70 @@
     <meta name="apple-mobile-web-app-title" content="正邦家政">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{
-            background:#f5f7fa;
-            font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Helvetica Neue",system-ui,sans-serif;
-            padding:16px 12px 90px 12px;
-            color:#1e293b;
-        }
-        .card{
-            background:#ffffff;
-            border-radius:24px;
-            padding:20px 16px;
-            margin-bottom:14px;
-            box-shadow:0 2px 8px rgba(0,0,0,0.04);
-            border:1px solid #edf2f7;
-        }
-        .logo-bar{
-            display:flex;
-            align-items:center;
-            gap:10px;
-        }
-        .logo-icon{
-            font-size:28px;
-        }
-        .logo-text h1{
-            font-size:20px;
-            font-weight:700;
-            color:#1a365d;
-            letter-spacing:-0.3px;
-        }
-        .logo-text .sub{
-            font-size:12px;
-            color:#718096;
-            margin-top:-2px;
-        }
-        .btn{
-            background:#edf2f7;
-            border:none;
-            padding:8px 16px;
-            border-radius:30px;
-            font-size:13px;
-            font-weight:600;
-            cursor:pointer;
-            transition:all 0.15s;
-            color:#2d3748;
-        }
-        .btn:active{transform:scale(0.95);opacity:0.7}
+        body{background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Helvetica Neue",system-ui,sans-serif;padding:16px 12px 90px 12px;color:#1e293b}
+        .card{background:#fff;border-radius:24px;padding:20px 16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);border:1px solid #edf2f7}
+        .logo-bar{display:flex;align-items:center;gap:10px}
+        .logo-icon{font-size:28px}
+        .logo-text h1{font-size:20px;font-weight:700;color:#1a365d;letter-spacing:-0.3px}
+        .logo-text .sub{font-size:12px;color:#718096;margin-top:-2px}
+        .btn{background:#edf2f7;border:none;padding:8px 16px;border-radius:30px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;color:#2d3748}
+        .btn:active{transform:scale(.95)}
         .btn-primary{background:#1a365d;color:#fff}
-        .btn-primary:active{background:#15304f}
-        .stats-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:10px;
-            margin-bottom:16px;
-        }
-        .stat-card{
-            background:#ffffff;
-            border-radius:20px;
-            padding:14px 8px;
-            text-align:center;
-            border:1px solid #edf2f7;
-            box-shadow:0 1px 4px rgba(0,0,0,0.03);
-        }
-        .stat-number{
-            font-size:20px;
-            font-weight:800;
-            color:#1a365d;
-        }
-        .stat-label{
-            font-size:10px;
-            color:#a0aec0;
-            margin-top:2px;
-            font-weight:600;
-            letter-spacing:0.3px;
-        }
-        .year-selector{
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            gap:14px;
-            margin-bottom:16px;
-        }
-        .year-selector button{
-            background:transparent;
-            border:1px solid #e2e8f0;
-            width:40px;height:40px;
-            border-radius:30px;
-            font-size:16px;
-            cursor:pointer;
-            color:#4a5568;
-            transition:all 0.15s;
-        }
-        .year-selector button:active{transform:scale(0.92);background:#edf2f7}
-        .year-selector span{
-            font-size:17px;
-            font-weight:700;
-            min-width:90px;
-            text-align:center;
-            color:#1a365d;
-        }
-        .month-selector{
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            gap:14px;
-            margin-bottom:10px;
-        }
-        .month-selector button{
-            background:transparent;
-            border:1px solid #e2e8f0;
-            width:34px;height:34px;
-            border-radius:30px;
-            font-size:14px;
-            cursor:pointer;
-            color:#4a5568;
-        }
-        .month-selector span{
-            font-size:14px;
-            font-weight:600;
-            min-width:110px;
-            text-align:center;
-            color:#1a365d;
-        }
-        .report-tabs{
-            display:flex;
-            gap:8px;
-            margin-bottom:12px;
-        }
-        .tab-btn{
-            flex:1;
-            background:#edf2f7;
-            border:none;
-            padding:10px 8px;
-            border-radius:30px;
-            font-weight:600;
-            font-size:13px;
-            cursor:pointer;
-            transition:all 0.15s;
-            color:#718096;
-        }
-        .tab-btn.active{
-            background:#1a365d;
-            color:#fff;
-        }
-        .report-summary{
-            display:flex;
-            justify-content:space-around;
-            padding:10px 8px;
-            background:#edf2f7;
-            border-radius:16px;
-            margin-bottom:10px;
-            font-weight:600;
-            font-size:13px;
-            color:#1a365d;
-        }
-        .report-list{
-            background:#f7fafc;
-            border-radius:16px;
-            padding:4px;
-            max-height:180px;
-            overflow-y:auto;
-        }
-        .report-item{
-            display:flex;
-            justify-content:space-between;
-            padding:8px 12px;
-            border-bottom:1px solid #edf2f7;
-            font-size:13px;
-            align-items:center;
-        }
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+        .stat-card{background:#fff;border-radius:20px;padding:14px 8px;text-align:center;border:1px solid #edf2f7}
+        .stat-number{font-size:20px;font-weight:800;color:#1a365d}
+        .stat-label{font-size:10px;color:#a0aec0;margin-top:2px;font-weight:600;letter-spacing:.3px}
+        .year-selector{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:16px}
+        .year-selector button{background:transparent;border:1px solid #e2e8f0;width:40px;height:40px;border-radius:30px;font-size:16px;cursor:pointer;color:#4a5568}
+        .year-selector button:active{transform:scale(.92);background:#edf2f7}
+        .year-selector span{font-size:17px;font-weight:700;min-width:90px;text-align:center;color:#1a365d}
+        .month-selector{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:10px}
+        .month-selector button{background:transparent;border:1px solid #e2e8f0;width:34px;height:34px;border-radius:30px;font-size:14px;cursor:pointer;color:#4a5568}
+        .month-selector span{font-size:14px;font-weight:600;min-width:110px;text-align:center;color:#1a365d}
+        .report-tabs{display:flex;gap:8px;margin-bottom:12px}
+        .tab-btn{flex:1;background:#edf2f7;border:none;padding:10px 8px;border-radius:30px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;color:#718096}
+        .tab-btn.active{background:#1a365d;color:#fff}
+        .report-summary{display:flex;justify-content:space-around;padding:10px 8px;background:#edf2f7;border-radius:16px;margin-bottom:10px;font-weight:600;font-size:13px;color:#1a365d}
+        .report-list{background:#f7fafc;border-radius:16px;padding:4px;max-height:180px;overflow-y:auto}
+        .report-item{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #edf2f7;font-size:13px;align-items:center}
         .report-item:last-child{border-bottom:none}
-        .month-nav{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:14px;
-        }
-        .month-nav button{
-            background:transparent;
-            border:1px solid #e2e8f0;
-            width:40px;height:40px;
-            border-radius:30px;
-            font-size:16px;
-            cursor:pointer;
-            color:#4a5568;
-        }
-        .month-nav button:active{transform:scale(0.92);background:#edf2f7}
-        .month-title{
-            font-size:17px;
-            font-weight:700;
-            color:#1a365d;
-        }
-        .weekdays{
-            display:grid;
-            grid-template-columns:repeat(7,1fr);
-            text-align:center;
-            margin-bottom:8px;
-            font-size:11px;
-            font-weight:700;
-            color:#a0aec0;
-            letter-spacing:0.5px;
-        }
-        .calendar-grid{
-            display:grid;
-            grid-template-columns:repeat(7,1fr);
-            gap:4px;
-        }
-        .date-cell{
-            background:#ffffff;
-            border-radius:14px;
-            padding:6px 3px;
-            min-height:76px;
-            border:1px solid #edf2f7;
-            cursor:pointer;
-            transition:all 0.1s;
-        }
-        .date-cell:active{transform:scale(0.96);background:#f7fafc}
-        .date-cell.today{
-            border:2px solid #1a365d;
-            background:#f0f4ff;
-        }
-        .date-cell.has-orders{
-            background:#fafcff;
-        }
-        .day-number{
-            font-size:13px;
-            font-weight:700;
-            color:#1a365d;
-            margin-bottom:3px;
-            padding-left:3px;
-        }
-        .date-cell .order-dot{
-            display:flex;
-            flex-wrap:wrap;
-            gap:3px;
-            justify-content:center;
-            padding:0 2px;
-        }
-        .date-cell .order-dot .dot{
-            display:inline-block;
-            width:22px;
-            height:22px;
-            border-radius:6px;
-            font-size:10px;
-            font-weight:700;
-            text-align:center;
-            line-height:22px;
-            color:#fff;
-            transition:all 0.2s;
-        }
-        .dot.pending{background:#38a169}
-        .dot.progress{background:#3182ce}
-        .dot.completed{background:#e53e3e}
-        .fab-group{
-            position:fixed;
-            bottom:28px;
-            right:20px;
-            display:flex;
-            flex-direction:column;
-            gap:12px;
-            z-index:100;
-        }
-        .fab{
-            width:58px;height:58px;
-            border-radius:30px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:26px;
-            cursor:pointer;
-            box-shadow:0 4px 16px rgba(0,0,0,0.12);
-            border:none;
-            transition:all 0.15s;
-        }
-        .fab:active{transform:scale(0.88)}
+        .month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .month-nav button{background:transparent;border:1px solid #e2e8f0;width:40px;height:40px;border-radius:30px;font-size:16px;cursor:pointer;color:#4a5568}
+        .month-nav button:active{transform:scale(.92);background:#edf2f7}
+        .month-title{font-size:17px;font-weight:700;color:#1a365d}
+        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:8px;font-size:11px;font-weight:700;color:#a0aec0;letter-spacing:.5px}
+        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+        .date-cell{background:#fff;border-radius:14px;padding:6px 3px;min-height:76px;border:1px solid #edf2f7;cursor:pointer;transition:all .1s}
+        .date-cell:active{transform:scale(.96);background:#f7fafc}
+        .date-cell.today{border:2px solid #1a365d;background:#f0f4ff}
+        .date-cell.has-orders{background:#fafcff}
+        .day-number{font-size:13px;font-weight:700;color:#1a365d;margin-bottom:3px;padding-left:3px}
+        .date-cell .order-times{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;padding:0 2px}
+        .date-cell .order-times .time-tag{display:inline-block;padding:1px 5px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;min-width:32px;text-align:center}
+        .time-tag.pending{background:#38a169}
+        .time-tag.progress{background:#3182ce}
+        .time-tag.completed{background:#e53e3e}
+        .fab-group{position:fixed;bottom:28px;right:20px;display:flex;flex-direction:column;gap:12px;z-index:100}
+        .fab{width:58px;height:58px;border-radius:30px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.12);border:none;transition:all .15s}
+        .fab:active{transform:scale(.88)}
         .fab-add{background:#1a365d;color:#fff}
         .fab-paste{background:#4a5568;color:#fff;font-size:20px}
-        .modal{
-            position:fixed;
-            bottom:0;left:0;right:0;
-            background:#fff;
-            border-radius:28px 28px 0 0;
-            max-height:85vh;
-            overflow-y:auto;
-            z-index:200;
-            transform:translateY(100%);
-            transition:transform .3s cubic-bezier(0.32,0.72,0,1);
-            box-shadow:0 -4px 24px rgba(0,0,0,0.08);
-        }
+        .modal{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:28px 28px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);box-shadow:0 -4px 24px rgba(0,0,0,.08)}
         .modal.open{transform:translateY(0)}
-        .modal-header{
-            padding:18px 20px 12px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            border-bottom:1px solid #edf2f7;
-            position:sticky;
-            top:0;
-            background:#fff;
-            border-radius:28px 28px 0 0;
-        }
+        .modal-header{padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #edf2f7;position:sticky;top:0;background:#fff;border-radius:28px 28px 0 0}
         .modal-header h3{font-size:18px;font-weight:700;color:#1a365d}
-        .close-btn{
-            background:#edf2f7;
-            border:none;
-            width:38px;height:38px;
-            border-radius:30px;
-            font-size:20px;
-            cursor:pointer;
-            color:#4a5568;
-        }
-        .close-btn:active{transform:scale(0.90)}
+        .close-btn{background:#edf2f7;border:none;width:38px;height:38px;border-radius:30px;font-size:20px;cursor:pointer;color:#4a5568}
+        .close-btn:active{transform:scale(.9)}
         .modal-body{padding:20px}
         .form-group{margin-bottom:14px}
-        .form-group label{
-            font-size:13px;
-            font-weight:600;
-            display:block;
-            margin-bottom:5px;
-            color:#2d3748;
-        }
-        .form-group input,
-        .form-group textarea{
-            width:100%;
-            padding:11px 14px;
-            border:1.5px solid #e2e8f0;
-            border-radius:16px;
-            font-size:15px;
-            background:#fafcff;
-            transition:all 0.15s;
-            font-family:inherit;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus{
-            outline:none;
-            border-color:#1a365d;
-            box-shadow:0 0 0 3px rgba(26,54,93,0.08);
-        }
+        .form-group label{font-size:13px;font-weight:600;display:block;margin-bottom:5px;color:#2d3748}
+        .form-group input,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:16px;font-size:15px;background:#fafcff;transition:all .15s;font-family:inherit}
+        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#1a365d;box-shadow:0 0 0 3px rgba(26,54,93,.08)}
         .form-row{display:flex;gap:12px}
-        .form-buttons{
-            display:flex;
-            gap:10px;
-            margin-top:16px;
-        }
-        .form-buttons button{
-            flex:1;
-            padding:12px;
-            border-radius:30px;
-            font-weight:700;
-            font-size:14px;
-            border:none;
-            cursor:pointer;
-            transition:all 0.15s;
-        }
-        .form-buttons button:active{transform:scale(0.97)}
-        .order-card{
-            border-radius:16px;
-            padding:14px;
-            margin-bottom:10px;
-            border-left:4px solid;
-            background:#fafcff;
-        }
+        .form-buttons{display:flex;gap:10px;margin-top:16px}
+        .form-buttons button{flex:1;padding:12px;border-radius:30px;font-weight:700;font-size:14px;border:none;cursor:pointer;transition:all .15s}
+        .form-buttons button:active{transform:scale(.97)}
+        .order-card{border-radius:16px;padding:14px;margin-bottom:10px;border-left:4px solid;background:#fafcff}
         .order-card.pending{border-left-color:#38a169}
         .order-card.progress{border-left-color:#3182ce}
         .order-card.completed{border-left-color:#e53e3e}
@@ -388,68 +92,20 @@
         .order-card .detail{font-size:13px;color:#4a5568;display:flex;gap:12px;flex-wrap:wrap}
         .order-card .status-text{font-size:11px;font-weight:700;margin-top:5px}
         .order-card .actions{margin-top:8px;display:flex;gap:8px}
-        .order-card .actions button{
-            padding:6px 14px;
-            border-radius:30px;
-            border:none;
-            font-size:12px;
-            font-weight:600;
-            cursor:pointer;
-        }
-        .order-card .actions button:active{transform:scale(0.95)}
+        .order-card .actions button{padding:6px 14px;border-radius:30px;border:none;font-size:12px;font-weight:600;cursor:pointer}
+        .order-card .actions button:active{transform:scale(.95)}
         .order-card .actions .edit-btn{background:#edf2f7;color:#2d3748}
         .order-card .actions .del-btn{background:#fed7d7;color:#c53030}
-        .token-bar{
-            background:#f7fafc;
-            border-radius:16px;
-            padding:12px;
-            margin-top:12px;
-            border:1px solid #edf2f7;
-        }
-        .token-input{
-            width:100%;
-            padding:10px 14px;
-            border:1.5px solid #e2e8f0;
-            border-radius:30px;
-            margin-top:6px;
-            font-size:14px;
-            background:#fff;
-        }
-        .sync-status{
-            font-size:12px;
-            margin-top:6px;
-            text-align:center;
-            font-weight:500;
-            color:#718096;
-        }
-        select{
-            width:100%;
-            padding:11px 14px;
-            border-radius:16px;
-            border:1.5px solid #e2e8f0;
-            background:#fafcff;
-            font-size:15px;
-            font-family:inherit;
-            color:#2d3748;
-        }
-        .empty-state{
-            text-align:center;
-            padding:30px 20px;
-            color:#a0aec0;
-            font-size:14px;
-        }
-        @media(max-width:480px){
-            .date-cell{min-height:64px;padding:4px 2px}
-            .day-number{font-size:12px}
-            .stat-number{font-size:17px}
-            .fab{width:54px;height:54px;font-size:22px}
-            .date-cell .order-dot .dot{width:20px;height:20px;font-size:9px;line-height:20px}
-        }
+        .token-bar{background:#f7fafc;border-radius:16px;padding:12px;margin-top:12px;border:1px solid #edf2f7}
+        .token-input{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:30px;margin-top:6px;font-size:14px;background:#fff}
+        .sync-status{font-size:12px;margin-top:6px;text-align:center;font-weight:500;color:#718096}
+        select{width:100%;padding:11px 14px;border-radius:16px;border:1.5px solid #e2e8f0;background:#fafcff;font-size:15px;font-family:inherit;color:#2d3748}
+        .empty-state{text-align:center;padding:30px 20px;color:#a0aec0;font-size:14px}
+        @media(max-width:480px){.date-cell{min-height:62px;padding:4px 2px}.day-number{font-size:12px}.stat-number{font-size:17px}.fab{width:54px;height:54px;font-size:22px}.date-cell .order-times .time-tag{font-size:9px;min-width:28px;padding:1px 4px}}
     </style>
 </head>
 <body>
 
-<!-- 頂部 -->
 <div class="card">
     <div class="logo-bar">
         <div class="logo-icon">❄️</div>
@@ -466,7 +122,6 @@
     </div>
 </div>
 
-<!-- 年度選擇器 + 統計 -->
 <div class="year-selector">
     <button id="prevYearBtn">‹</button>
     <span id="selectedYear">2026年</span>
@@ -479,7 +134,6 @@
     <div class="stat-card"><div class="stat-number" id="totalUnits">0</div><div class="stat-label">總洗機</div></div>
 </div>
 
-<!-- 本週 / 本月 收入 -->
 <div class="card">
     <div class="report-tabs">
         <button class="tab-btn active" id="weekTab">📅 本週</button>
@@ -494,7 +148,6 @@
     <div id="reportList" class="report-list"><div class="empty-state">暫無訂單</div></div>
 </div>
 
-<!-- 日曆 -->
 <div class="card">
     <div class="month-nav">
         <button id="prevMonth">‹</button>
@@ -505,13 +158,11 @@
     <div id="calendarGrid" class="calendar-grid"></div>
 </div>
 
-<!-- 懸浮按鈕 -->
 <div class="fab-group">
     <button class="fab fab-paste" id="pasteBtn">🤖</button>
     <button class="fab fab-add" id="addBtn">+</button>
 </div>
 
-<!-- 訂單彈窗 -->
 <div id="orderModal" class="modal">
     <div class="modal-header"><h3 id="modalTitle">➕ 新增訂單</h3><button class="close-btn" id="closeOrderModal">✕</button></div>
     <div class="modal-body">
@@ -533,7 +184,6 @@
     </div>
 </div>
 
-<!-- 智能粘貼彈窗 -->
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
@@ -543,7 +193,6 @@
     </div>
 </div>
 
-<!-- 訂單詳情彈窗 -->
 <div id="detailModal" class="modal">
     <div class="modal-header"><h3 id="detailTitle"></h3><button class="close-btn" id="closeDetailModal">✕</button></div>
     <div class="modal-body" id="detailList"></div>
@@ -574,7 +223,7 @@ function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDat
 function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
 function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#1a365d;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
 function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#1a365d;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
-function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#f7fafc';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var dotContainer=document.createElement('div');dotContainer.className='order-dot';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var dot=document.createElement('span');dot.className='dot '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);dot.innerText=timeStr;dotContainer.appendChild(dot);}cell.appendChild(dotContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
+function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#f7fafc';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var timeContainer=document.createElement('div');timeContainer.className='order-times';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var tag=document.createElement('span');tag.className='time-tag '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);tag.innerText=timeStr;timeContainer.appendChild(tag);}cell.appendChild(timeContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
 function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div class="time">⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div class="name">❄️ '+escapeHtml(o.name)+'</div>';html+='<div class="detail"><span>📞 '+(o.phone||'')+'</span><span>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</span></div>';html+='<div class="status-text">'+stText+'</div>';if(o.note){html+='<div style="font-size:13px;color:#718096;margin-top:3px;">📍 '+escapeHtml(o.note)+'</div>';}html+='<div class="actions"><button class="edit-btn" data-id="'+o.id+'">✏️ 編輯</button><button class="del-btn" data-id="'+o.id+'">🗑️ 刪除</button></div>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.edit-btn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.del-btn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
 function editOrder(id){var o=null;for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){o=allOrders[i];break;}}if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
 async function saveOrder(){var id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));var name=document.getElementById('name').value.trim();var phone=document.getElementById('phone').value.trim();var date=document.getElementById('date').value;var time=document.getElementById('time').value;var count=parseInt(document.getElementById('count').value);var note=document.getElementById('note').value.trim();var price=parseInt(document.getElementById('price').value);var status=document.getElementById('status').value;var isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;var datetime=date+'T'+time;for(var i=0;i<allOrders.length;i++){if(allOrders[i].datetime===datetime&&allOrders[i].id!==id){alert('⚠️ '+date+' '+time+' 已被預約');return;}}var orderData={id:id,name:name,phone:phone,datetime:datetime,count:count,note:note,price:price,status:status};if(isEdit){for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){allOrders[i]=orderData;break;}}}else{allOrders.push(orderData);}await saveData();closeOrderModal();}

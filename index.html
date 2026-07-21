@@ -34,6 +34,7 @@
         .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
         .date-cell{background:#fafcff;border-radius:12px;padding:4px 3px;min-height:70px;border:1px solid #eef2ff;cursor:pointer;overflow:hidden}
         .date-cell.today{background:#ecfdf5;border:2px solid #10b981}
+        .date-cell.past{background:#f8fafc;border:1px solid #e2e8f0}
         .day-number{font-size:13px;font-weight:700;margin-bottom:2px}
         .order-mini{border-radius:6px;padding:2px 3px;margin-bottom:2px;font-size:8px;border-left:2px solid;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .order-mini.pending{background:#dcfce7;border-left-color:#22c55e}
@@ -156,24 +157,23 @@ var DEFAULT_PRICE = 228;
 var statMonth = new Date().getMonth();
 var statYear = new Date().getFullYear();
 
-// 每天00:00自動更新日期
+// ===== 每天00:00自動更新日期 =====
 function checkDateChange() {
     var now = new Date();
     var stored = localStorage.getItem('last_date_check');
     var today = now.toDateString();
     if(stored !== today) {
         localStorage.setItem('last_date_check', today);
-        // 重新渲染，更新訂單顏色
+        // 強制刷新所有訂單狀態
         refreshAll();
-        // 顯示通知
         var status = document.getElementById('syncStatus');
         status.innerHTML = '🔄 日期已更新，訂單狀態已刷新';
         status.style.color = '#059669';
         setTimeout(function() { if(status.innerHTML === '🔄 日期已更新，訂單狀態已刷新') status.innerHTML = ''; }, 3000);
     }
 }
-// 每分鐘檢查一次日期變化
-setInterval(checkDateChange, 60000);
+// 每30秒檢查一次日期變化（確保跨天時自動更新）
+setInterval(checkDateChange, 30000);
 // 頁面加載時立即檢查
 checkDateChange();
 
@@ -271,12 +271,19 @@ function refreshAll() {
     else renderMonthStatReport(statYear, statMonth);
 }
 
-function getStatus(o) {
+// ===== 核心：根據當前時間判斷訂單狀態 =====
+function getOrderStatus(o) {
+    // 如果用戶手動設置了狀態，優先使用
     if(o.status) return o.status;
+    
     var n = new Date();
     var ot = new Date(o.datetime);
+    
+    // 如果訂單時間已過 → 自動變紅色（已完成）
     if(ot < n) return 'completed';
+    // 如果訂單時間是今天 → 黃色（進行中）
     else if(ot.toDateString() === n.toDateString()) return 'progress';
+    // 未來訂單 → 綠色（未開始）
     else return 'pending';
 }
 
@@ -284,6 +291,12 @@ function getStatusText(s) {
     if(s === 'pending') return '🟢 未開始';
     if(s === 'progress') return '🟡 進行中';
     return '🔴 已完成';
+}
+
+// ===== 手動切換狀態時，自動更新顏色 =====
+function setOrderStatus(order, newStatus) {
+    order.status = newStatus;
+    saveData();
 }
 
 function updateYearStats() {
@@ -416,7 +429,7 @@ function renderCalendar() {
         var showOrders = dayOrders.slice(0, maxShow);
         for(var j = 0; j < showOrders.length; j++) {
             var o = showOrders[j];
-            var st = getStatus(o);
+            var st = getOrderStatus(o);
             var div = document.createElement('div');
             div.className = 'order-mini ' + st;
             var timeStr = o.datetime.split('T')[1];
@@ -447,7 +460,7 @@ function showDetail(ds, orders) {
         for(var i = 0; i < orders.length; i++) {
             var o = orders[i];
             var p = o.price || DEFAULT_PRICE;
-            var st = getStatus(o);
+            var st = getOrderStatus(o);
             var stText = getStatusText(st);
             html += '<div class="order-card ' + st + '">';
             html += '<div>⏰ ' + o.datetime.split('T')[1] + '</div>';
@@ -494,7 +507,7 @@ function editOrder(id) {
     document.getElementById('count').value = o.count;
     document.getElementById('note').value = o.note || '';
     document.getElementById('price').value = o.price || DEFAULT_PRICE;
-    document.getElementById('status').value = o.status || getStatus(o);
+    document.getElementById('status').value = o.status || getOrderStatus(o);
     document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
     document.getElementById('deleteBtn').style.display = "block";
     closeDetailModal();
@@ -646,7 +659,6 @@ document.getElementById('monthTab').onclick = function() {
     var btns = document.querySelectorAll('.tab-btn');
     for(var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
     document.getElementById('monthTab').classList.add('active');
-    // 顯示當前月份
     statMonth = new Date().getMonth();
     statYear = new Date().getFullYear();
     renderMonthStatReport(statYear, statMonth);

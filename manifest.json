@@ -1,7 +1,7 @@
 {
   "name": "正邦家政",
   "short_name": "正邦",
-  "start_url": "/",
+  "start_url": "/my-order-data/",
   "display": "standalone",
   "background_color": "#e8ecf1",
   "theme_color": "#0f172a",

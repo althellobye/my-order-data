@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>正邦家政 · 洗冷氣訂單</title>
-    <link rel="manifest" href="data:application/json,{
-      \"name\":\"正邦家政\",\"short_name\":\"正邦\",\"start_url\":\"\/\",\"display\":\"standalone\",\"background_color\":\"#e8ecf1\",\"theme_color\":\"#0f172a\",
-      \"icons\":[{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image\/svg+xml\"},{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"512x512\",\"type\":\"image\/svg+xml\"}]}">
+    
+    <!-- ===== PWA 設定 ===== -->
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="正邦">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- ===== PWA 設定結束 ===== -->
+    
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{background:#e8ecf1;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK",system-ui,sans-serif;padding:18px 14px 100px 14px;color:#1e293b}
@@ -273,8 +276,16 @@ document.getElementById('nextMonthStatBtn').onclick=function(){statMonth++;if(st
 document.getElementById('saveTokenBtn').onclick=function(){var t=document.getElementById('tokenInput').value.trim();if(t){localStorage.setItem('github_token',t);githubToken=t;document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}};
 loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}
 </script>
+
+<!-- ===== Service Worker 註冊 ===== -->
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(function() { console.log('✅ Service Worker 註冊成功'); })
+        .catch(function() { console.log('❌ Service Worker 註冊失敗'); });
+}
 </script>
+<!-- ===== Service Worker 註冊結束 ===== -->
+
 </body>
 </html>

@@ -9,8 +9,8 @@
       \"short_name\":\"訂單系統\",
       \"start_url\":\"\/\",
       \"display\":\"standalone\",
-      \"background_color\":\"#f0f2f5\",
-      \"theme_color\":\"#059669\",
+      \"background_color\":\"#f0f4f8\",
+      \"theme_color\":\"#1e3a5f\",
       \"icons\":[
         {\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image\/svg+xml\"},
         {\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"512x512\",\"type\":\"image\/svg+xml\"}
@@ -18,7 +18,6 @@
     }">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="正邦家政">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{
@@ -38,10 +37,16 @@
         .card h1{
             font-size:22px;
             font-weight:700;
+            color:#1e3a5f;
             letter-spacing:-0.3px;
         }
+        .subtitle{
+            font-size:13px;
+            color:#5b7a9a;
+            margin-top:2px;
+        }
         .btn{
-            background:#f1f5f9;
+            background:#e8edf4;
             border:none;
             padding:10px 18px;
             border-radius:40px;
@@ -52,7 +57,7 @@
             color:#1e293b;
         }
         .btn:active{transform:scale(0.96);opacity:0.8}
-        .btn-primary{background:#0b7b5e;color:#fff}
+        .btn-primary{background:#1e3a5f;color:#fff}
         .stats-grid{
             display:grid;
             grid-template-columns:repeat(3,1fr);
@@ -60,12 +65,12 @@
             margin-bottom:16px;
         }
         .stat-card{
-            background:linear-gradient(145deg,#0b7b5e,#065f46);
+            background:linear-gradient(145deg,#1e3a5f,#2a5298);
             border-radius:24px;
             padding:16px 8px;
             text-align:center;
             color:#fff;
-            box-shadow:0 4px 12px rgba(11,123,94,0.25);
+            box-shadow:0 4px 12px rgba(30,58,95,0.3);
         }
         .stat-number{font-size:22px;font-weight:800;letter-spacing:-0.5px}
         .stat-label{font-size:11px;opacity:0.8;margin-top:2px}
@@ -77,13 +82,14 @@
             margin-bottom:16px;
         }
         .year-selector button{
-            background:#e8ecf0;
+            background:#e8edf4;
             border:none;
             width:44px;height:44px;
             border-radius:30px;
             font-size:18px;
             cursor:pointer;
             transition:all 0.15s;
+            color:#1e3a5f;
         }
         .year-selector button:active{transform:scale(0.92)}
         .year-selector span{
@@ -94,6 +100,7 @@
             background:#f8fafc;
             padding:8px 16px;
             border-radius:40px;
+            color:#1e3a5f;
         }
         .month-selector{
             display:flex;
@@ -103,18 +110,20 @@
             margin-bottom:12px;
         }
         .month-selector button{
-            background:#e8ecf0;
+            background:#e8edf4;
             border:none;
             width:36px;height:36px;
             border-radius:30px;
             font-size:16px;
             cursor:pointer;
+            color:#1e3a5f;
         }
         .month-selector span{
             font-size:15px;
             font-weight:600;
             min-width:120px;
             text-align:center;
+            color:#1e3a5f;
         }
         .report-tabs{
             display:flex;
@@ -123,7 +132,7 @@
         }
         .tab-btn{
             flex:1;
-            background:#f1f5f9;
+            background:#e8edf4;
             border:none;
             padding:12px 8px;
             border-radius:40px;
@@ -131,23 +140,23 @@
             font-size:14px;
             cursor:pointer;
             transition:all 0.15s;
-            color:#64748b;
+            color:#5b7a9a;
         }
         .tab-btn.active{
-            background:#0b7b5e;
+            background:#1e3a5f;
             color:#fff;
-            box-shadow:0 2px 8px rgba(11,123,94,0.25);
+            box-shadow:0 2px 8px rgba(30,58,95,0.25);
         }
         .report-summary{
             display:flex;
             justify-content:space-around;
             padding:12px 8px;
-            background:#e6f7f2;
+            background:#e8edf4;
             border-radius:20px;
             margin-bottom:10px;
             font-weight:700;
             font-size:14px;
-            color:#065f46;
+            color:#1e3a5f;
         }
         .report-list{
             background:#f8fafc;
@@ -172,19 +181,20 @@
             margin-bottom:16px;
         }
         .month-nav button{
-            background:#f1f5f9;
+            background:#e8edf4;
             border:none;
             width:44px;height:44px;
             border-radius:30px;
             font-size:20px;
             cursor:pointer;
             transition:all 0.15s;
+            color:#1e3a5f;
         }
         .month-nav button:active{transform:scale(0.92)}
         .month-title{
             font-size:18px;
             font-weight:700;
-            color:#0f172a;
+            color:#1e3a5f;
         }
         .weekdays{
             display:grid;
@@ -193,53 +203,58 @@
             margin-bottom:10px;
             font-size:12px;
             font-weight:600;
-            color:#94a3b8;
+            color:#5b7a9a;
         }
         .calendar-grid{
             display:grid;
             grid-template-columns:repeat(7,1fr);
-            gap:5px;
+            gap:4px;
         }
         .date-cell{
-            background:#fafcff;
-            border-radius:16px;
-            padding:6px 4px;
-            min-height:80px;
-            border:1px solid #eef2f6;
+            background:#ffffff;
+            border-radius:14px;
+            padding:6px 3px;
+            min-height:72px;
+            border:1px solid #e8edf4;
             cursor:pointer;
             transition:all 0.1s;
         }
-        .date-cell:active{transform:scale(0.97);background:#f1f5f9}
+        .date-cell:active{transform:scale(0.97);background:#eef2f6}
         .date-cell.today{
-            background:#ecfdf5;
-            border:2px solid #0b7b5e;
+            background:#dbe4f0;
+            border:2px solid #1e3a5f;
+        }
+        .date-cell.has-orders{
+            background:#f0f5ff;
         }
         .day-number{
             font-size:14px;
             font-weight:700;
-            margin-bottom:4px;
-            padding-left:4px;
-        }
-        .order-mini{
-            border-radius:8px;
-            padding:3px 5px;
+            color:#1e3a5f;
             margin-bottom:3px;
-            font-size:8px;
-            border-left:3px solid;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-            font-weight:500;
+            padding-left:3px;
         }
-        .order-mini.pending{background:#d1fae5;border-left-color:#22c55e}
-        .order-mini.progress{background:#fef3c7;border-left-color:#f59e0b}
-        .order-mini.completed{background:#fecaca;border-left-color:#ef4444}
-        .more-indicator{
+        .date-cell .order-dot{
+            display:flex;
+            flex-wrap:wrap;
+            gap:2px;
+            justify-content:center;
+            padding:0 2px;
+        }
+        .date-cell .order-dot .dot{
+            display:inline-block;
+            width:16px;
+            height:16px;
+            border-radius:4px;
             font-size:8px;
-            color:#94a3b8;
+            font-weight:700;
             text-align:center;
-            font-weight:600;
+            line-height:16px;
+            color:#fff;
         }
+        .dot.pending{background:#60a5fa}
+        .dot.progress{background:#fbbf24}
+        .dot.completed{background:#94a3b8}
         .fab-group{
             position:fixed;
             bottom:28px;
@@ -262,8 +277,8 @@
             transition:all 0.15s;
         }
         .fab:active{transform:scale(0.90)}
-        .fab-add{background:#0b7b5e;color:#fff}
-        .fab-paste{background:#7c3aed;color:#fff;font-size:22px}
+        .fab-add{background:#1e3a5f;color:#fff}
+        .fab-paste{background:#3b82f6;color:#fff;font-size:22px}
         .modal{
             position:fixed;
             bottom:0;left:0;right:0;
@@ -282,21 +297,22 @@
             display:flex;
             justify-content:space-between;
             align-items:center;
-            border-bottom:1px solid #f1f5f9;
+            border-bottom:1px solid #e8edf4;
             position:sticky;
             top:0;
             background:#fff;
             border-radius:32px 32px 0 0;
         }
-        .modal-header h3{font-size:19px;font-weight:700}
+        .modal-header h3{font-size:19px;font-weight:700;color:#1e3a5f}
         .close-btn{
-            background:#f1f5f9;
+            background:#e8edf4;
             border:none;
             width:40px;height:40px;
             border-radius:30px;
             font-size:22px;
             cursor:pointer;
             transition:all 0.15s;
+            color:#1e3a5f;
         }
         .close-btn:active{transform:scale(0.90)}
         .modal-body{padding:20px}
@@ -306,13 +322,13 @@
             font-weight:600;
             display:block;
             margin-bottom:6px;
-            color:#475569;
+            color:#1e3a5f;
         }
         .form-group input,
         .form-group textarea{
             width:100%;
             padding:12px 14px;
-            border:1.5px solid #e2e8f0;
+            border:1.5px solid #dce4ec;
             border-radius:20px;
             font-size:15px;
             background:#fafcff;
@@ -322,8 +338,8 @@
         .form-group input:focus,
         .form-group textarea:focus{
             outline:none;
-            border-color:#0b7b5e;
-            box-shadow:0 0 0 3px rgba(11,123,94,0.12);
+            border-color:#1e3a5f;
+            box-shadow:0 0 0 3px rgba(30,58,95,0.12);
         }
         .form-row{display:flex;gap:12px}
         .form-buttons{
@@ -347,13 +363,13 @@
             border-radius:20px;
             padding:14px;
             margin-bottom:12px;
-            border-left:5px solid;
+            border-left:5px solid #1e3a5f;
             transition:all 0.15s;
         }
-        .order-card.pending{border-left-color:#22c55e}
-        .order-card.progress{border-left-color:#f59e0b;background:#fffbeb}
-        .order-card.completed{border-left-color:#ef4444;background:#fef2f2}
-        .order-card .time{font-weight:700;font-size:14px;color:#0b7b5e}
+        .order-card.pending{border-left-color:#3b82f6}
+        .order-card.progress{border-left-color:#fbbf24;background:#fffbeb}
+        .order-card.completed{border-left-color:#94a3b8;background:#f1f5f9}
+        .order-card .time{font-weight:700;font-size:14px;color:#1e3a5f}
         .order-card .name{font-size:17px;font-weight:700;margin:6px 0 4px}
         .order-card .detail{font-size:13px;color:#475569;display:flex;gap:12px;flex-wrap:wrap}
         .order-card .status-text{font-size:12px;font-weight:600;margin-top:6px}
@@ -368,10 +384,10 @@
             transition:all 0.15s;
         }
         .order-card .actions button:active{transform:scale(0.95)}
-        .order-card .actions .edit-btn{background:#e2e8f0;color:#1e293b}
+        .order-card .actions .edit-btn{background:#dbe4f0;color:#1e3a5f}
         .order-card .actions .del-btn{background:#fecaca;color:#dc2626}
         .token-bar{
-            background:#e8f0fe;
+            background:#e8edf4;
             border-radius:20px;
             padding:14px;
             margin-top:14px;
@@ -395,7 +411,7 @@
             width:100%;
             padding:12px 14px;
             border-radius:20px;
-            border:1.5px solid #e2e8f0;
+            border:1.5px solid #dce4ec;
             background:#fafcff;
             font-size:15px;
             font-family:inherit;
@@ -407,11 +423,11 @@
             font-size:15px;
         }
         @media(max-width:480px){
-            .date-cell{min-height:64px;padding:4px 3px}
-            .order-mini{font-size:7px;padding:2px 4px}
+            .date-cell{min-height:60px;padding:4px 2px}
             .day-number{font-size:12px}
             .stat-number{font-size:18px}
             .fab{width:56px;height:56px;font-size:24px}
+            .date-cell .order-dot .dot{width:14px;height:14px;font-size:7px;line-height:14px}
         }
     </style>
 </head>
@@ -420,9 +436,9 @@
 <!-- 頂部 -->
 <div class="card">
     <h1>❄️ 正邦家政</h1>
-    <div style="font-size:13px;color:#64748b;margin-top:2px;">洗冷氣訂單管理</div>
+    <div class="subtitle">洗冷氣訂單管理</div>
     <div class="token-bar">
-        <div id="tokenStatus" style="font-size:13px;font-weight:600;">⚪ 未連接雲端</div>
+        <div id="tokenStatus" style="font-size:13px;font-weight:600;color:#1e3a5f;">⚪ 未連接雲端</div>
         <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
         <button class="btn btn-primary" id="saveTokenBtn" style="width:100%;margin-top:8px;">🔗 連接雲端</button>
         <div id="syncStatus" class="sync-status"></div>
@@ -487,12 +503,12 @@
         <div class="form-group"><label>單價 (每部)</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-group"><label>訂單狀態</label>
             <select id="status">
-                <option value="pending">🟢 未開始</option>
-                <option value="progress">🟡 進行中</option>
-                <option value="completed">🔴 已完成</option>
+                <option value="pending">🟦 未開始</option>
+                <option value="progress">🟨 進行中</option>
+                <option value="completed">⬜ 已完成</option>
             </select>
         </div>
-        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:#fecaca;color:#dc2626;">🗑️ 刪除</button><button id="saveBtn" style="background:#0b7b5e;color:#fff;">💾 保存</button></div>
+        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:#fecaca;color:#dc2626;">🗑️ 刪除</button><button id="saveBtn" style="background:#1e3a5f;color:#fff;">💾 保存</button></div>
     </div>
 </div>
 
@@ -500,9 +516,9 @@
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
-        <textarea id="pasteText" rows="6" style="width:100%;padding:12px;border-radius:20px;border:1.5px solid #e2e8f0;font-family:monospace;font-size:14px;background:#fafcff;" placeholder="貼上聊天記錄，例如：
+        <textarea id="pasteText" rows="6" style="width:100%;padding:12px;border-radius:20px;border:1.5px solid #dce4ec;font-family:monospace;font-size:14px;background:#fafcff;" placeholder="貼上聊天記錄，例如：
 陳生話：聽日下午3點，洗3部冷氣，地址台山XX大廈，電話+853 66668888"></textarea>
-        <button id="recognizeBtn" style="margin-top:12px;width:100%;background:#7c3aed;color:#fff;border:none;padding:14px;border-radius:40px;font-weight:700;font-size:16px;cursor:pointer;">🔍 自動識別</button>
+        <button id="recognizeBtn" style="margin-top:12px;width:100%;background:#3b82f6;color:#fff;border:none;padding:14px;border-radius:40px;font-weight:700;font-size:16px;cursor:pointer;">🔍 自動識別</button>
         <div id="preview" style="margin-top:16px;display:none;"></div>
     </div>
 </div>
@@ -517,10 +533,10 @@
 var GH_USER="althellobye",GH_REPO="my-order-data",API_URL="https://api.github.com/repos/"+GH_USER+"/"+GH_REPO+"/contents/data.json";
 var allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth(),selectedYear=new Date().getFullYear(),currentReport="week",githubToken=localStorage.getItem('github_token')||"",DEFAULT_PRICE=228,statMonth=new Date().getMonth(),statYear=new Date().getFullYear();
 
-function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#0b7b5e';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
+function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#1e3a5f';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
 setInterval(checkDateChange,30000);checkDateChange();
 
-function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#dc2626':'#0b7b5e';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
+function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#dc2626':'#1e3a5f';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
 function b64d(s){return decodeURIComponent(escape(atob(s)));}
 
@@ -532,20 +548,20 @@ function saveLocal(){localStorage.setItem('ac_backup',JSON.stringify(allOrders))
 function saveData(){if(githubToken&&fileSha)saveToGit();else saveLocal();}
 function refreshAll(){renderCalendar();updateYearStats();if(currentReport==='week')renderReport('week');else renderMonthStatReport(statYear,statMonth);}
 function getOrderStatus(o){if(o.status)return o.status;var n=new Date(),ot=new Date(o.datetime);if(ot<n)return'completed';else if(ot.toDateString()===n.toDateString())return'progress';else return'pending';}
-function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🟡 進行中';return'🔴 已完成';}
+function getStatusText(s){if(s==='pending')return'🟦 未開始';if(s==='progress')return'🟨 進行中';return'⬜ 已完成';}
 function updateYearStats(){document.getElementById('selectedYear').innerHTML=selectedYear+'年';var inc=0,ord=0,unt=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var y=new Date(o.datetime).getFullYear();if(y===selectedYear){var p=o.price||DEFAULT_PRICE;inc+=(o.count||1)*p;ord++;unt+=(o.count||1);}}document.getElementById('totalIncome').innerHTML='$'+inc.toLocaleString();document.getElementById('totalOrders').innerText=ord;document.getElementById('totalUnits').innerText=unt;}
 function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));var s=new Date(m);s.setDate(m.getDate()+6);function f(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return{start:f(m),end:f(s)};}
 function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
-function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#0b7b5e;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
-function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#0b7b5e;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
-function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#fefce8';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);var maxShow=3;var showOrders=dayOrders.slice(0,maxShow);for(var j=0;j<showOrders.length;j++){var o=showOrders[j];var st=getOrderStatus(o);var div=document.createElement('div');div.className='order-mini '+st;var timeStr=o.datetime.split('T')[1];var nameStr=o.name.length>7?o.name.slice(0,7)+'…':o.name;div.innerHTML='<span style="font-weight:700;">'+timeStr+'</span> '+nameStr+'('+o.count+')';cell.appendChild(div);}if(dayOrders.length>maxShow){var more=document.createElement('div');more.className='more-indicator';more.innerText='+'+String(dayOrders.length-maxShow);cell.appendChild(more);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
+function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#1e3a5f;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
+function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span style="font-weight:700;color:#1e3a5f;">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
+function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#f1f5f9';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var dotContainer=document.createElement('div');dotContainer.className='order-dot';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var dot=document.createElement('span');dot.className='dot '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);dot.innerText=timeStr.replace(':','');dotContainer.appendChild(dot);}cell.appendChild(dotContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
 function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div class="time">⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div class="name">❄️ '+escapeHtml(o.name)+'</div>';html+='<div class="detail"><span>📞 '+(o.phone||'')+'</span><span>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</span></div>';html+='<div class="status-text">'+stText+'</div>';if(o.note){html+='<div style="font-size:13px;color:#64748b;margin-top:4px;">📍 '+escapeHtml(o.note)+'</div>';}html+='<div class="actions"><button class="edit-btn" data-id="'+o.id+'">✏️ 編輯</button><button class="del-btn" data-id="'+o.id+'">🗑️ 刪除</button></div>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.edit-btn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.del-btn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
 function editOrder(id){var o=null;for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){o=allOrders[i];break;}}if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
 async function saveOrder(){var id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));var name=document.getElementById('name').value.trim();var phone=document.getElementById('phone').value.trim();var date=document.getElementById('date').value;var time=document.getElementById('time').value;var count=parseInt(document.getElementById('count').value);var note=document.getElementById('note').value.trim();var price=parseInt(document.getElementById('price').value);var status=document.getElementById('status').value;var isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;var datetime=date+'T'+time;for(var i=0;i<allOrders.length;i++){if(allOrders[i].datetime===datetime&&allOrders[i].id!==id){alert('⚠️ '+date+' '+time+' 已被預約');return;}}var orderData={id:id,name:name,phone:phone,datetime:datetime,count:count,note:note,price:price,status:status};if(isEdit){for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){allOrders[i]=orderData;break;}}}else{allOrders.push(orderData);}await saveData();closeOrderModal();}
 async function deleteOrder(){var id=document.getElementById('editId').value;var name=document.getElementById('name').value;if(!confirm('刪除「'+name+'」嗎？'))return;allOrders=allOrders.filter(function(o){return o.id!==id;});await saveData();closeOrderModal();}
 function escapeHtml(s){if(!s)return'';return s.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;});}
 function recognizeText(t){var r={name:"",phone:"",date:"",time:"",count:1,note:""};var m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);var today=new Date();function fmt(y,m,d){return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());else if(t.includes("聽日")||t.includes("明天")){var d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else if(t.includes("後日")||t.includes("后天")){var d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else{var dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){var mo=parseInt(dm[1]);var da=parseInt(dm[2]);var yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}var tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=String(tm[1]).padStart(2,'0')+':'+tm[2];else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){var h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=String(h).padStart(2,'0')+':00';}}var nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";var ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];return r;}
-function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#f1f5f9;padding:16px;border-radius:20px;"><strong style="font-size:15px;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#0b7b5e;color:#fff;border:none;padding:12px;border-radius:40px;font-weight:700;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
+function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#e8edf4;padding:16px;border-radius:20px;"><strong style="font-size:15px;color:#1e3a5f;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;color:#1e293b;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#1e3a5f;color:#fff;border:none;padding:12px;border-radius:40px;font-weight:700;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
 function openOrderModal(){document.getElementById('orderModal').classList.add('open');}
 function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
 function openPasteModal(){document.getElementById('pasteModal').classList.add('open');document.getElementById('preview').style.display='none';document.getElementById('pasteText').value='';}

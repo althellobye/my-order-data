@@ -5,96 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>正邦家政 · 洗冷氣訂單</title>
     <link rel="manifest" href="data:application/json,{
-      \"name\":\"正邦家政\",\"short_name\":\"正邦\",\"start_url\":\"\/\",\"display\":\"standalone\",\"background_color\":\"#f0f2f6\",\"theme_color\":\"#0f172a\",
+      \"name\":\"正邦家政\",\"short_name\":\"正邦\",\"start_url\":\"\/\",\"display\":\"standalone\",\"background_color\":\"#f5f7fa\",\"theme_color\":\"#0f172a\",
       \"icons\":[{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image\/svg+xml\"},{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"512x512\",\"type\":\"image\/svg+xml\"}]}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="正邦">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Inter",system-ui,sans-serif;padding:20px 16px 100px 16px;color:#0f172a;min-height:100vh}
-        .card{background:rgba(255,255,255,0.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:32px;padding:24px 20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.5);box-shadow:0 8px 32px rgba(0,0,0,0.04)}
+        body{background:#f1f4f9;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK",system-ui,sans-serif;padding:18px 14px 100px 14px;color:#0f172a}
+
+        /* 卡片 */
+        .card{background:#ffffff;border-radius:28px;padding:20px 16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
         .logo-bar{display:flex;align-items:center;gap:12px}
-        .logo-icon{font-size:28px;opacity:0.8}
-        .logo-text h1{font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.5px}
-        .logo-text .sub{font-size:13px;color:#64748b;margin-top:-2px;font-weight:400}
-        .btn{background:rgba(255,255,255,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.6);padding:10px 20px;border-radius:40px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:#334155}
-        .btn:active{transform:scale(.96)}
-        .btn-primary{background:#0f172a;border:1px solid #0f172a;color:#fff;box-shadow:0 4px 16px rgba(15,23,42,0.15)}
-        .btn-primary:active{background:#1e293b}
-        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-        .stat-card{background:rgba(255,255,255,0.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:24px;padding:18px 8px;text-align:center;border:1px solid rgba(255,255,255,0.6);box-shadow:0 4px 12px rgba(0,0,0,0.02)}
-        .stat-number{font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.5px}
-        .stat-label{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500;letter-spacing:.2px}
-        .year-selector{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:20px}
-        .year-selector button{background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.5);width:42px;height:42px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569;transition:all .2s}
-        .year-selector button:active{transform:scale(.92);background:rgba(255,255,255,0.7)}
-        .year-selector span{font-size:18px;font-weight:600;min-width:100px;text-align:center;color:#0f172a;letter-spacing:-0.3px}
-        .month-selector{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:12px}
-        .month-selector button{background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.4);width:34px;height:34px;border-radius:30px;font-size:14px;cursor:pointer;color:#475569}
+        .logo-icon{font-size:26px}
+        .logo-text h1{font-size:20px;font-weight:700;color:#0f172a;letter-spacing:-0.3px}
+        .logo-text .sub{font-size:12px;color:#8a99b0;margin-top:-2px}
+
+        /* 按鈕 */
+        .btn{background:#f1f4f9;border:none;padding:9px 18px;border-radius:40px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:#334155}
+        .btn:active{transform:scale(.95)}
+        .btn-primary{background:#0f172a;color:#fff}
+
+        /* 統計卡片 */
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+        .stat-card{background:#ffffff;border-radius:20px;padding:14px 6px;text-align:center;border:1px solid #eef2f6}
+        .stat-number{font-size:20px;font-weight:700;color:#0f172a}
+        .stat-label{font-size:10px;color:#94a3b8;margin-top:3px;font-weight:500;letter-spacing:.3px}
+
+        /* 年份選擇 */
+        .year-selector{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:18px}
+        .year-selector button{background:#fff;border:1px solid #eef2f6;width:38px;height:38px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+        .year-selector button:active{transform:scale(.92);background:#f1f4f9}
+        .year-selector span{font-size:17px;font-weight:600;min-width:90px;text-align:center;color:#0f172a}
+
+        /* 報表 */
+        .month-selector{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:10px}
+        .month-selector button{background:transparent;border:1px solid #eef2f6;width:32px;height:32px;border-radius:30px;font-size:14px;cursor:pointer;color:#475569}
         .month-selector span{font-size:14px;font-weight:500;min-width:100px;text-align:center;color:#475569}
-        .report-tabs{display:flex;gap:8px;margin-bottom:14px}
-        .tab-btn{flex:1;background:rgba(255,255,255,0.3);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);padding:12px 8px;border-radius:40px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;color:#94a3b8}
-        .tab-btn.active{background:#0f172a;color:#fff;border-color:#0f172a;box-shadow:0 4px 16px rgba(15,23,42,0.12)}
-        .report-summary{display:flex;justify-content:space-around;padding:14px 8px;background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);border-radius:20px;margin-bottom:12px;font-weight:600;font-size:14px;color:#0f172a;border:1px solid rgba(255,255,255,0.3)}
-        .report-list{background:rgba(255,255,255,0.25);backdrop-filter:blur(8px);border-radius:16px;padding:4px;max-height:180px;overflow-y:auto;border:1px solid rgba(255,255,255,0.2)}
-        .report-item{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.3);font-size:13px;color:#475569}
+        .report-tabs{display:flex;gap:8px;margin-bottom:12px}
+        .tab-btn{flex:1;background:#f1f4f9;border:none;padding:10px 8px;border-radius:40px;font-weight:600;font-size:13px;cursor:pointer;color:#94a3b8}
+        .tab-btn.active{background:#0f172a;color:#fff}
+        .report-summary{display:flex;justify-content:space-around;padding:12px 8px;background:#f8fafc;border-radius:18px;margin-bottom:10px;font-weight:600;font-size:13px;color:#0f172a;border:1px solid #eef2f6}
+        .report-list{background:#fafcff;border-radius:16px;padding:4px;max-height:170px;overflow-y:auto;border:1px solid #f1f4f9}
+        .report-item{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f1f4f9;font-size:13px;color:#475569}
         .report-item:last-child{border-bottom:none}
         .report-item .income{font-weight:600;color:#0f172a}
-        .month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-        .month-nav button{background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.5);width:42px;height:42px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569;transition:all .2s}
+
+        /* 日曆 */
+        .month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .month-nav button{background:#fff;border:1px solid #eef2f6;width:38px;height:38px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569}
         .month-nav button:active{transform:scale(.92)}
-        .month-title{font-size:18px;font-weight:600;color:#0f172a;letter-spacing:-0.3px}
-        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:10px;font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.3px}
-        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-        .date-cell{background:rgba(255,255,255,0.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:6px 3px;min-height:80px;border:1px solid rgba(255,255,255,0.4);cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,0.02)}
-        .date-cell:active{transform:scale(.96);background:rgba(255,255,255,0.55)}
-        .date-cell.today{border:2px solid #0f172a;background:rgba(255,255,255,0.5)}
-        .date-cell.has-orders{background:rgba(255,255,255,0.45)}
-        .day-number{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:4px;padding-left:4px}
-        .date-cell .order-dot{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;padding:0 2px}
-        /* 玻璃感時間方塊 */
-        .date-cell .order-dot .dot{display:inline-block;min-width:34px;height:26px;border-radius:10px;font-size:9px;font-weight:600;text-align:center;line-height:26px;color:#fff;padding:0 5px;letter-spacing:.3px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2)}
-        .dot.pending{background:rgba(5,150,105,0.85);border-color:rgba(255,255,255,0.3)}
-        .dot.progress{background:rgba(37,99,235,0.85);border-color:rgba(255,255,255,0.3)}
-        .dot.completed{background:rgba(220,38,38,0.85);border-color:rgba(255,255,255,0.3)}
-        .fab-group{position:fixed;bottom:32px;right:20px;display:flex;flex-direction:column;gap:14px;z-index:100}
-        .fab{width:58px;height:58px;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 8px 32px rgba(15,23,42,0.1);border:1px solid rgba(255,255,255,0.3);transition:all .2s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+        .month-title{font-size:17px;font-weight:600;color:#0f172a}
+        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:8px;font-size:11px;font-weight:600;color:#94a3b8}
+        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+        .date-cell{background:#fff;border-radius:14px;padding:5px 2px;min-height:72px;border:1px solid #eef2f6;cursor:pointer;transition:.1s}
+        .date-cell:active{transform:scale(.95);background:#f8fafc}
+        .date-cell.today{border:2px solid #0f172a;background:#fafcff}
+        .date-cell.has-orders{background:#ffffff}
+        .day-number{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:3px;padding-left:3px}
+        .date-cell .order-dot{display:flex;flex-wrap:wrap;gap:2px;justify-content:center}
+        .date-cell .order-dot .dot{display:inline-block;min-width:26px;height:20px;border-radius:6px;font-size:8px;font-weight:600;text-align:center;line-height:20px;color:#fff;padding:0 3px}
+        .dot.pending{background:#10b981}
+        .dot.progress{background:#3b82f6}
+        .dot.completed{background:#ef4444}
+
+        /* 懸浮按鈕 */
+        .fab-group{position:fixed;bottom:28px;right:18px;display:flex;flex-direction:column;gap:12px;z-index:100}
+        .fab{width:56px;height:56px;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid #eef2f6;transition:.15s;background:#fff}
         .fab:active{transform:scale(.88)}
-        .fab-add{background:rgba(15,23,42,0.9);color:#fff}
-        .fab-paste{background:rgba(255,255,255,0.6);color:#0f172a;font-size:20px}
-        .modal{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:32px 32px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 40px rgba(0,0,0,0.06)}
+        .fab-add{background:#0f172a;color:#fff;border-color:#0f172a}
+        .fab-paste{background:#fff;color:#0f172a}
+
+        /* 彈窗 */
+        .modal{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:28px 28px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);box-shadow:0 -4px 24px rgba(0,0,0,0.06)}
         .modal.open{transform:translateY(0)}
-        .modal-header{padding:20px 24px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,0.04);position:sticky;top:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:32px 32px 0 0}
+        .modal-header{padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f4f9;position:sticky;top:0;background:#fff;border-radius:28px 28px 0 0}
         .modal-header h3{font-size:18px;font-weight:600;color:#0f172a}
-        .close-btn{background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.3);width:38px;height:38px;border-radius:30px;font-size:20px;cursor:pointer;color:#475569;backdrop-filter:blur(8px)}
+        .close-btn{background:#f1f4f9;border:none;width:36px;height:36px;border-radius:30px;font-size:20px;cursor:pointer;color:#475569}
         .close-btn:active{transform:scale(.9)}
-        .modal-body{padding:24px}
-        .form-group{margin-bottom:16px}
-        .form-group label{font-size:13px;font-weight:500;display:block;margin-bottom:5px;color:#475569}
-        .form-group input,.form-group textarea{width:100%;padding:12px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:16px;font-size:15px;background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);transition:all .2s;font-family:inherit;color:#0f172a}
-        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#0f172a;box-shadow:0 0 0 3px rgba(15,23,42,.06)}
+        .modal-body{padding:20px}
+        .form-group{margin-bottom:14px}
+        .form-group label{font-size:13px;font-weight:500;display:block;margin-bottom:4px;color:#475569}
+        .form-group input,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid #eef2f6;border-radius:16px;font-size:15px;background:#fafcff;font-family:inherit}
+        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#0f172a}
         .form-row{display:flex;gap:12px}
-        .form-buttons{display:flex;gap:10px;margin-top:20px}
-        .form-buttons button{flex:1;padding:14px;border-radius:40px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .2s}
+        .form-buttons{display:flex;gap:10px;margin-top:18px}
+        .form-buttons button{flex:1;padding:12px;border-radius:40px;font-weight:600;font-size:14px;border:none;cursor:pointer}
         .form-buttons button:active{transform:scale(.97)}
-        .order-card{border-radius:20px;padding:16px;margin-bottom:12px;border-left:4px solid;background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3)}
-        .order-card.pending{border-left-color:#059669;background:rgba(5,150,105,0.06)}
-        .order-card.progress{border-left-color:#2563eb;background:rgba(37,99,235,0.06)}
-        .order-card.completed{border-left-color:#dc2626;background:rgba(220,38,38,0.06)}
+        .order-card{border-radius:16px;padding:14px;margin-bottom:10px;border-left:4px solid;background:#fafcff}
+        .order-card.pending{border-left-color:#10b981;background:#f0fdf4}
+        .order-card.progress{border-left-color:#3b82f6;background:#eff6ff}
+        .order-card.completed{border-left-color:#ef4444;background:#fef2f2}
         .order-card .time{font-weight:600;font-size:13px;color:#64748b}
-        .order-card .name{font-size:17px;font-weight:600;margin:4px 0 3px;color:#0f172a}
-        .order-card .detail{font-size:13px;color:#64748b;display:flex;gap:14px;flex-wrap:wrap}
-        .order-card .status-text{font-size:12px;font-weight:500;margin-top:5px}
-        .order-card .actions{margin-top:10px;display:flex;gap:8px}
-        .order-card .actions button{padding:6px 16px;border-radius:30px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3)}
-        .order-card .actions .edit-btn{color:#475569}
-        .order-card .actions .del-btn{background:rgba(220,38,38,0.1);color:#dc2626}
-        .token-bar{background:rgba(255,255,255,0.3);backdrop-filter:blur(12px);border-radius:20px;padding:14px;margin-top:14px;border:1px solid rgba(255,255,255,0.3)}
-        .token-input{width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:40px;margin-top:6px;font-size:14px;background:rgba(255,255,255,0.4);backdrop-filter:blur(8px)}
-        .sync-status{font-size:12px;margin-top:6px;text-align:center;font-weight:400;color:#94a3b8}
-        select{width:100%;padding:12px 14px;border-radius:16px;border:1.5px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);font-size:15px;font-family:inherit;color:#0f172a}
-        .empty-state{text-align:center;padding:32px 20px;color:#94a3b8;font-size:14px;font-weight:400}
-        @media(max-width:480px){.date-cell{min-height:66px;padding:4px 2px}.day-number{font-size:12px}.stat-number{font-size:18px}.fab{width:54px;height:54px;font-size:22px}.date-cell .order-dot .dot{min-width:30px;height:24px;font-size:8px;line-height:24px}}
+        .order-card .name{font-size:16px;font-weight:600;margin:4px 0 3px;color:#0f172a}
+        .order-card .detail{font-size:13px;color:#64748b;display:flex;gap:12px;flex-wrap:wrap}
+        .order-card .status-text{font-size:12px;font-weight:500;margin-top:4px}
+        .order-card .actions{margin-top:8px;display:flex;gap:8px}
+        .order-card .actions button{padding:6px 14px;border-radius:30px;border:none;font-size:12px;font-weight:500;cursor:pointer}
+        .order-card .actions button:active{transform:scale(.95)}
+        .order-card .actions .edit-btn{background:#f1f4f9;color:#475569}
+        .order-card .actions .del-btn{background:#fef2f2;color:#ef4444}
+        .token-bar{background:#f8fafc;border-radius:16px;padding:12px;margin-top:12px;border:1px solid #eef2f6}
+        .token-input{width:100%;padding:10px 14px;border:1.5px solid #eef2f6;border-radius:40px;margin-top:6px;font-size:14px;background:#fff}
+        .sync-status{font-size:12px;margin-top:6px;text-align:center;color:#94a3b8}
+        select{width:100%;padding:11px 14px;border-radius:16px;border:1.5px solid #eef2f6;background:#fafcff;font-size:15px;font-family:inherit}
+        .empty-state{text-align:center;padding:28px 20px;color:#94a3b8;font-size:14px}
+        @media(max-width:480px){.date-cell{min-height:62px;padding:4px 2px}.day-number{font-size:12px}.stat-number{font-size:17px}.fab{width:52px;height:52px;font-size:22px}.date-cell .order-dot .dot{min-width:22px;height:18px;font-size:7px;line-height:18px}}
     </style>
 </head>
 <body>
@@ -167,14 +182,14 @@
         <div class="form-group"><label>地址 / 備註</label><textarea id="note" rows="2"></textarea></div>
         <div class="form-group"><label>單價</label><input type="number" id="price" step="10" value="228"></div>
         <div class="form-group"><label>訂單狀態</label><select id="status"><option value="pending">🟢 未開始</option><option value="progress">🔵 進行中</option><option value="completed">🔴 已完成</option></select></div>
-        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:rgba(220,38,38,0.1);color:#dc2626;">🗑️ 刪除</button><button id="saveBtn" style="background:#0f172a;color:#fff;">💾 保存</button></div>
+        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:#fef2f2;color:#ef4444;">🗑️ 刪除</button><button id="saveBtn" style="background:#0f172a;color:#fff;">💾 保存</button></div>
     </div>
 </div>
 
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
-        <textarea id="pasteText" rows="5" style="width:100%;padding:12px;border-radius:16px;border:1.5px solid rgba(0,0,0,0.06);font-family:monospace;font-size:14px;background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);"></textarea>
+        <textarea id="pasteText" rows="5" style="width:100%;padding:12px;border-radius:16px;border:1.5px solid #eef2f6;font-family:monospace;font-size:14px;background:#fafcff;"></textarea>
         <button id="recognizeBtn" style="margin-top:12px;width:100%;background:#0f172a;color:#fff;border:none;padding:12px;border-radius:40px;font-weight:600;font-size:15px;cursor:pointer;">🔍 自動識別</button>
         <div id="preview" style="margin-top:14px;display:none;"></div>
     </div>
@@ -192,7 +207,7 @@ var allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=ne
 function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#0f172a';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
 setInterval(checkDateChange,30000);checkDateChange();
 
-function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#dc2626':'#0f172a';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
+function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#ef4444':'#0f172a';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
 function b64d(s){return decodeURIComponent(escape(atob(s)));}
 
@@ -210,14 +225,14 @@ function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDat
 function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
 function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span class="income">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
 function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span class="income">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
-function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='rgba(255,255,255,0.15)';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var dotContainer=document.createElement('div');dotContainer.className='order-dot';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var dot=document.createElement('span');dot.className='dot '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);dot.innerText=timeStr;dotContainer.appendChild(dot);}cell.appendChild(dotContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
+function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#f8fafc';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var dotContainer=document.createElement('div');dotContainer.className='order-dot';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var dot=document.createElement('span');dot.className='dot '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);dot.innerText=timeStr;dotContainer.appendChild(dot);}cell.appendChild(dotContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
 function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div class="time">⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div class="name">❄️ '+escapeHtml(o.name)+'</div>';html+='<div class="detail"><span>📞 '+(o.phone||'')+'</span><span>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</span></div>';html+='<div class="status-text">'+stText+'</div>';if(o.note){html+='<div style="font-size:13px;color:#64748b;margin-top:3px;">📍 '+escapeHtml(o.note)+'</div>';}html+='<div class="actions"><button class="edit-btn" data-id="'+o.id+'">✏️ 編輯</button><button class="del-btn" data-id="'+o.id+'">🗑️ 刪除</button></div>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.edit-btn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.del-btn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
 function editOrder(id){var o=null;for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){o=allOrders[i];break;}}if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
 async function saveOrder(){var id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));var name=document.getElementById('name').value.trim();var phone=document.getElementById('phone').value.trim();var date=document.getElementById('date').value;var time=document.getElementById('time').value;var count=parseInt(document.getElementById('count').value);var note=document.getElementById('note').value.trim();var price=parseInt(document.getElementById('price').value);var status=document.getElementById('status').value;var isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;var datetime=date+'T'+time;for(var i=0;i<allOrders.length;i++){if(allOrders[i].datetime===datetime&&allOrders[i].id!==id){alert('⚠️ '+date+' '+time+' 已被預約');return;}}var orderData={id:id,name:name,phone:phone,datetime:datetime,count:count,note:note,price:price,status:status};if(isEdit){for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){allOrders[i]=orderData;break;}}}else{allOrders.push(orderData);}await saveData();closeOrderModal();}
 async function deleteOrder(){var id=document.getElementById('editId').value;var name=document.getElementById('name').value;if(!confirm('刪除「'+name+'」嗎？'))return;allOrders=allOrders.filter(function(o){return o.id!==id;});await saveData();closeOrderModal();}
 function escapeHtml(s){if(!s)return'';return s.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;});}
 function recognizeText(t){var r={name:"",phone:"",date:"",time:"",count:1,note:""};var m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);var today=new Date();function fmt(y,m,d){return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());else if(t.includes("聽日")||t.includes("明天")){var d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else if(t.includes("後日")||t.includes("后天")){var d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else{var dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){var mo=parseInt(dm[1]);var da=parseInt(dm[2]);var yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}var tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=String(tm[1]).padStart(2,'0')+':'+tm[2];else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){var h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=String(h).padStart(2,'0')+':00';}}var nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";var ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];return r;}
-function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:rgba(255,255,255,0.4);backdrop-filter:blur(12px);padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);"><strong style="font-size:15px;color:#0f172a;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;color:#475569;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#0f172a;color:#fff;border:none;padding:10px;border-radius:40px;font-weight:500;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
+function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#f8fafc;padding:14px;border-radius:16px;border:1px solid #eef2f6;"><strong style="font-size:15px;color:#0f172a;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;color:#475569;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#0f172a;color:#fff;border:none;padding:10px;border-radius:40px;font-weight:500;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
 function openOrderModal(){document.getElementById('orderModal').classList.add('open');}
 function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
 function openPasteModal(){document.getElementById('pasteModal').classList.add('open');document.getElementById('preview').style.display='none';document.getElementById('pasteText').value='';}

@@ -5,125 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>正邦家政 · 洗冷氣訂單</title>
     <link rel="manifest" href="data:application/json,{
-      \"name\":\"正邦家政\",\"short_name\":\"正邦\",\"start_url\":\"\/\",\"display\":\"standalone\",\"background_color\":\"#f5f7fa\",\"theme_color\":\"#0A1628\",
+      \"name\":\"正邦家政\",\"short_name\":\"正邦\",\"start_url\":\"\/\",\"display\":\"standalone\",\"background_color\":\"#f0f2f5\",\"theme_color\":\"#0f172a\",
       \"icons\":[{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image\/svg+xml\"},{\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"512x512\",\"type\":\"image\/svg+xml\"}]}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="正邦">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK",system-ui,sans-serif;padding:18px 14px 100px 14px;color:#1e293b}
+        body{background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK",system-ui,sans-serif;padding:18px 14px 100px 14px;color:#1e293b}
 
-        /* 卡片 */
-        .card{background:#ffffff;border-radius:24px;padding:20px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);border:1px solid #eef2f6}
+        .card{background:#ffffff;border-radius:28px;padding:22px 18px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,0.03);border:1px solid rgba(226,232,240,0.4)}
         .logo-bar{display:flex;align-items:center;gap:12px}
         .logo-icon{font-size:26px}
-        .logo-text h1{font-size:20px;font-weight:700;color:#0A1628;letter-spacing:-0.3px}
-        .logo-text .sub{font-size:12px;color:#8a99b0;margin-top:-2px}
+        .logo-text h1{font-size:20px;font-weight:700;color:#0f172a;letter-spacing:-0.3px}
+        .logo-text .sub{font-size:12px;color:#94a3b8;margin-top:-2px}
 
-        .btn{background:#f1f4f9;border:none;padding:9px 18px;border-radius:40px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;color:#334155}
+        .btn{background:#f1f5f9;border:none;padding:10px 18px;border-radius:40px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;color:#334155}
         .btn:active{transform:scale(.95)}
-        .btn-primary{background:#0A1628;color:#fff}
+        .btn-primary{background:#0f172a;color:#fff;box-shadow:0 2px 8px rgba(15,23,42,0.08)}
 
-        /* 統計卡片 - 參考圖片風格 */
-        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-        .stat-card{background:#ffffff;border-radius:20px;padding:16px 6px;text-align:center;border:1px solid #eef2f6}
-        .stat-number{font-size:22px;font-weight:700;color:#0A1628;letter-spacing:-0.3px}
-        .stat-label{font-size:11px;color:#8a99b0;margin-top:4px;font-weight:500}
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+        .stat-card{background:#ffffff;border-radius:24px;padding:18px 6px;text-align:center;border:1px solid rgba(226,232,240,0.4)}
+        .stat-number{font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px}
+        .stat-label{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500;letter-spacing:.3px}
 
         .year-selector{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:18px}
-        .year-selector button{background:#fff;border:1px solid #eef2f6;width:38px;height:38px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569}
-        .year-selector button:active{transform:scale(.92)}
-        .year-selector span{font-size:17px;font-weight:600;min-width:90px;text-align:center;color:#0A1628}
+        .year-selector button{background:#fff;border:1px solid rgba(226,232,240,0.4);width:40px;height:40px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569}
+        .year-selector button:active{transform:scale(.92);background:#f1f5f9}
+        .year-selector span{font-size:17px;font-weight:600;min-width:90px;text-align:center;color:#0f172a}
 
         .month-selector{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:10px}
-        .month-selector button{background:transparent;border:1px solid #eef2f6;width:32px;height:32px;border-radius:30px;font-size:14px;cursor:pointer;color:#475569}
+        .month-selector button{background:transparent;border:1px solid rgba(226,232,240,0.3);width:34px;height:34px;border-radius:30px;font-size:14px;cursor:pointer;color:#475569}
         .month-selector span{font-size:14px;font-weight:500;min-width:100px;text-align:center;color:#475569}
 
         .report-tabs{display:flex;gap:8px;margin-bottom:12px}
-        .tab-btn{flex:1;background:#f1f4f9;border:none;padding:10px 8px;border-radius:40px;font-weight:500;font-size:13px;cursor:pointer;color:#8a99b0}
-        .tab-btn.active{background:#0A1628;color:#fff}
-        .report-summary{display:flex;justify-content:space-around;padding:12px 8px;background:#f8fafc;border-radius:18px;margin-bottom:10px;font-weight:500;font-size:13px;color:#0A1628;border:1px solid #eef2f6}
-        .report-list{background:#fafcff;border-radius:16px;padding:4px;max-height:170px;overflow-y:auto;border:1px solid #f1f4f9}
-        .report-item{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f1f4f9;font-size:13px;color:#475569}
+        .tab-btn{flex:1;background:#f1f5f9;border:none;padding:11px 8px;border-radius:40px;font-weight:500;font-size:13px;cursor:pointer;color:#94a3b8}
+        .tab-btn.active{background:#0f172a;color:#fff}
+        .report-summary{display:flex;justify-content:space-around;padding:12px 8px;background:#f8fafc;border-radius:20px;margin-bottom:10px;font-weight:500;font-size:13px;color:#0f172a;border:1px solid rgba(226,232,240,0.3)}
+        .report-list{background:#fafcff;border-radius:16px;padding:4px;max-height:170px;overflow-y:auto;border:1px solid #f1f5f9}
+        .report-item{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#475569}
         .report-item:last-child{border-bottom:none}
-        .report-item .income{font-weight:600;color:#0A1628}
+        .report-item .income{font-weight:600;color:#0f172a}
 
-        /* 日曆 */
         .month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-        .month-nav button{background:#fff;border:1px solid #eef2f6;width:38px;height:38px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569}
-        .month-nav button:active{transform:scale(.92)}
-        .month-title{font-size:17px;font-weight:600;color:#0A1628}
-        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:8px;font-size:11px;font-weight:500;color:#8a99b0}
-        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-        .date-cell{background:#fff;border-radius:14px;padding:5px 2px;min-height:70px;border:1px solid #eef2f6;cursor:pointer;transition:.1s}
+        .month-nav button{background:#fff;border:1px solid rgba(226,232,240,0.4);width:40px;height:40px;border-radius:40px;font-size:16px;cursor:pointer;color:#475569}
+        .month-nav button:active{transform:scale(.92);background:#f1f5f9}
+        .month-title{font-size:17px;font-weight:600;color:#0f172a}
+
+        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:8px;font-size:11px;font-weight:500;color:#94a3b8;letter-spacing:.3px}
+        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+        .date-cell{background:#ffffff;border-radius:16px;padding:5px 2px;min-height:72px;border:1px solid rgba(226,232,240,0.4);cursor:pointer;transition:.1s}
         .date-cell:active{transform:scale(.95);background:#f8fafc}
-        .date-cell.today{border:2px solid #0A1628;background:#fafcff}
+        .date-cell.today{border:2px solid #0f172a;background:#fafcff}
         .date-cell.has-orders{background:#ffffff}
-        .day-number{font-size:13px;font-weight:600;color:#0A1628;margin-bottom:3px;padding-left:3px}
-        .date-cell .order-dot{display:flex;flex-wrap:wrap;gap:2px;justify-content:center}
+        .day-number{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:3px;padding-left:4px}
+
+        .date-cell .order-dot{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;padding:0 2px}
         .date-cell .order-dot .dot{
             display:inline-block;
-            min-width:24px;
-            height:18px;
-            border-radius:5px;
+            min-width:26px;
+            height:20px;
+            border-radius:6px;
             font-size:8px;
-            font-weight:500;
+            font-weight:600;
             text-align:center;
-            line-height:18px;
+            line-height:20px;
             color:#fff;
-            padding:0 2px;
-            letter-spacing:0.2px;
+            padding:0 3px;
+            letter-spacing:.2px;
         }
-        .dot.pending{background:#10b981}
-        .dot.progress{background:#2463EB}
-        .dot.completed{background:#94a3b8}
+        .dot.pending{background:#059669}
+        .dot.progress{background:#2563eb}
+        .dot.completed{background:#dc2626}
 
         .fab-group{position:fixed;bottom:28px;right:18px;display:flex;flex-direction:column;gap:12px;z-index:100}
-        .fab{width:56px;height:56px;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid #eef2f6;transition:.15s;background:#fff}
+        .fab{width:56px;height:56px;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid rgba(226,232,240,0.4);transition:.15s;background:#fff}
         .fab:active{transform:scale(.88)}
-        .fab-add{background:#0A1628;color:#fff;border-color:#0A1628}
-        .fab-paste{background:#fff;color:#0A1628}
+        .fab-add{background:#0f172a;color:#fff;border-color:#0f172a}
+        .fab-paste{background:#fff;color:#0f172a}
 
-        .modal{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:28px 28px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);box-shadow:0 -4px 24px rgba(0,0,0,0.06)}
+        .modal{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:32px 32px 0 0;max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);box-shadow:0 -4px 24px rgba(0,0,0,0.04)}
         .modal.open{transform:translateY(0)}
-        .modal-header{padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f4f9;position:sticky;top:0;background:#fff;border-radius:28px 28px 0 0}
-        .modal-header h3{font-size:18px;font-weight:600;color:#0A1628}
-        .close-btn{background:#f1f4f9;border:none;width:36px;height:36px;border-radius:30px;font-size:20px;cursor:pointer;color:#475569}
+        .modal-header{padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;position:sticky;top:0;background:#fff}
+        .modal-header h3{font-size:18px;font-weight:600;color:#0f172a}
+        .close-btn{background:#f1f5f9;border:none;width:36px;height:36px;border-radius:30px;font-size:20px;cursor:pointer;color:#475569}
         .close-btn:active{transform:scale(.9)}
         .modal-body{padding:20px}
         .form-group{margin-bottom:14px}
         .form-group label{font-size:13px;font-weight:500;display:block;margin-bottom:4px;color:#475569}
-        .form-group input,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid #eef2f6;border-radius:16px;font-size:15px;background:#fafcff;font-family:inherit}
-        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#2463EB}
+        .form-group input,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid #eef2f6;border-radius:18px;font-size:15px;background:#fafcff;font-family:inherit}
+        .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#0f172a}
         .form-row{display:flex;gap:12px}
         .form-buttons{display:flex;gap:10px;margin-top:18px}
-        .form-buttons button{flex:1;padding:12px;border-radius:40px;font-weight:500;font-size:14px;border:none;cursor:pointer}
+        .form-buttons button{flex:1;padding:13px;border-radius:40px;font-weight:500;font-size:14px;border:none;cursor:pointer}
         .form-buttons button:active{transform:scale(.97)}
         .order-card{border-radius:16px;padding:14px;margin-bottom:10px;border-left:4px solid;background:#fafcff}
-        .order-card.pending{border-left-color:#10b981;background:#f0fdf4}
-        .order-card.progress{border-left-color:#2463EB;background:#eff6ff}
-        .order-card.completed{border-left-color:#94a3b8;background:#f8fafc}
+        .order-card.pending{border-left-color:#059669;background:#f0fdf4}
+        .order-card.progress{border-left-color:#2563eb;background:#eff6ff}
+        .order-card.completed{border-left-color:#dc2626;background:#fef2f2}
         .order-card .time{font-weight:500;font-size:13px;color:#64748b}
-        .order-card .name{font-size:16px;font-weight:600;margin:4px 0 3px;color:#0A1628}
+        .order-card .name{font-size:16px;font-weight:600;margin:4px 0 3px;color:#0f172a}
         .order-card .detail{font-size:13px;color:#64748b;display:flex;gap:12px;flex-wrap:wrap}
         .order-card .status-text{font-size:12px;font-weight:500;margin-top:4px}
         .order-card .actions{margin-top:8px;display:flex;gap:8px}
         .order-card .actions button{padding:6px 14px;border-radius:30px;border:none;font-size:12px;font-weight:500;cursor:pointer}
         .order-card .actions button:active{transform:scale(.95)}
-        .order-card .actions .edit-btn{background:#f1f4f9;color:#475569}
-        .order-card .actions .del-btn{background:#fef2f2;color:#ef4444}
+        .order-card .actions .edit-btn{background:#f1f5f9;color:#475569}
+        .order-card .actions .del-btn{background:#fef2f2;color:#dc2626}
         .token-bar{background:#f8fafc;border-radius:16px;padding:12px;margin-top:12px;border:1px solid #eef2f6}
         .token-input{width:100%;padding:10px 14px;border:1.5px solid #eef2f6;border-radius:40px;margin-top:6px;font-size:14px;background:#fff}
         .sync-status{font-size:12px;margin-top:6px;text-align:center;color:#94a3b8}
-        select{width:100%;padding:11px 14px;border-radius:16px;border:1.5px solid #eef2f6;background:#fafcff;font-size:15px;font-family:inherit}
+        select{width:100%;padding:11px 14px;border-radius:18px;border:1.5px solid #eef2f6;background:#fafcff;font-size:15px;font-family:inherit}
         .empty-state{text-align:center;padding:28px 20px;color:#94a3b8;font-size:14px}
 
         @media(max-width:480px){
-            .date-cell{min-height:58px;padding:3px 2px}
-            .day-number{font-size:11px}
+            .date-cell{min-height:60px;padding:4px 2px}
+            .day-number{font-size:12px}
             .stat-number{font-size:18px}
             .fab{width:52px;height:52px;font-size:22px}
-            .date-cell .order-dot .dot{min-width:20px;height:16px;font-size:7px;line-height:16px}
+            .date-cell .order-dot .dot{min-width:22px;height:18px;font-size:7px;line-height:18px}
         }
     </style>
 </head>
@@ -196,16 +195,16 @@
         <div class="form-group"><label>數量</label><input type="number" id="count" min="1" value="1"></div>
         <div class="form-group"><label>地址 / 備註</label><textarea id="note" rows="2"></textarea></div>
         <div class="form-group"><label>單價</label><input type="number" id="price" step="10" value="228"></div>
-        <div class="form-group"><label>訂單狀態</label><select id="status"><option value="pending">🟢 未開始</option><option value="progress">🔵 進行中</option><option value="completed">⬜ 已完成</option></select></div>
-        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:#fef2f2;color:#ef4444;">🗑️ 刪除</button><button id="saveBtn" style="background:#0A1628;color:#fff;">💾 保存</button></div>
+        <div class="form-group"><label>訂單狀態</label><select id="status"><option value="pending">🟢 未開始</option><option value="progress">🔵 進行中</option><option value="completed">🔴 已完成</option></select></div>
+        <div class="form-buttons"><button id="deleteBtn" style="display:none;background:#fef2f2;color:#dc2626;">🗑️ 刪除</button><button id="saveBtn" style="background:#0f172a;color:#fff;">💾 保存</button></div>
     </div>
 </div>
 
 <div id="pasteModal" class="modal">
     <div class="modal-header"><h3>🤖 智能粘貼</h3><button class="close-btn" id="closePasteModal">✕</button></div>
     <div class="modal-body">
-        <textarea id="pasteText" rows="5" style="width:100%;padding:12px;border-radius:16px;border:1.5px solid #eef2f6;font-family:monospace;font-size:14px;background:#fafcff;"></textarea>
-        <button id="recognizeBtn" style="margin-top:12px;width:100%;background:#0A1628;color:#fff;border:none;padding:12px;border-radius:40px;font-weight:500;font-size:15px;cursor:pointer;">🔍 自動識別</button>
+        <textarea id="pasteText" rows="5" style="width:100%;padding:12px;border-radius:18px;border:1.5px solid #eef2f6;font-family:monospace;font-size:14px;background:#fafcff;"></textarea>
+        <button id="recognizeBtn" style="margin-top:12px;width:100%;background:#0f172a;color:#fff;border:none;padding:12px;border-radius:40px;font-weight:500;font-size:15px;cursor:pointer;">🔍 自動識別</button>
         <div id="preview" style="margin-top:14px;display:none;"></div>
     </div>
 </div>
@@ -219,10 +218,10 @@
 var GH_USER="althellobye",GH_REPO="my-order-data",API_URL="https://api.github.com/repos/"+GH_USER+"/"+GH_REPO+"/contents/data.json";
 var allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth(),selectedYear=new Date().getFullYear(),currentReport="week",githubToken=localStorage.getItem('github_token')||"",DEFAULT_PRICE=228,statMonth=new Date().getMonth(),statYear=new Date().getFullYear();
 
-function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#0A1628';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
+function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#0f172a';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
 setInterval(checkDateChange,30000);checkDateChange();
 
-function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#ef4444':'#0A1628';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
+function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#dc2626':'#0f172a';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
 function b64d(s){return decodeURIComponent(escape(atob(s)));}
 
@@ -234,7 +233,7 @@ function saveLocal(){localStorage.setItem('ac_backup',JSON.stringify(allOrders))
 function saveData(){if(githubToken&&fileSha)saveToGit();else saveLocal();}
 function refreshAll(){renderCalendar();updateYearStats();if(currentReport==='week')renderReport('week');else renderMonthStatReport(statYear,statMonth);}
 function getOrderStatus(o){if(o.status)return o.status;var n=new Date(),ot=new Date(o.datetime);if(ot<n)return'completed';else if(ot.toDateString()===n.toDateString())return'progress';else return'pending';}
-function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🔵 進行中';return'⬜ 已完成';}
+function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🔵 進行中';return'🔴 已完成';}
 function updateYearStats(){document.getElementById('selectedYear').innerHTML=selectedYear+'年';var inc=0,ord=0,unt=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var y=new Date(o.datetime).getFullYear();if(y===selectedYear){var p=o.price||DEFAULT_PRICE;inc+=(o.count||1)*p;ord++;unt+=(o.count||1);}}document.getElementById('totalIncome').innerHTML='$'+inc.toLocaleString();document.getElementById('totalOrders').innerText=ord;document.getElementById('totalUnits').innerText=unt;}
 function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));var s=new Date(m);s.setDate(m.getDate()+6);function f(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return{start:f(m),end:f(s)};}
 function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
@@ -247,7 +246,7 @@ async function saveOrder(){var id=document.getElementById('editId').value||('id_
 async function deleteOrder(){var id=document.getElementById('editId').value;var name=document.getElementById('name').value;if(!confirm('刪除「'+name+'」嗎？'))return;allOrders=allOrders.filter(function(o){return o.id!==id;});await saveData();closeOrderModal();}
 function escapeHtml(s){if(!s)return'';return s.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;});}
 function recognizeText(t){var r={name:"",phone:"",date:"",time:"",count:1,note:""};var m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);var today=new Date();function fmt(y,m,d){return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());else if(t.includes("聽日")||t.includes("明天")){var d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else if(t.includes("後日")||t.includes("后天")){var d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else{var dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){var mo=parseInt(dm[1]);var da=parseInt(dm[2]);var yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}var tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=String(tm[1]).padStart(2,'0')+':'+tm[2];else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){var h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=String(h).padStart(2,'0')+':00';}}var nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";var ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];return r;}
-function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#f8fafc;padding:14px;border-radius:16px;border:1px solid #eef2f6;"><strong style="font-size:15px;color:#0A1628;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;color:#475569;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#0A1628;color:#fff;border:none;padding:10px;border-radius:40px;font-weight:500;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
+function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#f8fafc;padding:14px;border-radius:18px;border:1px solid #eef2f6;"><strong style="font-size:15px;color:#0f172a;">✅ 識別結果</strong><div style="margin-top:8px;line-height:1.8;color:#475569;">📛 客戶：'+rec.name+'<br>📞 電話：'+(rec.phone||'未識別')+'<br>📅 日期：'+(rec.date||'未識別')+'<br>⏰ 時間：'+(rec.time||'未識別')+'<br>🔢 數量：'+rec.count+'部<br>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:12px;width:100%;background:#0f172a;color:#fff;border:none;padding:10px;border-radius:40px;font-weight:500;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
 function openOrderModal(){document.getElementById('orderModal').classList.add('open');}
 function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
 function openPasteModal(){document.getElementById('pasteModal').classList.add('open');document.getElementById('preview').style.display='none';document.getElementById('pasteText').value='';}

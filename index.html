@@ -3,7 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>洗冷氣訂單系統</title>
+    <title>正邦家政 · 洗冷氣訂單</title>
+    <!-- 直接內嵌 PWA 安裝 -->
+    <link rel="manifest" href="data:application/json,{
+      \"name\":\"正邦家政\",
+      \"short_name\":\"訂單系統\",
+      \"start_url\":\"\/\",
+      \"display\":\"standalone\",
+      \"background_color\":\"#f0f2f5\",
+      \"theme_color\":\"#059669\",
+      \"icons\":[
+        {\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image\/svg+xml\"},
+        {\"src\":\"data:image\/svg+xml,%3Csvg xmlns='http:\/\/www.w3.org\/2000\/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%84%EF%B8%8F%3C\/text%3E%3C\/svg%3E\",\"sizes\":\"512x512\",\"type\":\"image\/svg+xml\"}
+      ]
+    }">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="正邦家政">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{background:#f0f2f5;font-family:system-ui,-apple-system,'Segoe UI',Roboto;padding:16px 12px 90px 12px}
@@ -34,7 +49,6 @@
         .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
         .date-cell{background:#fafcff;border-radius:12px;padding:4px 3px;min-height:70px;border:1px solid #eef2ff;cursor:pointer;overflow:hidden}
         .date-cell.today{background:#ecfdf5;border:2px solid #10b981}
-        .date-cell.past{background:#f8fafc;border:1px solid #e2e8f0}
         .day-number{font-size:13px;font-weight:700;margin-bottom:2px}
         .order-mini{border-radius:6px;padding:2px 3px;margin-bottom:2px;font-size:8px;border-left:2px solid;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .order-mini.pending{background:#dcfce7;border-left-color:#22c55e}
@@ -64,13 +78,12 @@
         .token-input{width:100%;padding:10px;border:1px solid #c7d2fe;border-radius:40px;margin-top:8px}
         .sync-status{font-size:12px;margin-top:8px;text-align:center}
         select{width:100%;padding:10px 12px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;font-size:14px}
-        .view-month-btn{background:#dbeafe;border:1px solid #93c5fd;padding:4px 12px;border-radius:30px;font-size:12px;cursor:pointer;margin-left:8px}
         @media(max-width:480px){.date-cell{min-height:60px;padding:3px 2px}.order-mini{font-size:7px}.day-number{font-size:11px}}
     </style>
 </head>
 <body>
 <div class="card">
-    <h1>❄️ 洗冷氣訂單系統</h1>
+    <h1>❄️ 正邦家政 · 洗冷氣訂單</h1>
     <div class="token-bar">
         <div id="tokenStatus">⚪ 未連接雲端</div>
         <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
@@ -141,553 +154,61 @@
     <div class="modal-body" id="detailList"></div>
 </div>
 <script>
-// ===== CONFIG =====
-var GH_USER = "althellobye";
-var GH_REPO = "my-order-data";
-var API_URL = "https://api.github.com/repos/" + GH_USER + "/" + GH_REPO + "/contents/data.json";
-
-var allOrders = [];
-var fileSha = "";
-var currentYear = new Date().getFullYear();
-var currentMonth = new Date().getMonth();
-var selectedYear = new Date().getFullYear();
-var currentReport = "week";
-var githubToken = localStorage.getItem('github_token') || "";
-var DEFAULT_PRICE = 228;
-var statMonth = new Date().getMonth();
-var statYear = new Date().getFullYear();
-
-// ===== 每天00:00自動更新日期 =====
-function checkDateChange() {
-    var now = new Date();
-    var stored = localStorage.getItem('last_date_check');
-    var today = now.toDateString();
-    if(stored !== today) {
-        localStorage.setItem('last_date_check', today);
-        // 強制刷新所有訂單狀態
-        refreshAll();
-        var status = document.getElementById('syncStatus');
-        status.innerHTML = '🔄 日期已更新，訂單狀態已刷新';
-        status.style.color = '#059669';
-        setTimeout(function() { if(status.innerHTML === '🔄 日期已更新，訂單狀態已刷新') status.innerHTML = ''; }, 3000);
-    }
-}
-// 每30秒檢查一次日期變化（確保跨天時自動更新）
-setInterval(checkDateChange, 30000);
-// 頁面加載時立即檢查
-checkDateChange();
-
-function showStatus(msg, isErr) {
-    var d = document.getElementById('syncStatus');
-    d.innerHTML = msg;
-    d.style.color = isErr ? '#991b1b' : '#065f46';
-    setTimeout(function() { if(d.innerHTML === msg) d.innerHTML = ''; }, 3000);
-}
-
-function b64e(str) { return btoa(unescape(encodeURIComponent(str))); }
-function b64d(str) { return decodeURIComponent(escape(atob(str))); }
-
-async function loadFromGit() {
-    if(!githubToken) { loadLocal(); return; }
-    try {
-        var r = await fetch(API_URL + '?t=' + Date.now(), {
-            headers: { "Authorization": "token " + githubToken }
-        });
-        if(r.status === 401) { showStatus("Token無效", true); return; }
-        if(r.status === 404) { await createFile(); return; }
-        var d = await r.json();
-        fileSha = d.sha;
-        var c = b64d(d.content);
-        allOrders = JSON.parse(c || "[]");
-        localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-        refreshAll();
-        showStatus("✅ 已同步", false);
-        document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-    } catch(e) {
-        showStatus("⚠️ 雲端失敗", true);
-        loadLocal();
-    }
-}
-
-async function createFile() {
-    var c = b64e(JSON.stringify([], null, 2));
-    var r = await fetch(API_URL, {
-        method: "PUT",
-        headers: { "Authorization": "token " + githubToken, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "init", content: c, branch: "main" })
-    });
-    if(r.ok) {
-        var d = await r.json();
-        fileSha = d.content.sha;
-        allOrders = [];
-        refreshAll();
-        showStatus("✅ 已創建", false);
-    } else {
-        showStatus("❌ 創建失敗", true);
-        loadLocal();
-    }
-}
-
-async function saveToGit() {
-    if(!githubToken || !fileSha) { saveLocal(); return; }
-    var c = b64e(JSON.stringify(allOrders, null, 2));
-    try {
-        var r = await fetch(API_URL, {
-            method: "PUT",
-            headers: { "Authorization": "token " + githubToken, "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "update", content: c, sha: fileSha, branch: "main" })
-        });
-        if(r.ok) {
-            var d = await r.json();
-            fileSha = d.content.sha;
-            localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-            showStatus("✅ 已保存", false);
-        } else {
-            saveLocal();
-        }
-    } catch(e) { saveLocal(); }
-}
-
-function loadLocal() {
-    var s = localStorage.getItem('ac_backup');
-    allOrders = s ? JSON.parse(s) : [];
-    refreshAll();
-}
-
-function saveLocal() {
-    localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-    refreshAll();
-}
-
-function saveData() {
-    if(githubToken && fileSha) saveToGit();
-    else saveLocal();
-}
-
-function refreshAll() {
-    renderCalendar();
-    updateYearStats();
-    if(currentReport === 'week') renderReport('week');
-    else renderMonthStatReport(statYear, statMonth);
-}
-
-// ===== 核心：根據當前時間判斷訂單狀態 =====
-function getOrderStatus(o) {
-    // 如果用戶手動設置了狀態，優先使用
-    if(o.status) return o.status;
-    
-    var n = new Date();
-    var ot = new Date(o.datetime);
-    
-    // 如果訂單時間已過 → 自動變紅色（已完成）
-    if(ot < n) return 'completed';
-    // 如果訂單時間是今天 → 黃色（進行中）
-    else if(ot.toDateString() === n.toDateString()) return 'progress';
-    // 未來訂單 → 綠色（未開始）
-    else return 'pending';
-}
-
-function getStatusText(s) {
-    if(s === 'pending') return '🟢 未開始';
-    if(s === 'progress') return '🟡 進行中';
-    return '🔴 已完成';
-}
-
-// ===== 手動切換狀態時，自動更新顏色 =====
-function setOrderStatus(order, newStatus) {
-    order.status = newStatus;
-    saveData();
-}
-
-function updateYearStats() {
-    document.getElementById('selectedYear').innerHTML = selectedYear + '年';
-    var inc = 0, ord = 0, unt = 0;
-    for(var i = 0; i < allOrders.length; i++) {
-        var o = allOrders[i];
-        var y = new Date(o.datetime).getFullYear();
-        if(y === selectedYear) {
-            var p = o.price || DEFAULT_PRICE;
-            inc += (o.count || 1) * p;
-            ord++;
-            unt += (o.count || 1);
-        }
-    }
-    document.getElementById('totalIncome').innerHTML = '$' + inc.toLocaleString();
-    document.getElementById('totalOrders').innerText = ord;
-    document.getElementById('totalUnits').innerText = unt;
-}
-
-function getWeekRange() {
-    var n = new Date();
-    var d = n.getDay();
-    var m = new Date(n);
-    m.setDate(n.getDate() - (d === 0 ? 6 : d - 1));
-    var s = new Date(m);
-    s.setDate(m.getDate() + 6);
-    function f(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
-    return { start: f(m), end: f(s) };
-}
-
-function getMonthRange(year, month) {
-    var s = year + '-' + String(month+1).padStart(2,'0') + '-01';
-    var l = new Date(year, month+1, 0).getDate();
-    return { start: s, end: year + '-' + String(month+1).padStart(2,'0') + '-' + String(l).padStart(2,'0') };
-}
-
-function renderReport(period) {
-    var r = period === 'week' ? getWeekRange() : getMonthRange(new Date().getFullYear(), new Date().getMonth());
-    if(period === 'week') {
-        document.getElementById('monthSelector').style.display = 'none';
-    } else {
-        document.getElementById('monthSelector').style.display = 'flex';
-        document.getElementById('statMonthDisplay').innerHTML = statYear + '年 ' + (statMonth+1) + '月';
-    }
-    var details = [];
-    var totalInc = 0, totalUnits = 0;
-    for(var i = 0; i < allOrders.length; i++) {
-        var o = allOrders[i];
-        var dt = o.datetime.split('T')[0];
-        if(dt >= r.start && dt <= r.end) {
-            var inc = (o.price || DEFAULT_PRICE) * (o.count || 1);
-            details.push({ date: dt, name: o.name, count: o.count, income: inc });
-            totalInc += inc;
-            totalUnits += (o.count || 1);
-        }
-    }
-    details.sort(function(a,b) { return a.date.localeCompare(b.date); });
-    var c = document.getElementById('reportList');
-    var summary = document.getElementById('reportSummary');
-    summary.innerHTML = '💰 收入: $' + totalInc.toLocaleString() + ' &nbsp;|&nbsp; ❄️ 洗機: ' + totalUnits + '部';
-    if(details.length === 0) {
-        c.innerHTML = '<div style="text-align:center;padding:20px;">暫無訂單</div>';
-    } else {
-        var html = '';
-        for(var i = 0; i < details.length; i++) {
-            html += '<div class="report-item"><span>' + details[i].date + '</span><span>' + details[i].name + '(' + details[i].count + '部)</span><span>$' + details[i].income + '</span></div>';
-        }
-        c.innerHTML = html;
-    }
-}
-
-function renderMonthStatReport(year, month) {
-    document.getElementById('monthSelector').style.display = 'flex';
-    document.getElementById('statMonthDisplay').innerHTML = year + '年 ' + (month+1) + '月';
-    var r = getMonthRange(year, month);
-    var details = [];
-    var totalInc = 0, totalUnits = 0;
-    for(var i = 0; i < allOrders.length; i++) {
-        var o = allOrders[i];
-        var dt = o.datetime.split('T')[0];
-        if(dt >= r.start && dt <= r.end) {
-            var inc = (o.price || DEFAULT_PRICE) * (o.count || 1);
-            details.push({ date: dt, name: o.name, count: o.count, income: inc });
-            totalInc += inc;
-            totalUnits += (o.count || 1);
-        }
-    }
-    details.sort(function(a,b) { return a.date.localeCompare(b.date); });
-    var c = document.getElementById('reportList');
-    var summary = document.getElementById('reportSummary');
-    summary.innerHTML = '💰 收入: $' + totalInc.toLocaleString() + ' &nbsp;|&nbsp; ❄️ 洗機: ' + totalUnits + '部';
-    if(details.length === 0) {
-        c.innerHTML = '<div style="text-align:center;padding:20px;">暫無訂單</div>';
-    } else {
-        var html = '';
-        for(var i = 0; i < details.length; i++) {
-            html += '<div class="report-item"><span>' + details[i].date + '</span><span>' + details[i].name + '(' + details[i].count + '部)</span><span>$' + details[i].income + '</span></div>';
-        }
-        c.innerHTML = html;
-    }
-}
-
-function renderCalendar() {
-    var f = new Date(currentYear, currentMonth, 1);
-    var off = (f.getDay() === 0 ? 6 : f.getDay() - 1);
-    var days = new Date(currentYear, currentMonth + 1, 0).getDate();
-    var g = document.getElementById('calendarGrid');
-    g.innerHTML = "";
-    document.getElementById('monthTitle').innerHTML = currentYear + '年' + String(currentMonth+1).padStart(2,'0') + '月';
-    var today = new Date().toISOString().slice(0,10);
-    for(var i = 0; i < off; i++) {
-        var e = document.createElement('div');
-        e.className = 'date-cell';
-        e.style.background = '#fefce8';
-        e.style.opacity = '0.5';
-        g.appendChild(e);
-    }
-    for(var d = 1; d <= days; d++) {
-        var ds = currentYear + '-' + String(currentMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-        var dayOrders = allOrders.filter(function(o) { return o.datetime && o.datetime.startsWith(ds); });
-        var cell = document.createElement('div');
-        cell.className = 'date-cell';
-        if(ds === today) cell.classList.add('today');
-        var num = document.createElement('div');
-        num.className = 'day-number';
-        num.innerText = d;
-        cell.appendChild(num);
-        var maxShow = 3;
-        var showOrders = dayOrders.slice(0, maxShow);
-        for(var j = 0; j < showOrders.length; j++) {
-            var o = showOrders[j];
-            var st = getOrderStatus(o);
-            var div = document.createElement('div');
-            div.className = 'order-mini ' + st;
-            var timeStr = o.datetime.split('T')[1];
-            var nameStr = o.name.length > 6 ? o.name.slice(0,6) + '…' : o.name;
-            div.innerHTML = '<span style="font-weight:600;">' + timeStr + '</span> ' + nameStr + '(' + o.count + ')';
-            cell.appendChild(div);
-        }
-        if(dayOrders.length > maxShow) {
-            var more = document.createElement('div');
-            more.className = 'more-indicator';
-            more.innerText = '+' + (dayOrders.length - maxShow);
-            cell.appendChild(more);
-        }
-        cell.onclick = (function(ds, dayOrders) {
-            return function() { showDetail(ds, dayOrders); };
-        })(ds, dayOrders);
-        g.appendChild(cell);
-    }
-}
-
-function showDetail(ds, orders) {
-    document.getElementById('detailTitle').innerHTML = '📅 ' + ds;
-    var c = document.getElementById('detailList');
-    if(orders.length === 0) {
-        c.innerHTML = '<div style="text-align:center;padding:40px;">暫無訂單</div>';
-    } else {
-        var html = '';
-        for(var i = 0; i < orders.length; i++) {
-            var o = orders[i];
-            var p = o.price || DEFAULT_PRICE;
-            var st = getOrderStatus(o);
-            var stText = getStatusText(st);
-            html += '<div class="order-card ' + st + '">';
-            html += '<div>⏰ ' + o.datetime.split('T')[1] + '</div>';
-            html += '<div style="font-size:16px;font-weight:700;margin:6px 0;">❄️ ' + escapeHtml(o.name) + '</div>';
-            html += '<div>📞 ' + (o.phone || '') + '</div>';
-            html += '<div>🔢 ' + o.count + '部 × $' + p + ' = $' + ((o.count||1)*p) + '</div>';
-            html += '<div>📌 ' + stText + '</div>';
-            if(o.note) { html += '<div>📍 ' + escapeHtml(o.note) + '</div>'; }
-            html += '<button class="editBtn" data-id="' + o.id + '" style="background:#e2e8f0;border:none;padding:6px 12px;border-radius:30px;margin-top:8px;margin-right:8px;">✏️ 編輯</button>';
-            html += '<button class="delBtn" data-id="' + o.id + '" style="background:#fee2e2;border:none;padding:6px 12px;border-radius:30px;color:#e11d48;margin-top:8px;">🗑️ 刪除</button>';
-            html += '</div>';
-        }
-        c.innerHTML = html;
-        var editBtns = document.querySelectorAll('.editBtn');
-        for(var i = 0; i < editBtns.length; i++) {
-            editBtns[i].onclick = function() { editOrder(this.getAttribute('data-id')); };
-        }
-        var delBtns = document.querySelectorAll('.delBtn');
-        for(var i = 0; i < delBtns.length; i++) {
-            delBtns[i].onclick = function() {
-                var that = this;
-                if(confirm('確認刪除？')) {
-                    allOrders = allOrders.filter(function(o) { return o.id !== that.getAttribute('data-id'); });
-                    saveData();
-                    closeDetailModal();
-                }
-            };
-        }
-    }
-    document.getElementById('detailModal').classList.add('open');
-}
-
-function editOrder(id) {
-    var o = null;
-    for(var i = 0; i < allOrders.length; i++) {
-        if(allOrders[i].id === id) { o = allOrders[i]; break; }
-    }
-    if(!o) return;
-    document.getElementById('editId').value = o.id;
-    document.getElementById('name').value = o.name;
-    document.getElementById('phone').value = o.phone || '';
-    document.getElementById('date').value = o.datetime.split('T')[0];
-    document.getElementById('time').value = o.datetime.split('T')[1];
-    document.getElementById('count').value = o.count;
-    document.getElementById('note').value = o.note || '';
-    document.getElementById('price').value = o.price || DEFAULT_PRICE;
-    document.getElementById('status').value = o.status || getOrderStatus(o);
-    document.getElementById('modalTitle').innerText = "✏️ 編輯訂單";
-    document.getElementById('deleteBtn').style.display = "block";
-    closeDetailModal();
-    openOrderModal();
-}
-
-async function saveOrder() {
-    var id = document.getElementById('editId').value || ('id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6));
-    var name = document.getElementById('name').value.trim();
-    var phone = document.getElementById('phone').value.trim();
-    var date = document.getElementById('date').value;
-    var time = document.getElementById('time').value;
-    var count = parseInt(document.getElementById('count').value);
-    var note = document.getElementById('note').value.trim();
-    var price = parseInt(document.getElementById('price').value);
-    var status = document.getElementById('status').value;
-    var isEdit = document.getElementById('editId').value !== '';
-    if(!name || !phone || !date || !time || !count) { alert("請填寫完整"); return; }
-    if(isNaN(price) || price <= 0) price = DEFAULT_PRICE;
-    var datetime = date + 'T' + time;
-    for(var i = 0; i < allOrders.length; i++) {
-        if(allOrders[i].datetime === datetime && allOrders[i].id !== id) {
-            alert('⚠️ ' + date + ' ' + time + ' 已被預約');
-            return;
-        }
-    }
-    var orderData = { id: id, name: name, phone: phone, datetime: datetime, count: count, note: note, price: price, status: status };
-    if(isEdit) {
-        for(var i = 0; i < allOrders.length; i++) {
-            if(allOrders[i].id === id) { allOrders[i] = orderData; break; }
-        }
-    } else {
-        allOrders.push(orderData);
-    }
-    await saveData();
-    closeOrderModal();
-}
-
-async function deleteOrder() {
-    var id = document.getElementById('editId').value;
-    var name = document.getElementById('name').value;
-    if(!confirm('刪除「' + name + '」嗎？')) return;
-    allOrders = allOrders.filter(function(o) { return o.id !== id; });
-    await saveData();
-    closeOrderModal();
-}
-
-function escapeHtml(s) {
-    if(!s) return '';
-    return s.replace(/[&<>]/g, function(m) {
-        if(m === '&') return '&amp;';
-        if(m === '<') return '&lt;';
-        if(m === '>') return '&gt;';
-        return m;
-    });
-}
-
-function recognizeText(t) {
-    var r = { name: "", phone: "", date: "", time: "", count: 1, note: "" };
-    var m = t.match(/\b(\d{8})\b/);
-    if(m) r.phone = m[1];
-    else { m = t.match(/1[3-9]\d{9}/); if(m) r.phone = m[0]; }
-    m = t.match(/(\d+)\s*[部台]/); if(m) r.count = parseInt(m[1]);
-    var today = new Date();
-    function fmt(y, m, d) { return y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'); }
-    if(t.includes("今日") || t.includes("今天")) r.date = fmt(today.getFullYear(), today.getMonth()+1, today.getDate());
-    else if(t.includes("聽日") || t.includes("明天")) { var d = new Date(today); d.setDate(today.getDate()+1); r.date = fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
-    else if(t.includes("後日") || t.includes("后天")) { var d = new Date(today); d.setDate(today.getDate()+2); r.date = fmt(d.getFullYear(), d.getMonth()+1, d.getDate()); }
-    else { var dm = t.match(/(\d{1,2})月(\d{1,2})[日號]/); if(dm) { var mo = parseInt(dm[1]); var da = parseInt(dm[2]); var yr = today.getFullYear(); if(mo < today.getMonth()+1) yr++; r.date = fmt(yr, mo, da); } }
-    var tm = t.match(/(\d{1,2})[:：](\d{2})/); if(tm) r.time = String(tm[1]).padStart(2,'0') + ':' + tm[2];
-    else { tm = t.match(/(\d{1,2})\s*[點点]/); if(tm) { var h = parseInt(tm[1]); if((t.includes("下午")||t.includes("下晝")) && h < 12) h += 12; r.time = String(h).padStart(2,'0') + ':00'; } }
-    var nm = t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/); r.name = nm ? nm[0] + " 洗冷氣" : "洗冷氣訂單";
-    var ad = t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/); if(ad) r.note = ad[1];
-    return r;
-}
-
-function doRecognize() {
-    var raw = document.getElementById('pasteText').value;
-    if(!raw.trim()) { alert("請貼上聊天記錄"); return; }
-    var rec = recognizeText(raw);
-    var div = document.getElementById('preview');
-    div.style.display = 'block';
-    div.innerHTML = '<div style="background:#f1f5f9;padding:14px;border-radius:20px;"><strong>✅ 識別結果</strong><div>📛 客戶：' + rec.name + '</div><div>📞 電話：' + (rec.phone||'未識別') + '</div><div>📅 日期：' + (rec.date||'未識別') + '</div><div>⏰ 時間：' + (rec.time||'未識別') + '</div><div>🔢 數量：' + rec.count + '部</div><div>📍 地址：' + (rec.note||'無') + '</div><button id="applyBtn" style="margin-top:14px;width:100%;background:#059669;color:white;border:none;padding:12px;border-radius:40px;">📝 填寫</button></div>';
-    document.getElementById('applyBtn').onclick = function() {
-        document.getElementById('name').value = rec.name;
-        document.getElementById('phone').value = rec.phone || '';
-        if(rec.date) document.getElementById('date').value = rec.date;
-        if(rec.time) document.getElementById('time').value = rec.time;
-        document.getElementById('count').value = rec.count;
-        document.getElementById('note').value = rec.note || '';
-        document.getElementById('price').value = DEFAULT_PRICE;
-        document.getElementById('status').value = 'pending';
-        document.getElementById('editId').value = '';
-        document.getElementById('deleteBtn').style.display = 'none';
-        document.getElementById('modalTitle').innerText = "➕ 新增訂單";
-        closePasteModal();
-        openOrderModal();
-    };
-}
-
-function openOrderModal() { document.getElementById('orderModal').classList.add('open'); }
-function closeOrderModal() { document.getElementById('orderModal').classList.remove('open'); }
-function openPasteModal() { document.getElementById('pasteModal').classList.add('open'); document.getElementById('preview').style.display = 'none'; document.getElementById('pasteText').value = ''; }
-function closePasteModal() { document.getElementById('pasteModal').classList.remove('open'); }
-function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
-
-document.getElementById('prevMonth').onclick = function() {
-    currentMonth--;
-    if(currentMonth < 0) { currentMonth = 11; currentYear--; }
-    renderCalendar();
-};
-document.getElementById('nextMonth').onclick = function() {
-    currentMonth++;
-    if(currentMonth > 11) { currentMonth = 0; currentYear++; }
-    renderCalendar();
-};
-document.getElementById('prevYearBtn').onclick = function() { selectedYear--; updateYearStats(); };
-document.getElementById('nextYearBtn').onclick = function() { selectedYear++; updateYearStats(); };
-document.getElementById('addBtn').onclick = function() {
-    document.getElementById('editId').value = '';
-    document.getElementById('name').value = '';
-    document.getElementById('phone').value = '';
-    document.getElementById('date').value = new Date().toISOString().slice(0,10);
-    document.getElementById('time').value = '';
-    document.getElementById('count').value = '1';
-    document.getElementById('note').value = '';
-    document.getElementById('price').value = DEFAULT_PRICE;
-    document.getElementById('status').value = 'pending';
-    document.getElementById('deleteBtn').style.display = 'none';
-    document.getElementById('modalTitle').innerText = "➕ 新增訂單";
-    openOrderModal();
-};
-document.getElementById('pasteBtn').onclick = openPasteModal;
-document.getElementById('closeOrderModal').onclick = closeOrderModal;
-document.getElementById('closePasteModal').onclick = closePasteModal;
-document.getElementById('closeDetailModal').onclick = closeDetailModal;
-document.getElementById('saveBtn').onclick = saveOrder;
-document.getElementById('deleteBtn').onclick = deleteOrder;
-document.getElementById('recognizeBtn').onclick = doRecognize;
-document.getElementById('weekTab').onclick = function() {
-    currentReport = 'week';
-    var btns = document.querySelectorAll('.tab-btn');
-    for(var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-    document.getElementById('weekTab').classList.add('active');
-    renderReport('week');
-};
-document.getElementById('monthTab').onclick = function() {
-    currentReport = 'month';
-    var btns = document.querySelectorAll('.tab-btn');
-    for(var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-    document.getElementById('monthTab').classList.add('active');
-    statMonth = new Date().getMonth();
-    statYear = new Date().getFullYear();
-    renderMonthStatReport(statYear, statMonth);
-};
-document.getElementById('prevMonthStatBtn').onclick = function() {
-    statMonth--;
-    if(statMonth < 0) { statMonth = 11; statYear--; }
-    renderMonthStatReport(statYear, statMonth);
-};
-document.getElementById('nextMonthStatBtn').onclick = function() {
-    statMonth++;
-    if(statMonth > 11) { statMonth = 0; statYear++; }
-    renderMonthStatReport(statYear, statMonth);
-};
-document.getElementById('saveTokenBtn').onclick = function() {
-    var t = document.getElementById('tokenInput').value.trim();
-    if(t) {
-        localStorage.setItem('github_token', t);
-        githubToken = t;
-        document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-        loadFromGit();
-    }
-};
-
-loadLocal();
-if(githubToken) {
-    document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-    loadFromGit();
-}
+var GH_USER="althellobye",GH_REPO="my-order-data",API_URL="https://api.github.com/repos/"+GH_USER+"/"+GH_REPO+"/contents/data.json";
+var allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth(),selectedYear=new Date().getFullYear(),currentReport="week",githubToken=localStorage.getItem('github_token')||"",DEFAULT_PRICE=228,statMonth=new Date().getMonth(),statYear=new Date().getFullYear();
+function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#059669';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
+setInterval(checkDateChange,30000);checkDateChange();
+function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML=m;d.style.color=e?'#991b1b':'#065f46';setTimeout(function(){if(d.innerHTML===m)d.innerHTML='';},3000);}
+function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
+function b64d(s){return decodeURIComponent(escape(atob(s)));}
+async function loadFromGit(){if(!githubToken){loadLocal();return;}try{var r=await fetch(API_URL+'?t='+Date.now(),{headers:{"Authorization":"token "+githubToken}});if(r.status===401){showStatus("Token無效",true);return;}if(r.status===404){await createFile();return;}var d=await r.json();fileSha=d.sha;var c=b64d(d.content);allOrders=JSON.parse(c||"[]");localStorage.setItem('ac_backup',JSON.stringify(allOrders));refreshAll();showStatus("✅ 已同步",false);document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';}catch(e){showStatus("⚠️ 雲端失敗",true);loadLocal();}}
+async function createFile(){var c=b64e(JSON.stringify([],null,2));var r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":"token "+githubToken,"Content-Type":"application/json"},body:JSON.stringify({message:"init",content:c,branch:"main"})});if(r.ok){var d=await r.json();fileSha=d.content.sha;allOrders=[];refreshAll();showStatus("✅ 已創建",false);}else{showStatus("❌ 創建失敗",true);loadLocal();}}
+async function saveToGit(){if(!githubToken||!fileSha){saveLocal();return;}var c=b64e(JSON.stringify(allOrders,null,2));try{var r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":"token "+githubToken,"Content-Type":"application/json"},body:JSON.stringify({message:"update",content:c,sha:fileSha,branch:"main"})});if(r.ok){var d=await r.json();fileSha=d.content.sha;localStorage.setItem('ac_backup',JSON.stringify(allOrders));showStatus("✅ 已保存",false);}else{saveLocal();}}catch(e){saveLocal();}}
+function loadLocal(){var s=localStorage.getItem('ac_backup');allOrders=s?JSON.parse(s):[];refreshAll();}
+function saveLocal(){localStorage.setItem('ac_backup',JSON.stringify(allOrders));refreshAll();}
+function saveData(){if(githubToken&&fileSha)saveToGit();else saveLocal();}
+function refreshAll(){renderCalendar();updateYearStats();if(currentReport==='week')renderReport('week');else renderMonthStatReport(statYear,statMonth);}
+function getOrderStatus(o){if(o.status)return o.status;var n=new Date(),ot=new Date(o.datetime);if(ot<n)return'completed';else if(ot.toDateString()===n.toDateString())return'progress';else return'pending';}
+function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🟡 進行中';return'🔴 已完成';}
+function updateYearStats(){document.getElementById('selectedYear').innerHTML=selectedYear+'年';var inc=0,ord=0,unt=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var y=new Date(o.datetime).getFullYear();if(y===selectedYear){var p=o.price||DEFAULT_PRICE;inc+=(o.count||1)*p;ord++;unt+=(o.count||1);}}document.getElementById('totalIncome').innerHTML='$'+inc.toLocaleString();document.getElementById('totalOrders').innerText=ord;document.getElementById('totalUnits').innerText=unt;}
+function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));var s=new Date(m);s.setDate(m.getDate()+6);function f(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return{start:f(m),end:f(s)};}
+function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
+function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;|&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div style="text-align:center;padding:20px;">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span>$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
+function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 收入: $'+tI.toLocaleString()+' &nbsp;|&nbsp; ❄️ 洗機: '+tU+'部';if(d.length===0){c.innerHTML='<div style="text-align:center;padding:20px;">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span>$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
+function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#fefce8';e.style.opacity='0.5';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);var maxShow=3;var showOrders=dayOrders.slice(0,maxShow);for(var j=0;j<showOrders.length;j++){var o=showOrders[j];var st=getOrderStatus(o);var div=document.createElement('div');div.className='order-mini '+st;var timeStr=o.datetime.split('T')[1];var nameStr=o.name.length>6?o.name.slice(0,6)+'…':o.name;div.innerHTML='<span style="font-weight:600;">'+timeStr+'</span> '+nameStr+'('+o.count+')';cell.appendChild(div);}if(dayOrders.length>maxShow){var more=document.createElement('div');more.className='more-indicator';more.innerText='+'+(dayOrders.length-maxShow);cell.appendChild(more);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
+function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div style="text-align:center;padding:40px;">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div>⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div style="font-size:16px;font-weight:700;margin:6px 0;">❄️ '+escapeHtml(o.name)+'</div>';html+='<div>📞 '+(o.phone||'')+'</div>';html+='<div>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</div>';html+='<div>📌 '+stText+'</div>';if(o.note){html+='<div>📍 '+escapeHtml(o.note)+'</div>';}html+='<button class="editBtn" data-id="'+o.id+'" style="background:#e2e8f0;border:none;padding:6px 12px;border-radius:30px;margin-top:8px;margin-right:8px;">✏️ 編輯</button>';html+='<button class="delBtn" data-id="'+o.id+'" style="background:#fee2e2;border:none;padding:6px 12px;border-radius:30px;color:#e11d48;margin-top:8px;">🗑️ 刪除</button>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.editBtn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.delBtn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
+function editOrder(id){var o=null;for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){o=allOrders[i];break;}}if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
+async function saveOrder(){var id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));var name=document.getElementById('name').value.trim();var phone=document.getElementById('phone').value.trim();var date=document.getElementById('date').value;var time=document.getElementById('time').value;var count=parseInt(document.getElementById('count').value);var note=document.getElementById('note').value.trim();var price=parseInt(document.getElementById('price').value);var status=document.getElementById('status').value;var isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;var datetime=date+'T'+time;for(var i=0;i<allOrders.length;i++){if(allOrders[i].datetime===datetime&&allOrders[i].id!==id){alert('⚠️ '+date+' '+time+' 已被預約');return;}}var orderData={id:id,name:name,phone:phone,datetime:datetime,count:count,note:note,price:price,status:status};if(isEdit){for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){allOrders[i]=orderData;break;}}}else{allOrders.push(orderData);}await saveData();closeOrderModal();}
+async function deleteOrder(){var id=document.getElementById('editId').value;var name=document.getElementById('name').value;if(!confirm('刪除「'+name+'」嗎？'))return;allOrders=allOrders.filter(function(o){return o.id!==id;});await saveData();closeOrderModal();}
+function escapeHtml(s){if(!s)return'';return s.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;});}
+function recognizeText(t){var r={name:"",phone:"",date:"",time:"",count:1,note:""};var m=t.match(/\b(\d{8})\b/);if(m)r.phone=m[1];else{m=t.match(/1[3-9]\d{9}/);if(m)r.phone=m[0];}m=t.match(/(\d+)\s*[部台]/);if(m)r.count=parseInt(m[1]);var today=new Date();function fmt(y,m,d){return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}if(t.includes("今日")||t.includes("今天"))r.date=fmt(today.getFullYear(),today.getMonth()+1,today.getDate());else if(t.includes("聽日")||t.includes("明天")){var d=new Date(today);d.setDate(today.getDate()+1);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else if(t.includes("後日")||t.includes("后天")){var d=new Date(today);d.setDate(today.getDate()+2);r.date=fmt(d.getFullYear(),d.getMonth()+1,d.getDate());}else{var dm=t.match(/(\d{1,2})月(\d{1,2})[日號]/);if(dm){var mo=parseInt(dm[1]);var da=parseInt(dm[2]);var yr=today.getFullYear();if(mo<today.getMonth()+1)yr++;r.date=fmt(yr,mo,da);}}var tm=t.match(/(\d{1,2})[:：](\d{2})/);if(tm)r.time=String(tm[1]).padStart(2,'0')+':'+tm[2];else{tm=t.match(/(\d{1,2})\s*[點点]/);if(tm){var h=parseInt(tm[1]);if((t.includes("下午")||t.includes("下晝"))&&h<12)h+=12;r.time=String(h).padStart(2,'0')+':00';}}var nm=t.match(/([陳張李黃何鄭梁謝吳劉][生太小姐女士先生]?)/);r.name=nm?nm[0]+" 洗冷氣":"洗冷氣訂單";var ad=t.match(/(?:地址|响|喺)[：:]*\s*([^，,。\n]{5,30})/);if(ad)r.note=ad[1];return r;}
+function doRecognize(){var raw=document.getElementById('pasteText').value;if(!raw.trim()){alert("請貼上聊天記錄");return;}var rec=recognizeText(raw);var div=document.getElementById('preview');div.style.display='block';div.innerHTML='<div style="background:#f1f5f9;padding:14px;border-radius:20px;"><strong>✅ 識別結果</strong><div>📛 客戶：'+rec.name+'</div><div>📞 電話：'+(rec.phone||'未識別')+'</div><div>📅 日期：'+(rec.date||'未識別')+'</div><div>⏰ 時間：'+(rec.time||'未識別')+'</div><div>🔢 數量：'+rec.count+'部</div><div>📍 地址：'+(rec.note||'無')+'</div><button id="applyBtn" style="margin-top:14px;width:100%;background:#059669;color:white;border:none;padding:12px;border-radius:40px;">📝 填寫</button></div>';document.getElementById('applyBtn').onclick=function(){document.getElementById('name').value=rec.name;document.getElementById('phone').value=rec.phone||'';if(rec.date)document.getElementById('date').value=rec.date;if(rec.time)document.getElementById('time').value=rec.time;document.getElementById('count').value=rec.count;document.getElementById('note').value=rec.note||'';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('editId').value='';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";closePasteModal();openOrderModal();};}
+function openOrderModal(){document.getElementById('orderModal').classList.add('open');}
+function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
+function openPasteModal(){document.getElementById('pasteModal').classList.add('open');document.getElementById('preview').style.display='none';document.getElementById('pasteText').value='';}
+function closePasteModal(){document.getElementById('pasteModal').classList.remove('open');}
+function closeDetailModal(){document.getElementById('detailModal').classList.remove('open');}
+document.getElementById('prevMonth').onclick=function(){currentMonth--;if(currentMonth<0){currentMonth=11;currentYear--;}renderCalendar();};
+document.getElementById('nextMonth').onclick=function(){currentMonth++;if(currentMonth>11){currentMonth=0;currentYear++;}renderCalendar();};
+document.getElementById('prevYearBtn').onclick=function(){selectedYear--;updateYearStats();};
+document.getElementById('nextYearBtn').onclick=function(){selectedYear++;updateYearStats();};
+document.getElementById('addBtn').onclick=function(){document.getElementById('editId').value='';document.getElementById('name').value='';document.getElementById('phone').value='';document.getElementById('date').value=new Date().toISOString().slice(0,10);document.getElementById('time').value='';document.getElementById('count').value='1';document.getElementById('note').value='';document.getElementById('price').value=DEFAULT_PRICE;document.getElementById('status').value='pending';document.getElementById('deleteBtn').style.display='none';document.getElementById('modalTitle').innerText="➕ 新增訂單";openOrderModal();};
+document.getElementById('pasteBtn').onclick=openPasteModal;
+document.getElementById('closeOrderModal').onclick=closeOrderModal;
+document.getElementById('closePasteModal').onclick=closePasteModal;
+document.getElementById('closeDetailModal').onclick=closeDetailModal;
+document.getElementById('saveBtn').onclick=saveOrder;
+document.getElementById('deleteBtn').onclick=deleteOrder;
+document.getElementById('recognizeBtn').onclick=doRecognize;
+document.getElementById('weekTab').onclick=function(){currentReport='week';var btns=document.querySelectorAll('.tab-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');document.getElementById('weekTab').classList.add('active');renderReport('week');};
+document.getElementById('monthTab').onclick=function(){currentReport='month';var btns=document.querySelectorAll('.tab-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');document.getElementById('monthTab').classList.add('active');statMonth=new Date().getMonth();statYear=new Date().getFullYear();renderMonthStatReport(statYear,statMonth);};
+document.getElementById('prevMonthStatBtn').onclick=function(){statMonth--;if(statMonth<0){statMonth=11;statYear--;}renderMonthStatReport(statYear,statMonth);};
+document.getElementById('nextMonthStatBtn').onclick=function(){statMonth++;if(statMonth>11){statMonth=0;statYear++;}renderMonthStatReport(statYear,statMonth);};
+document.getElementById('saveTokenBtn').onclick=function(){var t=document.getElementById('tokenInput').value.trim();if(t){localStorage.setItem('github_token',t);githubToken=t;document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}};
+loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}
+</script>
+<script>
+if('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
 </script>
 </body>
 </html>

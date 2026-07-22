@@ -24,38 +24,6 @@
         .btn{background:#f1f5f9;border:none;padding:10px 18px;border-radius:40px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;color:#334155}
         .btn:active{transform:scale(.95)}
         .btn-primary{background:linear-gradient(145deg,#1a2a4a,#2a4a7a);color:#fff;box-shadow:0 4px 16px rgba(26,42,74,0.2)}
-        .btn-success{background:#059669;color:#fff;border:none;padding:10px 18px;border-radius:40px;font-size:13px;font-weight:500;cursor:pointer}
-        .btn-success:active{transform:scale(.95)}
-        .btn-warning{background:#d97706;color:#fff;border:none;padding:10px 18px;border-radius:40px;font-size:13px;font-weight:500;cursor:pointer}
-        .btn-warning:active{transform:scale(.95)}
-
-        /* ===== 離線狀態橫條 ===== */
-        .offline-banner{
-            background:#fef3c7;
-            color:#92400e;
-            padding:6px 12px;
-            border-radius:12px;
-            font-size:12px;
-            font-weight:500;
-            text-align:center;
-            margin-top:8px;
-            display:none;
-        }
-        .offline-banner.online{
-            background:#d1fae5;
-            color:#065f46;
-            display:block;
-        }
-        .offline-banner.offline{
-            background:#fef3c7;
-            color:#92400e;
-            display:block;
-        }
-        .offline-banner.syncing{
-            background:#dbeafe;
-            color:#1e40af;
-            display:block;
-        }
 
         .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
         .stat-card{background:#ffffff;border-radius:24px;padding:18px 6px;text-align:center;border:1px solid #f1f4f9;box-shadow:0 1px 4px rgba(0,0,0,0.02)}
@@ -111,8 +79,6 @@
         .dot.pending{background:#059669}
         .dot.progress{background:#2563eb}
         .dot.completed{background:#dc2626}
-        /* 離線新增的訂單標記 */
-        .dot.offline-dot{background:#d97706;border:1px dashed #fff}
 
         .fab-group{position:fixed;bottom:28px;right:18px;display:flex;flex-direction:column;gap:12px;z-index:100}
         .fab{width:56px;height:56px;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:none;transition:.15s}
@@ -151,9 +117,6 @@
         .token-bar{background:#f8fafc;border-radius:16px;padding:12px;margin-top:12px;border:1px solid #f1f4f9}
         .token-input{width:100%;padding:10px 14px;border:1.5px solid #f1f4f9;border-radius:40px;margin-top:6px;font-size:14px;background:#fff}
         .sync-status{font-size:12px;margin-top:6px;text-align:center;color:#94a3b8}
-        .sync-status .online{color:#059669}
-        .sync-status .offline{color:#d97706}
-        .sync-status .syncing{color:#2563eb}
         select{width:100%;padding:11px 14px;border-radius:18px;border:1.5px solid #f1f4f9;background:#fafcff;font-size:15px;font-family:inherit}
         .empty-state{text-align:center;padding:28px 20px;color:#94a3b8;font-size:14px}
 
@@ -176,10 +139,6 @@
             <div class="sub">洗冷氣訂單管理</div>
         </div>
     </div>
-    
-    <!-- ===== 離線狀態橫條 ===== -->
-    <div id="offlineBanner" class="offline-banner">🌐 已連線</div>
-    
     <div class="token-bar">
         <div id="tokenStatus" style="font-size:13px;font-weight:500;color:#64748b;">⚪ 未連接雲端</div>
         <input type="password" id="tokenInput" class="token-input" placeholder="輸入 GitHub Token (ghp_開頭)">
@@ -262,229 +221,6 @@
 var GH_USER="althellobye",GH_REPO="my-order-data",API_URL="https://api.github.com/repos/"+GH_USER+"/"+GH_REPO+"/contents/data.json";
 var allOrders=[],fileSha="",currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth(),selectedYear=new Date().getFullYear(),currentReport="week",githubToken=localStorage.getItem('github_token')||"",DEFAULT_PRICE=228,statMonth=new Date().getMonth(),statYear=new Date().getFullYear();
 
-// ===== 離線狀態 =====
-var isOnline = navigator.onLine;
-var pendingSync = []; // 待同步的離線訂單
-
-// ===== 更新離線狀態顯示 =====
-function updateOfflineStatus() {
-    var banner = document.getElementById('offlineBanner');
-    var statusEl = document.getElementById('syncStatus');
-    if (navigator.onLine) {
-        banner.className = 'offline-banner online';
-        banner.innerHTML = '✅ 已連線 · 數據自動同步';
-        statusEl.innerHTML = '<span class="online">✅ 已連線</span>';
-    } else {
-        banner.className = 'offline-banner offline';
-        banner.innerHTML = '📴 離線模式 · 訂單會儲存在本地，連線後自動同步';
-        statusEl.innerHTML = '<span class="offline">📴 離線模式</span>';
-    }
-}
-
-// ===== 監聽網路狀態變化 =====
-window.addEventListener('online', function() {
-    updateOfflineStatus();
-    syncOfflineOrders();
-});
-window.addEventListener('offline', function() {
-    updateOfflineStatus();
-});
-
-// ===== IndexedDB 操作（本地離線數據庫） =====
-var DB_NAME = 'zb_orders_db';
-var DB_VERSION = 1;
-var STORE_NAME = 'orders';
-
-function openDB() {
-    return new Promise(function(resolve, reject) {
-        var request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = function(e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            }
-        };
-        request.onsuccess = function(e) { resolve(e.target.result); };
-        request.onerror = function(e) { reject(e.target.error); };
-    });
-}
-
-function saveToLocalDB(order) {
-    return openDB().then(function(db) {
-        return new Promise(function(resolve, reject) {
-            var tx = db.transaction(STORE_NAME, 'readwrite');
-            var store = tx.objectStore(STORE_NAME);
-            var request = store.put(order);
-            request.onsuccess = function() { resolve(); };
-            request.onerror = function() { reject(request.error); };
-        });
-    });
-}
-
-function getAllFromLocalDB() {
-    return openDB().then(function(db) {
-        return new Promise(function(resolve, reject) {
-            var tx = db.transaction(STORE_NAME, 'readonly');
-            var store = tx.objectStore(STORE_NAME);
-            var request = store.getAll();
-            request.onsuccess = function() { resolve(request.result); };
-            request.onerror = function() { reject(request.error); };
-        });
-    });
-}
-
-function deleteFromLocalDB(id) {
-    return openDB().then(function(db) {
-        return new Promise(function(resolve, reject) {
-            var tx = db.transaction(STORE_NAME, 'readwrite');
-            var store = tx.objectStore(STORE_NAME);
-            var request = store.delete(id);
-            request.onsuccess = function() { resolve(); };
-            request.onerror = function() { reject(request.error); };
-        });
-    });
-}
-
-function clearLocalDB() {
-    return openDB().then(function(db) {
-        return new Promise(function(resolve, reject) {
-            var tx = db.transaction(STORE_NAME, 'readwrite');
-            var store = tx.objectStore(STORE_NAME);
-            var request = store.clear();
-            request.onsuccess = function() { resolve(); };
-            request.onerror = function() { reject(request.error); };
-        });
-    });
-}
-
-// ===== 合併本地數據和雲端數據 =====
-function mergeOrders(localOrders, cloudOrders) {
-    var merged = cloudOrders.slice();
-    var cloudIds = new Set(cloudOrders.map(function(o) { return o.id; }));
-    for (var i = 0; i < localOrders.length; i++) {
-        if (!cloudIds.has(localOrders[i].id)) {
-            merged.push(localOrders[i]);
-        }
-    }
-    return merged;
-}
-
-// ===== 同步離線訂單到 GitHub =====
-function syncOfflineOrders() {
-    if (!navigator.onLine || !githubToken) return;
-    getAllFromLocalDB().then(function(localOrders) {
-        if (localOrders.length === 0) return;
-        var syncStatus = document.getElementById('syncStatus');
-        syncStatus.innerHTML = '<span class="syncing">🔄 正在同步 ' + localOrders.length + ' 個離線訂單...</span>';
-        
-        var merged = mergeOrders(localOrders, allOrders);
-        allOrders = merged;
-        return saveToGitHub().then(function() {
-            return clearLocalDB();
-        }).then(function() {
-            syncStatus.innerHTML = '<span class="online">✅ 已同步 ' + localOrders.length + ' 個訂單</span>';
-            renderAll();
-        });
-    }).catch(function(e) {
-        console.error('同步失敗', e);
-    });
-}
-
-// ===== 修改 saveData 函數（離線優先） =====
-async function saveData() {
-    // 如果有網路且有 token，直接存 GitHub
-    if (navigator.onLine && githubToken && fileSha) {
-        await saveToGitHub();
-        renderAll();
-        return;
-    }
-    
-    // 如果沒有網路，存到本地 IndexedDB
-    if (!navigator.onLine) {
-        for (var i = 0; i < allOrders.length; i++) {
-            await saveToLocalDB(allOrders[i]);
-        }
-        localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-        renderAll();
-        var statusEl = document.getElementById('syncStatus');
-        statusEl.innerHTML = '<span class="offline">📴 已儲存到本地 (離線模式)</span>';
-        return;
-    }
-    
-    // 有網路但沒有 token，存 localStorage
-    if (!githubToken) {
-        localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-        renderAll();
-    }
-}
-
-// ===== 修改 loadFromGit 加入離線回退 =====
-async function loadFromGit() {
-    if (!githubToken) { 
-        loadFromLocal(); 
-        updateOfflineStatus();
-        return; 
-    }
-    
-    if (!navigator.onLine) {
-        // 離線：從 IndexedDB 讀取
-        try {
-            var localData = await getAllFromLocalDB();
-            if (localData.length > 0) {
-                allOrders = localData;
-                localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-                renderAll();
-                updateOfflineStatus();
-                return;
-            }
-        } catch(e) {}
-        loadFromLocal();
-        updateOfflineStatus();
-        return;
-    }
-    
-    // 有網路：正常從 GitHub 讀取
-    try {
-        var r = await fetch(API_URL + '?t=' + Date.now(), {
-            headers: { "Authorization": "token " + githubToken }
-        });
-        if (r.status === 401) { showStatus("Token無效", true); return; }
-        if (r.status === 404) { await createFile(); return; }
-        var d = await r.json();
-        fileSha = d.sha;
-        var c = b64d(d.content);
-        var cloudOrders = JSON.parse(c || "[]");
-        
-        // 檢查本地是否有離線訂單需要合併
-        try {
-            var localOrders = await getAllFromLocalDB();
-            if (localOrders.length > 0) {
-                allOrders = mergeOrders(localOrders, cloudOrders);
-                await saveToGitHub();
-                await clearLocalDB();
-                localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-                renderAll();
-                showStatus("✅ 已同步 (含離線訂單)", false);
-                document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-                updateOfflineStatus();
-                return;
-            }
-        } catch(e) {}
-        
-        allOrders = cloudOrders;
-        localStorage.setItem('ac_backup', JSON.stringify(allOrders));
-        renderAll();
-        showStatus("✅ 已從雲端同步", false);
-        document.getElementById('tokenStatus').innerHTML = '🟢 已連接雲端';
-        updateOfflineStatus();
-    } catch(e) {
-        showStatus("⚠️ 雲端失敗，使用本地", true);
-        loadFromLocal();
-        updateOfflineStatus();
-    }
-}
-
-// ===== 其他函數保持不變 =====
 function checkDateChange(){var n=new Date(),s=localStorage.getItem('last_date_check'),t=n.toDateString();if(s!==t){localStorage.setItem('last_date_check',t);refreshAll();var st=document.getElementById('syncStatus');st.innerHTML='🔄 日期已更新';st.style.color='#0f172a';setTimeout(function(){if(st.innerHTML==='🔄 日期已更新')st.innerHTML='';},3000);}}
 setInterval(checkDateChange,30000);checkDateChange();
 
@@ -492,10 +228,12 @@ function showStatus(m,e){var d=document.getElementById('syncStatus');d.innerHTML
 function b64e(s){return btoa(unescape(encodeURIComponent(s)));}
 function b64d(s){return decodeURIComponent(escape(atob(s)));}
 
+async function loadFromGit(){if(!githubToken){loadLocal();return;}try{var r=await fetch(API_URL+'?t='+Date.now(),{headers:{"Authorization":"token "+githubToken}});if(r.status===401){showStatus("Token無效",true);return;}if(r.status===404){await createFile();return;}var d=await r.json();fileSha=d.sha;var c=b64d(d.content);allOrders=JSON.parse(c||"[]");localStorage.setItem('ac_backup',JSON.stringify(allOrders));refreshAll();showStatus("✅ 已從雲端同步",false);document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';}catch(e){showStatus("⚠️ 雲端失敗，使用本地",true);loadLocal();}}
 async function createFile(){var c=b64e(JSON.stringify([],null,2));var r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":"token "+githubToken,"Content-Type":"application/json"},body:JSON.stringify({message:"init",content:c,branch:"main"})});if(r.ok){var d=await r.json();fileSha=d.content.sha;allOrders=[];refreshAll();showStatus("✅ 已創建",false);}else{showStatus("❌ 創建失敗",true);loadLocal();}}
 async function saveToGit(){if(!githubToken||!fileSha){saveLocal();return;}var c=b64e(JSON.stringify(allOrders,null,2));try{var r=await fetch(API_URL,{method:"PUT",headers:{"Authorization":"token "+githubToken,"Content-Type":"application/json"},body:JSON.stringify({message:"update",content:c,sha:fileSha,branch:"main"})});if(r.ok){var d=await r.json();fileSha=d.content.sha;localStorage.setItem('ac_backup',JSON.stringify(allOrders));showStatus("✅ 已保存",false);}else{saveLocal();}}catch(e){saveLocal();}}
 function loadLocal(){var s=localStorage.getItem('ac_backup');allOrders=s?JSON.parse(s):[];refreshAll();}
 function saveLocal(){localStorage.setItem('ac_backup',JSON.stringify(allOrders));refreshAll();}
+function saveData(){if(githubToken&&fileSha)saveToGit();else saveLocal();}
 function refreshAll(){renderCalendar();updateYearStats();if(currentReport==='week')renderReport('week');else renderMonthStatReport(statYear,statMonth);}
 function getOrderStatus(o){if(o.status)return o.status;var n=new Date(),ot=new Date(o.datetime);if(ot<n)return'completed';else if(ot.toDateString()===n.toDateString())return'progress';else return'pending';}
 function getStatusText(s){if(s==='pending')return'🟢 未開始';if(s==='progress')return'🔵 進行中';return'🔴 已完成';}
@@ -538,7 +276,6 @@ document.getElementById('saveTokenBtn').onclick=function(){var t=document.getEle
 loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}
 </script>
 
-<!-- Service Worker 註冊 -->
 <script>
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/my-order-data/sw.js')

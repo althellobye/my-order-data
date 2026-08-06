@@ -807,7 +807,7 @@
     "count": 2,
     "note": "黑沙環新街御景灣第一座7樓 E座",
     "price": 218,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1784449057453_88r9c9",
@@ -937,6 +937,16 @@
     "count": 3,
     "note": "花王堂街雅景花園一座8樓C",
     "price": 228,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786057708343_qhgqjy",
+    "name": "亞殷",
+    "phone": "66534547",
+    "datetime": "2026-08-23T10:00",
+    "count": 4,
+    "note": "新城市花園第14座3H",
+    "price": 218,
     "status": "pending"
   }
 ]

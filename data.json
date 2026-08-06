@@ -6,7 +6,8 @@
     "datetime": "2026-06-01T10:00",
     "count": 2,
     "note": "青洲大馬路 青怡大廈 二座 10 A",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780236021994_n73iaq",
@@ -15,7 +16,8 @@
     "datetime": "2026-06-01T11:30",
     "count": 1,
     "note": "粵德大廈",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780236069202_q028de",
@@ -24,7 +26,8 @@
     "datetime": "2026-06-01T02:00",
     "count": 3,
     "note": "氹仔華寶花園第三座8M",
-    "price": 238
+    "price": 238,
+    "status": "completed"
   },
   {
     "id": "id_1780236223322_w0el3p",
@@ -33,7 +36,8 @@
     "datetime": "2026-06-02T10:00",
     "count": 3,
     "note": "路環蝴蝶谷大馬路居雅第五座 14樓AT",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780236269714_01phrn",
@@ -42,7 +46,8 @@
     "datetime": "2026-06-02T01:00",
     "count": 3,
     "note": "澳門國際中心七座9C",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780236547564_0n09lz",
@@ -51,7 +56,8 @@
     "datetime": "2026-06-03T10:00",
     "count": 3,
     "note": "青怡大廈第一座 15樓D",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780236595156_ywuiwe",
@@ -60,7 +66,8 @@
     "datetime": "2026-06-03T02:30",
     "count": 2,
     "note": "台山逸麗花園第四座11樓Z",
-    "price": 238
+    "price": 238,
+    "status": "completed"
   },
   {
     "id": "id_1780236644956_h3yg9k",
@@ -69,7 +76,8 @@
     "datetime": "2026-06-04T10:00",
     "count": 3,
     "note": "青州坊3座7樓M",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780236727301_u8yy8d",
@@ -78,7 +86,8 @@
     "datetime": "2026-06-06T10:00",
     "count": 2,
     "note": "氹仔南京街417號濠庭都會14座15樓D",
-    "price": 238
+    "price": 238,
+    "status": "completed"
   },
   {
     "id": "id_1780236793108_14kd4y",
@@ -87,7 +96,8 @@
     "datetime": "2026-06-06T12:30",
     "count": 2,
     "note": "海天居第五座30/C",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780236830666_vsp7hl",
@@ -106,7 +116,8 @@
     "datetime": "2026-06-06T04:00",
     "count": 3,
     "note": "下環街鹹魚街1 號環安大廈3 樓b座",
-    "price": 238
+    "price": 238,
+    "status": "completed"
   },
   {
     "id": "id_1780304649977_90ufgn",
@@ -115,7 +126,8 @@
     "datetime": "2026-06-09T02:30",
     "count": 3,
     "note": "白鴿巢前地",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780304764661_h07kz8",
@@ -124,7 +136,8 @@
     "datetime": "2026-06-09T10:30",
     "count": 3,
     "note": "林茂塘海邊街24號",
-    "price": 218
+    "price": 218,
+    "status": "completed"
   },
   {
     "id": "id_1780304837901_1ngaby",
@@ -143,7 +156,8 @@
     "datetime": "2026-06-13T04:00",
     "count": 4,
     "note": "海上居第一座20 樓D",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780305160301_d5ebyx",
@@ -152,7 +166,8 @@
     "datetime": "2026-06-11T01:00",
     "count": 6,
     "note": "氹仔萬國華庭第一座11樓 B",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780388678925_rpg718",
@@ -171,7 +186,8 @@
     "datetime": "2026-06-04T01:00",
     "count": 2,
     "note": "居大馬路居雅大廈水第一座水仙苑6樓J座",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780393892849_jx8z4c",
@@ -180,7 +196,8 @@
     "datetime": "2026-06-04T02:30",
     "count": 2,
     "note": "",
-    "price": 228
+    "price": 228,
+    "status": "completed"
   },
   {
     "id": "id_1780407366494_69ra5i",
@@ -900,6 +917,16 @@
     "count": 3,
     "note": "皇朝恆基花園第一座 13樓 E 單位",
     "price": 228,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786000019835_tsyocj",
+    "name": "Angel",
+    "phone": "62811959",
+    "datetime": "2026-08-15T10:00",
+    "count": 2,
+    "note": "黑沙環新益花園第六座19/G",
+    "price": 218,
     "status": "pending"
   }
 ]

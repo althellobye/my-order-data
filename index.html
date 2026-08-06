@@ -274,9 +274,85 @@ document.getElementById('prevMonthStatBtn').onclick=function(){statMonth--;if(st
 document.getElementById('nextMonthStatBtn').onclick=function(){statMonth++;if(statMonth>11){statMonth=0;statYear++;}renderMonthStatReport(statYear,statMonth);};
 document.getElementById('saveTokenBtn').onclick=function(){var t=document.getElementById('tokenInput').value.trim();if(t){localStorage.setItem('github_token',t);githubToken=t;document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}};
 loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}
+
+// ===== 自動日期檢查 + 狀態更新（過期訂單自動變紅色 + 同步雲端）=====
+async function checkAndUpdateOrderStatus() {
+    var now = new Date();
+    var updated = false;
+    
+    for (var i = 0; i < allOrders.length; i++) {
+        var o = allOrders[i];
+        var orderTime = new Date(o.datetime);
+        
+        // 過期 → 強制設為 completed (紅色)
+        if (orderTime < now) {
+            if (o.status !== 'completed') {
+                o.status = 'completed';
+                updated = true;
+            }
+        }
+        // 今天 → 設為 progress (黃色)
+        else if (orderTime.toDateString() === now.toDateString()) {
+            if (o.status !== 'progress') {
+                o.status = 'progress';
+                updated = true;
+            }
+        }
+        // 未來 → 保留用戶手動設定
+    }
+    
+    if (updated) {
+        // 先存本地
+        localStorage.setItem('ac_backup', JSON.stringify(allOrders));
+        renderAll();
+        
+        // 如果有網路且有 token，上傳到雲端
+        if (navigator.onLine && githubToken && fileSha) {
+            try {
+                await saveToGit();
+                var st = document.getElementById('syncStatus');
+                st.innerHTML = '🔄 訂單狀態已自動更新並同步雲端 ✅';
+                st.style.color = '#0f172a';
+                setTimeout(function() {
+                    if (st.innerHTML === '🔄 訂單狀態已自動更新並同步雲端 ✅') st.innerHTML = '';
+                }, 3000);
+            } catch(e) {
+                // 上傳失敗，只存本地
+                var st = document.getElementById('syncStatus');
+                st.innerHTML = '🔄 訂單狀態已更新 (離線儲存)';
+                st.style.color = '#d97706';
+                setTimeout(function() {
+                    if (st.innerHTML === '🔄 訂單狀態已更新 (離線儲存)') st.innerHTML = '';
+                }, 3000);
+            }
+        } else {
+            // 離線模式，只存本地
+            var st = document.getElementById('syncStatus');
+            st.innerHTML = '🔄 訂單狀態已更新 (離線儲存)';
+            st.style.color = '#d97706';
+            setTimeout(function() {
+                if (st.innerHTML === '🔄 訂單狀態已更新 (離線儲存)') st.innerHTML = '';
+            }, 3000);
+        }
+    }
+}
+
+// 每30秒檢查一次
+setInterval(checkAndUpdateOrderStatus, 30000);
+
+// 頁面加載時立即檢查一次
+setTimeout(checkAndUpdateOrderStatus, 2000);
+
+// 頁面可見時也檢查（用戶切回App時）
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        checkAndUpdateOrderStatus();
+    }
+});
 </script>
 
 <script>
+// ===== Service Worker 註冊 =====
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/my-order-data/sw.js')
         .then(function() { console.log('✅ Service Worker 註冊成功'); })

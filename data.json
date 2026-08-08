@@ -807,7 +807,7 @@
     "count": 2,
     "note": "黑沙環新街御景灣第一座7樓 E座",
     "price": 218,
-    "status": "progress"
+    "status": "completed"
   },
   {
     "id": "id_1784449057453_88r9c9",
@@ -947,6 +947,16 @@
     "count": 4,
     "note": "新城市花園第14座3H",
     "price": 218,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786168063683_eo4a1f",
+    "name": "Sokman",
+    "phone": "62525707",
+    "datetime": "2026-08-12T10:00",
+    "count": 3,
+    "note": "下環街96號 利達樓1樓A",
+    "price": 238,
     "status": "pending"
   }
 ]

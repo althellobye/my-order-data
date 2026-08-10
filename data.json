@@ -917,7 +917,7 @@
     "count": 3,
     "note": "皇朝恆基花園第一座 13樓 E 單位",
     "price": 228,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1786010454419_b6jo1b",
@@ -967,6 +967,6 @@
     "count": 2,
     "note": "黑沙環新益花園第六座19/G",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   }
 ]

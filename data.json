@@ -957,7 +957,7 @@
     "count": 2,
     "note": "氹仔湖畔大廈2座8/A",
     "price": 228,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1786267042490_kbab5x",
@@ -977,7 +977,7 @@
     "count": 2,
     "note": "氹仔 東北馬路 聚龍明珠 第一座10 A",
     "price": 228,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1786353743071_dbpjac",
@@ -1006,6 +1006,16 @@
     "datetime": "2026-08-22T10:30",
     "count": 4,
     "note": "東南亞花園A座16樓Z座",
+    "price": 228,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786668229169_oph9w1",
+    "name": "Eddie",
+    "phone": "63138445",
+    "datetime": "2026-08-17T10:30",
+    "count": 4,
+    "note": "氹仔泉鴻花園碧苑",
     "price": 228,
     "status": "pending"
   }

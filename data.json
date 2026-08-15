@@ -897,7 +897,7 @@
     "count": 4,
     "note": "筷子基和樂大馬路宏信大廈第三座21/M",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1785849438082_nens1x",
@@ -997,7 +997,7 @@
     "count": 3,
     "note": "係新勝街68號J 泉偉軒5樓B座",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1786634099612_wofg5d",
@@ -1037,6 +1037,16 @@
     "count": 4,
     "note": "新益花園第六座23樓AA",
     "price": 238,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786767879445_dc5sij",
+    "name": "Dennies",
+    "phone": "63000988",
+    "datetime": "2026-09-12T10:00",
+    "count": 4,
+    "note": "海天居第三座",
+    "price": 218,
     "status": "pending"
   }
 ]

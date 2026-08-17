@@ -1017,7 +1017,7 @@
     "count": 4,
     "note": "氹仔泉鴻花園碧苑",
     "price": 228,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1786705860863_blms0l",
@@ -1046,6 +1046,16 @@
     "datetime": "2026-09-12T10:00",
     "count": 4,
     "note": "海天居第三座",
+    "price": 218,
+    "status": "pending"
+  },
+  {
+    "id": "id_1786932121656_mxwx9t",
+    "name": "May",
+    "phone": "66667898",
+    "datetime": "2026-08-18T10:30",
+    "count": 2,
+    "note": "青州坊第二座16樓G",
     "price": 218,
     "status": "pending"
   }

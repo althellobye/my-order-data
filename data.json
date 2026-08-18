@@ -1017,7 +1017,7 @@
     "count": 4,
     "note": "氹仔泉鴻花園碧苑",
     "price": 228,
-    "status": "progress"
+    "status": "completed"
   },
   {
     "id": "id_1786705860863_blms0l",
@@ -1057,6 +1057,6 @@
     "count": 2,
     "note": "青州坊第二座16樓G",
     "price": 218,
-    "status": "pending"
+    "status": "progress"
   }
 ]

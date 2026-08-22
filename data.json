@@ -1007,7 +1007,7 @@
     "count": 4,
     "note": "東南亞花園A座16樓Z座",
     "price": 228,
-    "status": "pending"
+    "status": "progress"
   },
   {
     "id": "id_1786668229169_oph9w1",
@@ -1077,7 +1077,7 @@
     "count": 2,
     "note": "台山平民大廈C座709室",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1787224835861_yf3dmb",
@@ -1087,6 +1087,6 @@
     "count": 2,
     "note": "提督馬路朗悅居18樓E",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   }
 ]

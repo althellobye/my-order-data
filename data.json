@@ -1007,7 +1007,7 @@
     "count": 4,
     "note": "東南亞花園A座16樓Z座",
     "price": 228,
-    "status": "progress"
+    "status": "completed"
   },
   {
     "id": "id_1786668229169_oph9w1",
@@ -1088,5 +1088,15 @@
     "note": "提督馬路朗悅居18樓E",
     "price": 218,
     "status": "completed"
+  },
+  {
+    "id": "id_1787375844022_65z0ad",
+    "name": "Mui",
+    "phone": "65651863",
+    "datetime": "2026-08-23T01:00",
+    "count": 3,
+    "note": "黑沙環利豐閣5樓J座",
+    "price": 228,
+    "status": "pending"
   }
 ]

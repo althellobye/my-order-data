@@ -937,7 +937,7 @@
     "count": 4,
     "note": "新城市花園第14座3H",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1786168063683_eo4a1f",
@@ -1097,7 +1097,7 @@
     "count": 3,
     "note": "黑沙環利豐閣5樓J座",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1787401157542_spgv6i",
@@ -1107,7 +1107,7 @@
     "count": 3,
     "note": "澳門雅廉方大馬路54號東方花園祿星閣4樓C",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1787410127904_v8b7yp",
@@ -1117,6 +1117,16 @@
     "count": 2,
     "note": "關閘李秉倫大廈第一座17A",
     "price": 218,
+    "status": "pending"
+  },
+  {
+    "id": "id_1787547822128_zoz720",
+    "name": "Enson",
+    "phone": "66871405",
+    "datetime": "2026-09-05T10:00",
+    "count": 3,
+    "note": "濠庭都會4座8D",
+    "price": 248,
     "status": "pending"
   }
 ]

@@ -1127,7 +1127,7 @@
     "count": 3,
     "note": "濠庭都會4座8D",
     "price": 248,
-    "status": "progress"
+    "status": "completed"
   },
   {
     "id": "id_1788056992063_1dm4vq",
@@ -1158,5 +1158,15 @@
     "note": "台山建富新邨業富閣5P",
     "price": 238,
     "status": "completed"
+  },
+  {
+    "id": "id_1788581350249_vp8t3x",
+    "name": "JO",
+    "phone": "66160982",
+    "datetime": "2026-09-07T09:30",
+    "count": 3,
+    "note": "：宏建二座7樓B",
+    "price": 218,
+    "status": "pending"
   }
 ]

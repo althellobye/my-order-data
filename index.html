@@ -242,8 +242,115 @@ function getWeekRange(){var n=new Date(),d=n.getDay();var m=new Date(n);m.setDat
 function getMonthRange(y,m){var s=y+'-'+String(m+1).padStart(2,'0')+'-01';var l=new Date(y,m+1,0).getDate();return{start:s,end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(l).padStart(2,'0')};}
 function renderReport(p){var r=p==='week'?getWeekRange():getMonthRange(new Date().getFullYear(),new Date().getMonth());if(p==='week'){document.getElementById('monthSelector').style.display='none';}else{document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=statYear+'年 '+(statMonth+1)+'月';}var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span class="income">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
 function renderMonthStatReport(y,m){document.getElementById('monthSelector').style.display='flex';document.getElementById('statMonthDisplay').innerHTML=y+'年 '+(m+1)+'月';var r=getMonthRange(y,m);var d=[],tI=0,tU=0;for(var i=0;i<allOrders.length;i++){var o=allOrders[i];var dt=o.datetime.split('T')[0];if(dt>=r.start&&dt<=r.end){var inc=(o.price||DEFAULT_PRICE)*(o.count||1);d.push({date:dt,name:o.name,count:o.count,income:inc});tI+=inc;tU+=(o.count||1);}}d.sort(function(a,b){return a.date.localeCompare(b.date);});var c=document.getElementById('reportList');var sm=document.getElementById('reportSummary');sm.innerHTML='💰 $'+tI.toLocaleString()+' &nbsp;│&nbsp; ❄️ '+tU+'部';if(d.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<d.length;i++){html+='<div class="report-item"><span>'+d[i].date+'</span><span>'+d[i].name+'('+d[i].count+'部)</span><span class="income">$'+d[i].income+'</span></div>';}c.innerHTML=html;}}
-function renderCalendar(){var f=new Date(currentYear,currentMonth,1);var off=(f.getDay()===0?6:f.getDay()-1);var days=new Date(currentYear,currentMonth+1,0).getDate();var g=document.getElementById('calendarGrid');g.innerHTML="";document.getElementById('monthTitle').innerHTML=currentYear+'年'+String(currentMonth+1).padStart(2,'0')+'月';var today=new Date().toISOString().slice(0,10);for(var i=0;i<off;i++){var e=document.createElement('div');e.className='date-cell';e.style.background='#f8fafc';e.style.opacity='0.4';g.appendChild(e);}for(var d=1;d<=days;d++){var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dayOrders=allOrders.filter(function(o){return o.datetime&&o.datetime.startsWith(ds);});var cell=document.createElement('div');cell.className='date-cell';if(dayOrders.length>0)cell.classList.add('has-orders');if(ds===today)cell.classList.add('today');var num=document.createElement('div');num.className='day-number';num.innerText=d;cell.appendChild(num);if(dayOrders.length>0){var dotContainer=document.createElement('div');dotContainer.className='order-dot';for(var j=0;j<dayOrders.length;j++){var o=dayOrders[j];var st=getOrderStatus(o);var dot=document.createElement('span');dot.className='dot '+st;var timeStr=o.datetime.split('T')[1].slice(0,5);dot.innerText=timeStr;dotContainer.appendChild(dot);}cell.appendChild(dotContainer);}cell.onclick=(function(ds,dayOrders){return function(){showDetail(ds,dayOrders);};})(ds,dayOrders);g.appendChild(cell);}}
-function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div class="time">⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div class="name">❄️ '+escapeHtml(o.name)+'</div>';html+='<div class="detail"><span>📞 '+(o.phone||'')+'</span><span>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</span></div>';html+='<div class="status-text">'+stText+'</div>';if(o.note){html+='<div style="font-size:13px;color:#64748b;margin-top:3px;">📍 '+escapeHtml(o.note)+'</div>';}html+='<div class="actions"><button class="edit-btn" data-id="'+o.id+'">✏️ 編輯</button><button class="del-btn" data-id="'+o.id+'">🗑️ 刪除</button></div>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.edit-btn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.del-btn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
+
+// ===== 核心：只刷新日曆格子的顏色，不重建整個日曆 =====
+function refreshCalendarColors() {
+    var grid = document.getElementById('calendarGrid');
+    var dateCells = grid.querySelectorAll('.date-cell');
+    var todayStr = new Date().toISOString().slice(0,10);
+    
+    dateCells.forEach(function(cell) {
+        // 找到這個格子對應的日期
+        var dayNum = cell.querySelector('.day-number');
+        if (!dayNum) return;
+        var d = parseInt(dayNum.innerText);
+        if (isNaN(d)) return;
+        var ds = currentYear + '-' + String(currentMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        
+        // 獲取該日期的訂單
+        var dayOrders = allOrders.filter(function(o) {
+            return o.datetime && o.datetime.startsWith(ds);
+        });
+        
+        // 移除舊的 order-dot
+        var oldDots = cell.querySelectorAll('.order-dot');
+        oldDots.forEach(function(el) { el.remove(); });
+        var oldMore = cell.querySelector('.more-indicator');
+        if (oldMore) oldMore.remove();
+        
+        // 重新生成訂單小方塊
+        if (dayOrders.length > 0) {
+            var dotContainer = document.createElement('div');
+            dotContainer.className = 'order-dot';
+            var maxShow = 3;
+            var showOrders = dayOrders.slice(0, maxShow);
+            for (var j = 0; j < showOrders.length; j++) {
+                var o = showOrders[j];
+                var st = getOrderStatus(o);
+                var dot = document.createElement('span');
+                dot.className = 'dot ' + st;
+                var timeStr = o.datetime.split('T')[1].slice(0,5);
+                dot.innerText = timeStr;
+                dotContainer.appendChild(dot);
+            }
+            if (dayOrders.length > maxShow) {
+                var more = document.createElement('div');
+                more.className = 'more-indicator';
+                more.innerText = '+' + String(dayOrders.length - maxShow);
+                dotContainer.appendChild(more);
+            }
+            cell.appendChild(dotContainer);
+        }
+    });
+}
+
+// ===== 重寫 renderCalendar（只重建一次，之後用 refreshCalendarColors 更新顏色）=====
+function renderCalendar() {
+    var f = new Date(currentYear, currentMonth, 1);
+    var off = (f.getDay() === 0 ? 6 : f.getDay() - 1);
+    var days = new Date(currentYear, currentMonth + 1, 0).getDate();
+    var g = document.getElementById('calendarGrid');
+    g.innerHTML = "";
+    document.getElementById('monthTitle').innerHTML = currentYear + '年' + String(currentMonth+1).padStart(2,'0') + '月';
+    var today = new Date().toISOString().slice(0,10);
+    for (var i = 0; i < off; i++) {
+        var e = document.createElement('div');
+        e.className = 'date-cell';
+        e.style.background = '#f8fafc';
+        e.style.opacity = '0.4';
+        g.appendChild(e);
+    }
+    for (var d = 1; d <= days; d++) {
+        var ds = currentYear + '-' + String(currentMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        var dayOrders = allOrders.filter(function(o) { return o.datetime && o.datetime.startsWith(ds); });
+        var cell = document.createElement('div');
+        cell.className = 'date-cell';
+        if (dayOrders.length > 0) cell.classList.add('has-orders');
+        if (ds === today) cell.classList.add('today');
+        var num = document.createElement('div');
+        num.className = 'day-number';
+        num.innerText = d;
+        cell.appendChild(num);
+        if (dayOrders.length > 0) {
+            var dotContainer = document.createElement('div');
+            dotContainer.className = 'order-dot';
+            var maxShow = 3;
+            var showOrders = dayOrders.slice(0, maxShow);
+            for (var j = 0; j < showOrders.length; j++) {
+                var o = showOrders[j];
+                var st = getOrderStatus(o);
+                var dot = document.createElement('span');
+                dot.className = 'dot ' + st;
+                var timeStr = o.datetime.split('T')[1].slice(0,5);
+                dot.innerText = timeStr;
+                dotContainer.appendChild(dot);
+            }
+            if (dayOrders.length > maxShow) {
+                var more = document.createElement('div');
+                more.className = 'more-indicator';
+                more.innerText = '+' + String(dayOrders.length - maxShow);
+                dotContainer.appendChild(more);
+            }
+            cell.appendChild(dotContainer);
+        }
+        cell.onclick = (function(ds, dayOrders) {
+            return function() { showDetail(ds, dayOrders); };
+        })(ds, dayOrders);
+        g.appendChild(cell);
+    }
+}
+
+function showDetail(ds,orders){document.getElementById('detailTitle').innerHTML='📅 '+ds;var c=document.getElementById('detailList');if(orders.length===0){c.innerHTML='<div class="empty-state">暫無訂單</div>';}else{var html='';for(var i=0;i<orders.length;i++){var o=orders[i];var p=o.price||DEFAULT_PRICE;var st=getOrderStatus(o);var stText=getStatusText(st);html+='<div class="order-card '+st+'">';html+='<div class="time">⏰ '+o.datetime.split('T')[1]+'</div>';html+='<div class="name">❄️ '+escapeHtml(o.name)+'</div>';html+='<div class="detail"><span>📞 '+(o.phone||'')+'</span><span>🔢 '+o.count+'部 × $'+p+' = $'+((o.count||1)*p)+'</span></div>';html+='<div class="status-text">'+stText+'</div>';if(o.note){html+='<div style="font-size:13px;color:#64748b;margin-top:3px;">📍 '+escapeHtml(o.note)+'</div>';}html+='<div class="actions"><button class="editBtn" data-id="'+o.id+'">✏️ 編輯</button><button class="delBtn" data-id="'+o.id+'">🗑️ 刪除</button></div>';html+='</div>';}c.innerHTML=html;var editBtns=document.querySelectorAll('.editBtn');for(var i=0;i<editBtns.length;i++){editBtns[i].onclick=function(){editOrder(this.getAttribute('data-id'));};}var delBtns=document.querySelectorAll('.delBtn');for(var i=0;i<delBtns.length;i++){delBtns[i].onclick=function(){var that=this;if(confirm('確認刪除？')){allOrders=allOrders.filter(function(o){return o.id!==that.getAttribute('data-id');});saveData();closeDetailModal();}};}}document.getElementById('detailModal').classList.add('open');}
 function editOrder(id){var o=null;for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){o=allOrders[i];break;}}if(!o)return;document.getElementById('editId').value=o.id;document.getElementById('name').value=o.name;document.getElementById('phone').value=o.phone||'';document.getElementById('date').value=o.datetime.split('T')[0];document.getElementById('time').value=o.datetime.split('T')[1];document.getElementById('count').value=o.count;document.getElementById('note').value=o.note||'';document.getElementById('price').value=o.price||DEFAULT_PRICE;document.getElementById('status').value=o.status||getOrderStatus(o);document.getElementById('modalTitle').innerText="✏️ 編輯訂單";document.getElementById('deleteBtn').style.display="block";closeDetailModal();openOrderModal();}
 async function saveOrder(){var id=document.getElementById('editId').value||('id_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));var name=document.getElementById('name').value.trim();var phone=document.getElementById('phone').value.trim();var date=document.getElementById('date').value;var time=document.getElementById('time').value;var count=parseInt(document.getElementById('count').value);var note=document.getElementById('note').value.trim();var price=parseInt(document.getElementById('price').value);var status=document.getElementById('status').value;var isEdit=document.getElementById('editId').value!=='';if(!name||!phone||!date||!time||!count){alert("請填寫完整");return;}if(isNaN(price)||price<=0)price=DEFAULT_PRICE;var datetime=date+'T'+time;for(var i=0;i<allOrders.length;i++){if(allOrders[i].datetime===datetime&&allOrders[i].id!==id){alert('⚠️ '+date+' '+time+' 已被預約');return;}}var orderData={id:id,name:name,phone:phone,datetime:datetime,count:count,note:note,price:price,status:status};if(isEdit){for(var i=0;i<allOrders.length;i++){if(allOrders[i].id===id){allOrders[i]=orderData;break;}}}else{allOrders.push(orderData);}await saveData();closeOrderModal();}
 async function deleteOrder(){var id=document.getElementById('editId').value;var name=document.getElementById('name').value;if(!confirm('刪除「'+name+'」嗎？'))return;allOrders=allOrders.filter(function(o){return o.id!==id;});await saveData();closeOrderModal();}
@@ -275,7 +382,7 @@ document.getElementById('nextMonthStatBtn').onclick=function(){statMonth++;if(st
 document.getElementById('saveTokenBtn').onclick=function(){var t=document.getElementById('tokenInput').value.trim();if(t){localStorage.setItem('github_token',t);githubToken=t;document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}};
 loadLocal();if(githubToken){document.getElementById('tokenStatus').innerHTML='🟢 已連接雲端';loadFromGit();}
 
-// ===== 自動日期檢查 + 狀態更新（過期訂單自動變紅色 + 同步雲端）=====
+// ===== 自動日期檢查 + 狀態更新 =====
 async function checkAndUpdateOrderStatus() {
     var now = new Date();
     var updated = false;
@@ -284,29 +391,26 @@ async function checkAndUpdateOrderStatus() {
         var o = allOrders[i];
         var orderTime = new Date(o.datetime);
         
-        // 過期 → 強制設為 completed (紅色)
         if (orderTime < now) {
             if (o.status !== 'completed') {
                 o.status = 'completed';
                 updated = true;
             }
         }
-        // 今天 → 設為 progress (黃色)
         else if (orderTime.toDateString() === now.toDateString()) {
             if (o.status !== 'progress') {
                 o.status = 'progress';
                 updated = true;
             }
         }
-        // 未來 → 保留用戶手動設定
     }
     
     if (updated) {
-        // 先存本地
         localStorage.setItem('ac_backup', JSON.stringify(allOrders));
         renderAll();
+        // ⭐ 同步更新日曆顏色
+        refreshCalendarColors();
         
-        // 如果有網路且有 token，上傳到雲端
         if (navigator.onLine && githubToken && fileSha) {
             try {
                 await saveToGit();
@@ -317,7 +421,6 @@ async function checkAndUpdateOrderStatus() {
                     if (st.innerHTML === '🔄 訂單狀態已自動更新並同步雲端 ✅') st.innerHTML = '';
                 }, 3000);
             } catch(e) {
-                // 上傳失敗，只存本地
                 var st = document.getElementById('syncStatus');
                 st.innerHTML = '🔄 訂單狀態已更新 (離線儲存)';
                 st.style.color = '#d97706';
@@ -326,7 +429,6 @@ async function checkAndUpdateOrderStatus() {
                 }, 3000);
             }
         } else {
-            // 離線模式，只存本地
             var st = document.getElementById('syncStatus');
             st.innerHTML = '🔄 訂單狀態已更新 (離線儲存)';
             st.style.color = '#d97706';
@@ -334,6 +436,9 @@ async function checkAndUpdateOrderStatus() {
                 if (st.innerHTML === '🔄 訂單狀態已更新 (離線儲存)') st.innerHTML = '';
             }, 3000);
         }
+    } else {
+        // 即使沒有更新訂單狀態，也要刷新顏色（防止時間變了但顏色沒變）
+        refreshCalendarColors();
     }
 }
 

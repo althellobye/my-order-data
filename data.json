@@ -1187,7 +1187,7 @@
     "count": 2,
     "note": "氹仔利圖大廈24K 樓E座",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1788783883052_5f6emb",
@@ -1207,6 +1207,16 @@
     "count": 2,
     "note": "海上居 1座28o",
     "price": 238,
+    "status": "pending"
+  },
+  {
+    "id": "id_1788924950441_ypbnsv",
+    "name": "Angel",
+    "phone": "66778031",
+    "datetime": "2026-09-13T10:30",
+    "count": 6,
+    "note": "氹仔百利寶花園第二座百花閣7G",
+    "price": 228,
     "status": "pending"
   }
 ]

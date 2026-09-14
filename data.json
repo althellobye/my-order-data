@@ -1217,7 +1217,7 @@
     "count": 6,
     "note": "氹仔百利寶花園第二座百花閣7G",
     "price": 228,
-    "status": "progress"
+    "status": "completed"
   },
   {
     "id": "id_1788937114614_fph264",
@@ -1246,6 +1246,16 @@
     "datetime": "2026-09-17T10:00",
     "count": 1,
     "note": "氹仔湖畔大廈第五座39E",
+    "price": 228,
+    "status": "pending"
+  },
+  {
+    "id": "id_1789351097398_0294kt",
+    "name": "Mii",
+    "phone": "65210369",
+    "datetime": "2026-09-14T01:30",
+    "count": 2,
+    "note": "栢蕙花園第二座14樓G",
     "price": 228,
     "status": "pending"
   }

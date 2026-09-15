@@ -1267,7 +1267,7 @@
     "count": 3,
     "note": "快子基宏建第二座",
     "price": 200,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1789393354518_xxl8e1",
@@ -1277,6 +1277,16 @@
     "count": 3,
     "note": "得勝斜路金龍閣15樓F",
     "price": 228,
+    "status": "completed"
+  },
+  {
+    "id": "id_1789441433155_p8t8cu",
+    "name": "paggy",
+    "phone": "66507898",
+    "datetime": "2026-09-17T11:00",
+    "count": 3,
+    "note": "濠庭都會4座8b",
+    "price": 238,
     "status": "pending"
   }
 ]

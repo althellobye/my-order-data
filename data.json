@@ -1217,7 +1217,7 @@
     "count": 4,
     "note": "龍園雲龍閣16樓Aa",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1788968038191_uzjzzd",
@@ -1227,7 +1227,7 @@
     "count": 2,
     "note": "海上居四座31G",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1789022907473_jcwilg",
@@ -1296,7 +1296,7 @@
     "datetime": "2026-09-19T11:30",
     "count": 2,
     "note": "海上居第4座24 樓 A",
-    "price": 228,
-    "status": "pending"
+    "price": 238,
+    "status": "completed"
   }
 ]

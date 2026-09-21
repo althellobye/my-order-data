@@ -1257,7 +1257,7 @@
     "count": 2,
     "note": "海上居 1座28o",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1789370385115_630dno",
@@ -1307,6 +1307,16 @@
     "count": 1,
     "note": "信步閒庭 第二座 13A",
     "price": 228,
+    "status": "pending"
+  },
+  {
+    "id": "id_1789984612682_s6bs9g",
+    "name": "安安",
+    "phone": "63023328",
+    "datetime": "2026-09-30T10:00",
+    "count": 2,
+    "note": "龍頭里5巷金龍花園二座5樓H",
+    "price": 248,
     "status": "pending"
   }
 ]

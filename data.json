@@ -1307,7 +1307,7 @@
     "count": 1,
     "note": "信步閒庭 第二座 13A",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1789984612682_s6bs9g",
@@ -1327,6 +1327,6 @@
     "count": 3,
     "note": "海濱花園第3座17樓H室",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   }
 ]

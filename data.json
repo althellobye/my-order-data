@@ -1367,7 +1367,7 @@
     "count": 3,
     "note": "地址：金峰南岸第6座",
     "price": 248,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790519083576_6ujgqr",
@@ -1377,6 +1377,16 @@
     "count": 5,
     "note": "氹仔曼克頓南座35樓",
     "price": 228,
+    "status": "completed"
+  },
+  {
+    "id": "id_1790568343247_jwrcrz",
+    "name": "Tyson",
+    "phone": "66603456",
+    "datetime": "2026-09-29T01:30",
+    "count": 2,
+    "note": "雅廉坊大馬路44號",
+    "price": 218,
     "status": "pending"
   }
 ]

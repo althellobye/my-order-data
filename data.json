@@ -1347,7 +1347,7 @@
     "count": 4,
     "note": "台山新城市花園第二座7E",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790398623562_a3jqds",
@@ -1377,16 +1377,6 @@
     "count": 1,
     "note": "雅廉坊大馬路44號",
     "price": 218,
-    "status": "pending"
-  },
-  {
-    "id": "id_1790587893812_8snm24",
-    "name": "Luey",
-    "phone": "56890236",
-    "datetime": "2026-09-30T09:30",
-    "count": 1,
-    "note": "友誼大馬路新安花園第一座9樓C",
-    "price": 238,
-    "status": "pending"
+    "status": "completed"
   }
 ]

@@ -1387,7 +1387,7 @@
     "count": 4,
     "note": "地址：友誼大馬路 新安花園第四座 14樓BA",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790694354486_4i2u2f",
@@ -1397,6 +1397,16 @@
     "count": 2,
     "note": "澳門馬六甲街140號國際中心第十幢4樓E  /",
     "price": 228,
+    "status": "completed"
+  },
+  {
+    "id": "id_1790764814611_arvf9q",
+    "name": "MC",
+    "phone": "62811720",
+    "datetime": "2026-10-05T10:30",
+    "count": 3,
+    "note": "氹仔皇族8樓C",
+    "price": 248,
     "status": "pending"
   }
 ]

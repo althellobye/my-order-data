@@ -1427,7 +1427,7 @@
     "count": 7,
     "note": "黑沙環君悅灣3座22C",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790948249498_zbs8es",
@@ -1437,6 +1437,16 @@
     "count": 2,
     "note": "美景花園第四座6樓P室",
     "price": 238,
+    "status": "pending"
+  },
+  {
+    "id": "id_1791000798891_9j0130",
+    "name": "燕語",
+    "phone": "63819197",
+    "datetime": "2026-10-04T01:30",
+    "count": 3,
+    "note": "澳門黑沙環寶輝寶利閣16樓P",
+    "price": 228,
     "status": "pending"
   }
 ]

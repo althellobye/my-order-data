@@ -1407,7 +1407,7 @@
     "count": 3,
     "note": "氹仔皇族8樓C",
     "price": 248,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790905643408_tgqcdi",
@@ -1437,7 +1437,7 @@
     "count": 2,
     "note": "美景花園第四座6樓P室",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1791000798891_9j0130",
@@ -1447,6 +1447,16 @@
     "count": 3,
     "note": "澳門黑沙環寶輝寶利閣16樓P",
     "price": 228,
+    "status": "completed"
+  },
+  {
+    "id": "id_1791375646179_48agfa",
+    "name": "Bobo",
+    "phone": "66505341",
+    "datetime": "2026-10-09T02:30",
+    "count": 3,
+    "note": "黑沙環海上居3座19樓H",
+    "price": 248,
     "status": "pending"
   }
 ]

@@ -1457,6 +1457,16 @@
     "count": 3,
     "note": "黑沙環海上居3座19樓H",
     "price": 248,
+    "status": "completed"
+  },
+  {
+    "id": "id_1791537413677_wk8r68",
+    "name": "謝 洗冷氣",
+    "phone": "63122002",
+    "datetime": "2026-10-12T02:00",
+    "count": 4,
+    "note": "海上居第三座 6樓 G",
+    "price": 218,
     "status": "pending"
   }
 ]

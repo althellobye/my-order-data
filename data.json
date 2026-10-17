@@ -1477,7 +1477,7 @@
     "count": 1,
     "note": "祐漢康樂新村2座3樓M室",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1791876368531_98vdqr",
@@ -1498,5 +1498,15 @@
     "note": "賈伯樂提督街4號 富德花園 1D",
     "price": 238,
     "status": "completed"
+  },
+  {
+    "id": "id_1792244840931_62gr8s",
+    "name": "Reachel",
+    "phone": "66561359",
+    "datetime": "2026-10-19T11:30",
+    "count": 2,
+    "note": "泉碧花園第二座3樓I",
+    "price": 228,
+    "status": "pending"
   }
 ]

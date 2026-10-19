@@ -1417,7 +1417,7 @@
     "count": 3,
     "note": "勞動節街廣福安第2座15樓J",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1790909719923_992fk3",
@@ -1504,9 +1504,9 @@
     "name": "Reachel",
     "phone": "66561359",
     "datetime": "2026-10-19T11:30",
-    "count": 2,
+    "count": 3,
     "note": "泉碧花園第二座3樓I",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   }
 ]

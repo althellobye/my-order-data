@@ -1527,7 +1527,7 @@
     "count": 1,
     "note": "澳門黑沙環广福祥一楼EB铺",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1792485011340_2gvejm",
@@ -1537,7 +1537,7 @@
     "count": 1,
     "note": "皇朝建興隆興海閣5x  電話：66507898",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1792493995242_bkvjch",
@@ -1546,6 +1546,16 @@
     "datetime": "2026-10-21T11:00",
     "count": 5,
     "note": "地址：金峰南岸第二座12G",
+    "price": 238,
+    "status": "completed"
+  },
+  {
+    "id": "id_1792582318842_axg2sr",
+    "name": "吉，大田",
+    "phone": "66365649",
+    "datetime": "2026-10-25T09:30",
+    "count": 1,
+    "note": "黑沙環中街",
     "price": 238,
     "status": "pending"
   }

@@ -1557,7 +1557,7 @@
     "count": 1,
     "note": "黑沙環中街",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1792633802746_oe9zvo",
@@ -1567,7 +1567,7 @@
     "count": 1,
     "note": "皇朝建興隆興海閣5x  電話：66507898",
     "price": 280,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1792746147559_wvdbq8",
@@ -1577,6 +1577,6 @@
     "count": 2,
     "note": "氹仔濠珀二座30樓D",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   }
 ]

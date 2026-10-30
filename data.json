@@ -1588,5 +1588,15 @@
     "note": "廣華新邨第6座4樓A",
     "price": 300,
     "status": "completed"
+  },
+  {
+    "id": "id_1793328101882_dhcqsd",
+    "name": "Natalie",
+    "phone": "62041462",
+    "datetime": "2026-11-02T10:30",
+    "count": 3,
+    "note": "金峰名鑄盛名7G",
+    "price": 248,
+    "status": "pending"
   }
 ]

@@ -1598,5 +1598,15 @@
     "note": "金峰名鑄盛名7G",
     "price": 248,
     "status": "pending"
+  },
+  {
+    "id": "id_1793507214522_rd3tm6",
+    "name": "Amigo",
+    "phone": "65453302",
+    "datetime": "2026-11-03T01:00",
+    "count": 2,
+    "note": "國際中心7座3樓H",
+    "price": 218,
+    "status": "pending"
   }
 ]

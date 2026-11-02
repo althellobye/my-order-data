@@ -1594,10 +1594,10 @@
     "name": "Natalie",
     "phone": "62041462",
     "datetime": "2026-11-02T10:30",
-    "count": 3,
+    "count": 5,
     "note": "金峰名鑄盛名7G",
-    "price": 248,
-    "status": "pending"
+    "price": 226,
+    "status": "completed"
   },
   {
     "id": "id_1793507214522_rd3tm6",
@@ -1617,7 +1617,7 @@
     "count": 3,
     "note": "路環石排灣居雅大廈第1座18樓j座",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1793518243556_krupk1",

@@ -1607,7 +1607,7 @@
     "count": 2,
     "note": "國際中心7座3樓H",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1793511133008_nyj1za",
@@ -1627,6 +1627,16 @@
     "count": 2,
     "note": "馬場東大馬路灣景園第一座3樓 C 單元",
     "price": 238,
+    "status": "completed"
+  },
+  {
+    "id": "id_1793791302136_d4ua8n",
+    "name": "豹",
+    "phone": "68681115",
+    "datetime": "2026-11-05T02:30",
+    "count": 2,
+    "note": "宏建大廈第三座4樓E單位",
+    "price": 218,
     "status": "pending"
   }
 ]

@@ -1637,6 +1637,16 @@
     "count": 2,
     "note": "宏建大廈第三座4樓E單位",
     "price": 218,
+    "status": "completed"
+  },
+  {
+    "id": "id_1793850016534_qx22f4",
+    "name": "Dep",
+    "phone": "66337669",
+    "datetime": "2026-11-07T10:00",
+    "count": 1,
+    "note": "御景灣第二座15樓e",
+    "price": 280,
     "status": "pending"
   }
 ]

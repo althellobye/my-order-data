@@ -1657,6 +1657,16 @@
     "count": 2,
     "note": "南灣1號第二座10樓O單位",
     "price": 238,
+    "status": "completed"
+  },
+  {
+    "id": "id_1793952231421_15e1og",
+    "name": "豹紋",
+    "phone": "68681115",
+    "datetime": "2026-11-09T10:00",
+    "count": 1,
+    "note": "宏建大廈第三座4樓E單位",
+    "price": 218,
     "status": "pending"
   }
 ]

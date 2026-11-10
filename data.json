@@ -1647,7 +1647,7 @@
     "count": 1,
     "note": "御景灣第二座15樓e",
     "price": 280,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1793874555627_lwx5t7",
@@ -1667,7 +1667,7 @@
     "count": 1,
     "note": "宏建大廈第三座4樓E單位",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1793963711619_fj8ahn",
@@ -1677,6 +1677,6 @@
     "count": 3,
     "note": "黑沙環東北大馬路廣華新邨十二座16C",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   }
 ]

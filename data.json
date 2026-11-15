@@ -1517,7 +1517,7 @@
     "count": 4,
     "note": "澳門賈伯樂提督街11G友輝大廈5樓E",
     "price": 218,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1792476266733_33vvpd",
@@ -1687,6 +1687,6 @@
     "count": 1,
     "note": "筷子基快型大廈第二座16P",
     "price": 228,
-    "status": "pending"
+    "status": "completed"
   }
 ]

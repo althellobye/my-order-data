@@ -1717,7 +1717,7 @@
     "count": 4,
     "note": "金豐大廈第一座11樓E座",
     "price": 238,
-    "status": "pending"
+    "status": "completed"
   },
   {
     "id": "id_1795589870378_0hq0xx",
@@ -1726,7 +1726,7 @@
     "datetime": "2026-11-27T01:30",
     "count": 4,
     "note": "石排灣居雅大廈第七座15BN",
-    "price": 228,
-    "status": "pending"
+    "price": 238,
+    "status": "completed"
   }
 ]
